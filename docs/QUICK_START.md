@@ -1,0 +1,435 @@
+# Quick Start Guide
+
+## What You're Building
+
+**Two projects, one timeline:**
+
+1. **Website (rickiecruz.com)** — Portfolio + consulting lead gen
+   - Launch: Week 2-4 (4 weeks total)
+   - Contains: Chatter Snow case study, Personal Finance case study (after), About, Consulting, Contact, Resume
+
+2. **Personal Finance OS** — Financial management dashboard for yourself
+   - Launch: Week 2-3 start, MVP by Week 4, improve ongoing
+   - Use it yourself, document as case study
+
+---
+
+## Pre-Launch Checklist (Before Week 1)
+
+- [ ] Domain registered: **rickiecruz.com**
+- [ ] GitHub account ready (create `rickiecruz.com` repo)
+- [ ] Vercel account (connect GitHub)
+- [ ] Supabase account (for finance app)
+- [ ] Collected Chatter Snow screenshots/docs
+- [ ] Have access to financial data (bank CSV/spreadsheet)
+- [ ] Confirmed time commitment (~20-25 hrs/week)
+
+---
+
+## Week-by-Week Summary
+
+### Week 1 (Setup + Content)
+**Time: ~10-12 hours**
+
+- Set up Next.js repo, Vercel, domain, DNS
+- Gather Chatter Snow materials
+- Organize content
+- Create data model sketch for finance app
+
+**Status end of week:** Repo ready, content gathered, domain pointing
+
+### Week 2 (Website MVP)
+**Time: ~22-24 hours**
+
+- Write Chatter Snow case study
+- Build website pages (Homepage, About, Consulting, Contact, Resume)
+- First finance features (Dashboard, Accounts)
+
+**Status end of week:** Website live with Chatter Snow case study
+
+### Week 3 (Polish Website + Finance MVP)
+**Time: ~24 hours**
+
+- Website: SEO, Accessibility, Analytics, Performance
+- Finance: Transactions, Categorization, Debt, Forecast
+
+**Status end of week:** Website feature-complete, Finance 70% done
+
+### Week 4 (Launch + Finalize)
+**Time: ~22-24 hours**
+
+- Website: Final testing, deploy to production
+- Finance: Complete MVP, polish, basic testing
+- Announce website live
+
+**Status end of week:** Website live, Finance MVP complete, generating leads
+
+---
+
+## File Structure
+
+```
+rickiecruz.com/
+├── pages/
+│   ├── index.tsx              (homepage)
+│   ├── about.tsx
+│   ├── work/
+│   │   ├── index.tsx          (work listing)
+│   │   └── [slug].tsx         (case study detail)
+│   ├── projects/
+│   │   ├── index.tsx          (project listing)
+│   │   └── [slug].tsx         (project detail)
+│   ├── consulting.tsx
+│   ├── contact.tsx
+│   ├── resume.tsx
+│   └── api/
+│       └── contact.ts         (form submission)
+│
+├── components/
+│   ├── Header.tsx
+│   ├── Footer.tsx
+│   ├── ProjectCard.tsx
+│   ├── CaseStudyLayout.tsx
+│   └── ...
+│
+├── styles/
+│   ├── globals.css
+│   ├── variables.css
+│   └── ...
+│
+├── content/
+│   ├── work/
+│   │   ├── chatter-snow/
+│   │   │   ├── index.mdx
+│   │   │   └── images/
+│   │   └── ...
+│   └── projects/
+│       ├── personal-finance/
+│       │   ├── index.mdx
+│       │   └── images/
+│       └── ...
+│
+├── public/
+│   ├── images/
+│   ├── favicon.ico
+│   └── robots.txt
+│
+├── lib/
+│   ├── projects.ts            (read content)
+│   ├── seo.ts                 (SEO utilities)
+│   └── ...
+│
+├── next.config.js
+├── tsconfig.json
+├── tailwind.config.js          (if using Tailwind)
+├── .env.local
+└── README.md
+```
+
+---
+
+## Key Files to Create First
+
+### Week 1
+
+```
+✓ GitHub repo created
+✓ Vercel project created
+✓ Basic Next.js structure
+✓ content/work/chatter-snow/index.mdx (start drafting)
+```
+
+### Week 2
+
+```
+✓ pages/index.tsx (homepage)
+✓ pages/work/[slug].tsx (case study template)
+✓ pages/about.tsx
+✓ pages/consulting.tsx
+✓ pages/contact.tsx
+✓ components/Header.tsx, Footer.tsx, ProjectCard.tsx
+```
+
+### Week 3-4
+
+```
+✓ All pages styled
+✓ SEO metadata
+✓ Analytics tracking
+✓ Performance optimization
+✓ Accessibility fixes
+```
+
+---
+
+## Critical Decisions (Make Before Week 1)
+
+1. **Styling approach?**
+   - Tailwind CSS (recommended) or CSS Modules?
+
+2. **Components?**
+   - shadcn/ui (recommended) or build from scratch?
+
+3. **MDX or JSON for content?**
+   - MDX (recommended) for easy authoring or JSON for structure?
+
+4. **Dark mode?**
+   - Yes (recommended for portfolio) or light only?
+
+5. **Fonts?**
+   - System fonts or Google Fonts?
+
+6. **Form submission?**
+   - Email service (Resend, SendGrid) or just validation?
+
+---
+
+## Core Requirements (Non-Negotiable)
+
+✅ **Website must:**
+- Be responsive (mobile, tablet, desktop)
+- Have excellent typography
+- Be keyboard-navigable
+- Have Lighthouse 90+
+- Include Chatter Snow case study
+- Have working contact form
+- Be hosted on rickiecruz.com
+
+✅ **Personal Finance must:**
+- Track accounts and transactions
+- Calculate net worth and cash runway
+- Show spending by category
+- Project cash flow 12 months ahead
+- Calculate debt payoff strategies
+- Actually be useful (you'll use it)
+
+---
+
+## What You Can Skip for MVP
+
+❌ Don't build:
+- Bank integrations (Plaid)
+- CMS admin panel
+- Blog
+- Advanced reporting
+- Mobile app
+- Recurring expense detection (manual okay)
+- Scenarios/"what if" analysis
+- Net worth tracking over time
+- User auth for website (public)
+- Anything requiring a database for website (git + markdown is fine)
+
+---
+
+## Success Metrics
+
+**Website launch (Week 2-4):**
+- ✅ Site live on rickiecruz.com
+- ✅ Lighthouse 90+
+- ✅ Responsive on all devices
+- ✅ Case study published
+- ✅ Contact form works
+- ✅ No broken links
+
+**Personal Finance MVP (Week 4+):**
+- ✅ Can add accounts
+- ✅ Can import transactions
+- ✅ Dashboard shows accurate net worth
+- ✅ Cash runway calculation works
+- ✅ Can categorize spending
+- ✅ Forecast projects 12 months
+- ✅ You're actually using it
+
+**Leading indicators:**
+- 1+ consulting inquiry from site
+- Personal Finance makes a financial decision you wouldn't have made
+- Website feels fast (actual vs. perceived)
+- Friends say "wow, this looks professional"
+
+---
+
+## Time Estimate Breakdown
+
+| Task Category        | Hours | When |
+|----------------------|-------|------|
+| Setup (repo, domain) | 6     | W1   |
+| Case study writing   | 5     | W2   |
+| Website build        | 18    | W2-3 |
+| Website polish       | 10    | W3-4 |
+| Finance MVP          | 45    | W2-4 |
+| Buffers/contingency  | 15    | All  |
+| **Total**            | ~100  | 4 wks|
+| **Per week**         | ~25   | Avg  |
+
+---
+
+## Burndown (if you want to track)
+
+**Target:** 100 hours over 4 weeks
+
+- **After Week 1:** 10 hours done, 90 remaining
+- **After Week 2:** 35 hours done, 65 remaining
+- **After Week 3:** 60 hours done, 40 remaining
+- **After Week 4:** 100 hours done, 0 remaining (MVP ships)
+
+---
+
+## Daily Workflow Suggestion
+
+**Morning (2-3 hrs):**
+- Coffee ☕
+- Review yesterday's work
+- Check if anything broke
+- One focused task (e.g., "write case study" or "build accounts page")
+
+**Afternoon (2-3 hrs):**
+- Another focused task
+- Test if possible
+- Take a break
+
+**Evening (optional, 1-2 hrs):**
+- Polish
+- Think about next day
+- Review progress
+
+**Day off:** Take one full day off per week (weekends?)
+
+---
+
+## Stuck? Here's What to Do
+
+### If design feels hard:
+- Look at other portfolios for inspiration
+- Use a design system (shadcn/ui)
+- Don't over-design; simpler is better
+- Default to solid colors + good typography
+
+### If writing case study is hard:
+- Just write badly first
+- Answer the questions in order (problem, solution, result)
+- Don't edit while writing
+- Fix after you have draft done
+
+### If finance calculations are wrong:
+- Print out your actual bank statements
+- Manually calculate expected cash runway
+- Compare to app output
+- Fix the calculation logic
+- Test again
+
+### If you're behind schedule:
+- Cut scope (no nice-to-have features)
+- Reduce perfection (Lighthouse 85 is okay)
+- Ship anyway; fix later
+- You can always improve v1.1
+
+### If motivation is low:
+- Remember: you're solving real problems
+- Show someone your progress
+- Ship something, even if rough
+- Celebrate small wins
+
+---
+
+## Communication Checklist
+
+**Week 1 (Thursday):**
+- Send quick message to close people: "Starting website project this week"
+
+**Week 2 (Friday):**
+- Post to LinkedIn: Website launching soon
+- Maybe sneak peek
+
+**Week 4 (Friday):**
+- Announce: Website is live! 🎉
+- Post screenshot
+- Share link
+
+**Post-launch:**
+- Let people know if you're available for consulting
+- Share a case study link if interesting opportunity comes up
+
+---
+
+## Resources to Keep Handy
+
+**Documentation:**
+- Next.js: https://nextjs.org/docs
+- Tailwind: https://tailwindcss.com/docs
+- Supabase: https://supabase.com/docs
+- Vercel: https://vercel.com/docs
+
+**Tools:**
+- GitHub (version control)
+- VS Code (editor)
+- Figma (design, if needed)
+- Chrome DevTools (debugging)
+- WAVE (accessibility testing)
+- Lighthouse (performance testing)
+
+**Inspiration:**
+- dribbble.com (design ideas)
+- awwwards.com (websites)
+- GitHub (how others structure projects)
+
+---
+
+## Future Reference
+
+Once you ship MVP, you can:
+
+1. **Add Personal Finance case study** to website (2-3 hrs)
+2. **Add blog** if you want to write (medium effort)
+3. **Add more case studies** as you complete projects (easy, reuse template)
+4. **Add email newsletter** for leads (low priority)
+5. **Build consulting CRM** to track leads (only if getting many)
+6. **Add bank sync** to finance if tedious importing (medium effort)
+7. **Build "what if" scenarios** for finance (fun but not critical)
+
+The site is built to support all of this without major redesign.
+
+---
+
+## Your North Star
+
+**Remember the goal:**
+
+When a nonprofit founder lands on rickiecruz.com, they should think:
+
+> "This person understands my problems. They know how to build something useful. I should talk to them."
+
+Not:
+
+> "Wow, cool animations"
+
+or
+
+> "I don't know what this person does"
+
+Every decision should support that goal.
+
+The site demonstrates your quality through:
+- Clear, thoughtful design
+- Case studies that show your thinking
+- Fast, accessible experience
+- Professional presence
+
+The content matters more than the code.
+
+---
+
+## Let's Go 🚀
+
+You've got this. Four weeks. Two projects. One goal: Launch.
+
+**First task:** Register rickiecruz.com
+
+**Second task:** Create GitHub repo
+
+**Third task:** Create Vercel project
+
+**Fourth task:** Write the Chatter Snow case study (get it out of your head)
+
+After that, everything else is building blocks.
+
+Go build something great.
