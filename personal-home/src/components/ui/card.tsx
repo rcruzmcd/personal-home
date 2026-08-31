@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
@@ -36,15 +37,23 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-header"
-      className={cn("flex flex-col gap-1 mb-4", className)}
+      className={cn(
+        "grid auto-rows-min grid-rows-[auto_auto] items-start gap-1 mb-4 has-[[data-slot=card-action]]:grid-cols-[1fr_auto]",
+        className
+      )}
       {...props}
     />
   )
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+function CardTitle({
+  className,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"div"> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot.Root : "div"
   return (
-    <div
+    <Comp
       data-slot="card-title"
       className={cn("text-h4 font-semibold text-foreground", className)}
       {...props}

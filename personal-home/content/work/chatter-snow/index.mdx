@@ -1,0 +1,155 @@
+---
+id: chatter-snow
+title: "Chatter Snow"
+slug: chatter-snow
+description: "Built the digital infrastructure supporting a growing LGBTQ+ ski and snowboard nonprofit — from inventory management to a full operations platform."
+featured: true
+category: work
+subcategory: platform
+status: active
+
+startDate: "2025-01-15"
+endDate: "2026-08-31"
+publishedDate: "2026-08-31"
+
+role: "Board Member + Director of Digital Operations"
+organization: "Chatter Snow"
+relationship: "Board Member and Director of Digital Operations"
+
+technologies:
+  - Next.js
+  - TypeScript
+  - Supabase
+  - Zoho
+  - Vercel
+  - Cloudflare
+
+links:
+  - title: "Live Site"
+    url: "https://chattersnow.org"
+    type: live
+  - title: "GitHub (Private)"
+    url: "#"
+    type: github
+
+casestudy:
+  problem: >
+    Chatter Snow was growing rapidly (more donations, more gear, more community interest) but
+    had no system to track inventory of donated gear, share what equipment was available to
+    community members, coordinate volunteers, manage events, handle finances, or organize
+    donations. Everything was scattered across spreadsheets and email threads, with no
+    visibility for community members, and it didn't scale. Core issue: as an organization
+    trying to serve the community, Chatter couldn't easily tell people "here's what we have
+    available" or manage operations efficiently.
+  context: >
+    A nonprofit with a limited budget and a volunteer team, a growing inventory of donated
+    ski and snowboard gear, and an active community of members who wanted to know what was
+    available. Existing infrastructure included Zoho for some communications. Being both a
+    board member and technical lead meant seeing the operational need and the technical
+    constraints firsthand.
+  goals:
+    - Create a centralized inventory system
+    - Enable the community to see available gear without email or phone calls
+    - Reduce manual admin work
+    - Build a foundation for future growth (volunteers, events, giving, etc.)
+    - Keep it maintainable by volunteers — not over-engineered
+  constraints:
+    - Nonprofit budget (minimal)
+    - Volunteer-driven — the system couldn't be complex
+    - Needed to launch quickly; the community was waiting
+    - No dedicated devops/infrastructure team
+    - Growing organization that needed the system to scale
+  research: >
+    As board member and director, the operational workflows, community expectations, staff
+    pain points, budget reality, and volunteer capabilities were already well understood. Key
+    insight: don't rebuild everything — integrate with what Chatter already uses (Zoho). Start
+    narrow (inventory) but design for expansion.
+  architecture: >
+    Core philosophy: minimal, maintainable, integrated. Next.js + TypeScript power both the
+    admin UI and the community-facing view, talking to Vercel Edge Functions that handle
+    mutations, auth, and logic, backed by Supabase/PostgreSQL for inventory, events,
+    volunteers, and financials — integrated with Zoho for communications and Cloudflare for
+    CDN/DNS. Next.js + TypeScript enabled fast iteration and full-stack capability with
+    familiar tools; Supabase + PostgreSQL suited simple relational data at low cost; the Zoho
+    integration avoided replacing a tool Chatter already used; Vercel kept deployment and
+    scaling simple; Cloudflare provided CDN, DNS, and DDoS protection. Deliberately not built:
+    a custom CMS (Supabase's admin interface was good enough), extensive reporting (kept focus
+    on core operations), a mobile app (responsive web was sufficient), and complex
+    authentication (simple role-based access was enough).
+  design: >
+    Functional and clear, focused on usability over visual polish — volunteers needed to
+    understand the system quickly. Key interfaces: an admin dashboard for inventory
+    management, volunteer coordination, and event creation; a community-facing gear view
+    showing what's available to rent or borrow; volunteer coordination for shift signup and
+    event management; and financial tracking for donations and expenses.
+  implementation: >
+    The initial phase covered inventory management (the core problem), the community-facing
+    gear view, and basic volunteer coordination. The platform then evolved to include event
+    management, donation/financial tracking, and member communication. Rough timeline: about
+    two weeks of discovery and planning, three to four weeks for the MVP build, two weeks of
+    testing and iteration, and one week to launch — built with volunteer time alongside the
+    technical lead role.
+  challenges:
+    - Requirement creep — once people saw the system working, everyone wanted new features
+    - Designing for volunteers — complex features had to stay simple to use
+    - Data accuracy — getting historical inventory data into the system
+    - Scaling — Vercel serverless can handle growth, but database optimization matters as data grows
+    - Feature priority — deciding what's MVP versus what can wait
+  decisions:
+    - title: "Use Supabase, not Firebase"
+      description: "Chose Supabase over Firebase for the database layer."
+      tradeoffs: >
+        Better suited to complex relational data (gear, volunteers, events, and financials are
+        all interconnected), at the cost of slightly more infrastructure to manage than
+        Firebase.
+    - title: "Integrate with Zoho, don't replace it"
+      description: "Built on top of Chatter's existing Zoho setup instead of migrating communications elsewhere."
+      tradeoffs: >
+        Chatter was already invested in Zoho, so this meant less work to maintain, at the cost
+        of some redundancy in data — worth it for simplicity.
+    - title: "Community view is separate from admin"
+      description: "Split the community-facing gear view from the admin interface entirely."
+      tradeoffs: >
+        Simple, focused experience for members and easier to secure and scale, at the cost of
+        some code duplication.
+    - title: "Start with inventory, design for expansion"
+      description: "Scoped the initial build to inventory management only, but architected it to support more."
+      tradeoffs: >
+        Enabled a quick, focused launch, and the architecture now supports adding volunteers,
+        events, and financials without a redesign — at the cost of more upfront design and
+        architecture work.
+    - title: "Vercel serverless functions, not a traditional backend"
+      description: "Used Vercel Edge/serverless functions for all API logic instead of a standalone backend service."
+      tradeoffs: >
+        Simple scaling, low cost, and minimal devops, at the cost of cold-start latency —
+        acceptable for a nonprofit's usage patterns.
+  result: >
+    Chatter now has a centralized inventory system, and the community can see available gear
+    without email or phone calls. Admin overhead has been reduced (specific figures TBD —
+    pending more usage data). The platform now also handles events, volunteers, financials,
+    and donations, and has built a foundation for future growth.
+  lessonLearned:
+    - "Start narrow, design wide — focusing on inventory first made launch possible, but the architecture allowed for expansion"
+    - "Integrate, don't replace — Chatter was already using Zoho, and building on top of existing tools was faster than rebuilding everything"
+    - "Design for your actual users — volunteers have limited patience for complexity, so every feature needs to be justified"
+    - "Get hands dirty — being on the board meant understanding real problems firsthand, an edge an outside consultant wouldn't have"
+    - "(Additional lesson TBD — to be added as the project matures)"
+
+seoTitle: "Chatter Snow — Digital Operations Platform | Rickie Cruz"
+seoDescription: "Case study: built the technical infrastructure for Chatter Snow, an LGBTQ+ nonprofit, from inventory management to a full operations platform."
+tags:
+  - nonprofit
+  - full-stack
+  - platform
+---
+
+## Metrics
+
+Technical metrics (deployment time, uptime, page load time, hosting cost) and organizational
+impact metrics (time saved, member engagement, admin efficiency gains) are still TBD — they'll
+be added here once more usage data is available.
+
+## What's next
+
+Near-term: optimize based on feedback from live usage. Medium-term: enhance reporting and
+analytics. Long-term: potentially add a mobile app and fundraising integrations.

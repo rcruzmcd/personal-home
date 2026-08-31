@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-purple text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity duration-200",
+          "bg-purple-solid text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity duration-200",
         secondary:
           "bg-background text-purple border border-border px-6 py-3 rounded-lg hover:bg-border transition-colors duration-200",
         tertiary:

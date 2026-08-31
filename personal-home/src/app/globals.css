@@ -22,12 +22,25 @@
   --background: #f4f6f9;
   --surface: #ffffff;
   --border: #e0e3e8;
-  --muted: #9ba3af;
+  /* #9ba3af (brand guide's literal light-muted value) fails WCAG AA
+     (2.4–2.5:1) against both --background and --surface; darkened to the
+     nearest value that clears 4.5:1 against both. */
+  --muted: #6c717a;
   --foreground: #2c3e50;
 
   /* Brand accents */
   --purple: #5d3a7a;
   --green: #2d7a4a;
+
+  /* Fixed (theme-independent) fills for solid purple/green surfaces that
+     carry white text — e.g. primary buttons, featured/active badges.
+     --purple/--green above get lightened in dark mode so they stay legible
+     as *text* against a dark page, but that lightened shade is too light
+     for white text on top of it (fails WCAG AA as a fill). These always
+     use the darker literal, which is what white text needs in either
+     theme. */
+  --purple-solid: #5d3a7a;
+  --green-solid: #2d7a4a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,7 +48,10 @@
     --background: #0f1117;
     --surface: #1c1f26;
     --border: #2d3139;
-    --muted: #6b7280;
+    /* #6b7280 (brand guide's literal dark-muted value) fails WCAG AA
+       (3.4:1) against --surface; lightened to the nearest value that
+       clears 4.5:1 against both --surface and --background. */
+    --muted: #7e8697;
     --foreground: #e0e3e8;
     --purple: #9b7ac9;
     --green: #5fb876;
@@ -46,7 +62,7 @@
   --background: #0f1117;
   --surface: #1c1f26;
   --border: #2d3139;
-  --muted: #6b7280;
+  --muted: #7e8697;
   --foreground: #e0e3e8;
   --purple: #9b7ac9;
   --green: #5fb876;
@@ -60,6 +76,8 @@
   --color-foreground: var(--foreground);
   --color-purple: var(--purple);
   --color-green: var(--green);
+  --color-purple-solid: var(--purple-solid);
+  --color-green-solid: var(--green-solid);
 
   --font-sans: var(--font-inter);
   --font-serif: var(--font-merriweather);

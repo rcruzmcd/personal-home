@@ -1,0 +1,138 @@
+---
+id: personal-finance-os
+title: "Personal Finance OS"
+slug: personal-finance-os
+description: "A financial management system to track cash, debt, and spending, and forecast runway — built to solve a real problem after a layoff."
+featured: true
+category: project
+subcategory: dashboard
+status: active
+
+startDate: "2026-09-08"
+publishedDate: "2026-08-31"
+
+role: "Sole Developer"
+
+technologies:
+  - Next.js
+  - TypeScript
+  - Supabase
+  - PostgreSQL
+  - Recharts
+  - Vercel
+
+casestudy:
+  problem: >
+    After being laid off, the core problem was simple: see all money across multiple accounts,
+    understand monthly burn rate, calculate how long severance would last, and make informed
+    decisions about spending and the job search. Traditional spreadsheets are tedious to
+    maintain and don't make it easy to see the big picture. Existing tools like Mint or
+    Personal Capital were overkill and didn't answer the core question directly; nothing felt
+    like it actually answered "how long can I sustain this?"
+  context: >
+    A personal project solving a personal problem, with no external deadline, built
+    sustainably. It doubles as an opportunity to showcase UI, data visualization, and backend
+    skills together — and because it uses real data, it becomes a real case study. Personal
+    finance data also demands real thoughtfulness around security and privacy.
+  goals:
+    - Create a single source of truth for financial position
+    - "Answer five core questions: Where is my money? Where is my money going? How much do I owe? How long can I sustain this? What should I do next?"
+    - 'Enable scenario modeling (e.g. "what if I get a job in October?")'
+    - Show the ability to build UX, data visualization, and backend together
+  constraints:
+    - Personal project — lower priority than consulting leads
+    - MVP needed to be achievable in 2-3 weeks
+    - Needed to actually be used, so it had to be genuinely good
+    - Security and privacy matter given how sensitive financial data is
+    - Simple enough to maintain long-term
+  research: >
+    Years of personally handling finances meant already knowing what matters, what existing
+    tools do well or poorly, and where the gaps in the market are — enabling something
+    uniquely tailored to this specific situation rather than a generic budgeting app.
+  architecture: >
+    Core philosophy: a financial ledger and calculation engine first, not a UI-first design.
+    Accounts, transactions, categories, and rules feed a financial model (the ledger engine)
+    that powers calculations for cash flow, debt, runway, and net worth, which in turn drive
+    the dashboard, forecast, scenarios, and alerts. Tech stack: Next.js + TypeScript for
+    frontend and API routes, Supabase + PostgreSQL for the relational database, Recharts for
+    data visualization, and Vercel for hosting. Supabase was chosen over Firebase because
+    financial data is inherently relational (accounts, transactions, and debt are all
+    interconnected) and the app needs complex queries — like spending by category over time —
+    that PostgreSQL handles better.
+  design: >
+    Clarity over decoration — this is a tool, not art. Key screens: a dashboard for financial
+    position at a glance, an accounts view for money in and out, a transactions view for where
+    money actually went, a debt view showing what's owed and payoff scenarios, and a forecast
+    view projecting runway. Design decisions: dark mode by default (a lot of time is spent in
+    this tool, and dark is easier on the eyes), keyboard-friendly for power-user speed,
+    mobile-responsive but optimized for desktop, and color-coded categories for quick scanning.
+  implementation: >
+    MVP scope targeted 2-3 weeks. Week one: repo and Supabase setup, the
+    accounts/transactions/categories/rules data model, a dashboard showing net worth, cash,
+    debt, and runway, account add/edit, and transaction entry or CSV import. Week two:
+    rule-based and manual categorization, an avalanche/snowball debt payoff calculator, a
+    30/60/90-day and 6/12-month forecast, and polish and testing. Explicitly not in MVP: bank
+    sync (Plaid), a "what if" scenario engine, advanced reports, a budgeting module, and net
+    worth history/trends.
+  challenges:
+    - Data quality — getting historical financial data into the system accurately
+    - Security — financial data requires real thoughtfulness around encryption and access control
+    - Accuracy — this is real money, so the calculations have to be correct
+    - Scope creep — financial features are effectively infinite, so MVP discipline matters
+    - Usefulness — the tool needs to actually guide decisions, not just display data
+  decisions:
+    - title: "MVP is narrow, launch quickly"
+      description: "Scoped the first version tightly instead of trying to cover every financial scenario."
+      tradeoffs: >
+        Got a working tool in about two weeks that's actually usable, at the cost of some
+        missing features that can be added later.
+    - title: "CSV import, not bank sync"
+      description: "Chose manual/CSV data entry over a Plaid bank-sync integration."
+      tradeoffs: >
+        Simpler to build and ship faster, and keeps full control over sensitive financial
+        data, at the cost of requiring manual import — a Plaid integration can be added later
+        if it proves valuable.
+    - title: "Rule-based categorization, not machine learning"
+      description: "Used explicit merchant-matching rules instead of an ML-based categorizer."
+      tradeoffs: >
+        Predictable and transparent — it's always clear why a transaction was categorized a
+        certain way — and simple to maintain, at the cost of not auto-learning from behavior
+        over time. Acceptable for a personal finance tool.
+    - title: "Cash runway as the central metric"
+      description: "Made cash runway the headline number on the dashboard rather than a general net-worth or budget view."
+      tradeoffs: >
+        The most relevant metric while unemployed ("how long can I sustain this?"), though
+        less relevant once employed, when the focus should shift toward budgeting and savings.
+        Intentional: build for the current situation first.
+    - title: "No traditional budgeting module in MVP"
+      description: "Left spending-limit budgeting out of the first version entirely."
+      tradeoffs: >
+        Simpler and faster to launch, with better focus on the more urgent cash-flow picture,
+        at the cost of not being able to set spending limits yet — planned for a later
+        version.
+  result: >
+    The tool is intended to provide clear visibility into financial runway, understanding of
+    spending patterns, debt payoff scenarios, and data-driven decisions about job search and
+    spending. (Actual outcome metrics — accuracy of runway predictions versus reality, time
+    saved versus spreadsheets, decisions made based on insights — are TBD until the tool has
+    been in use for a while.)
+  lessonLearned:
+    - >-
+      (Lessons learned are TBD — to be filled in once the tool has been in real use for a
+      while: what building financial software taught, any surprises in the underlying
+      financial picture, which design decisions worked or didn't, and what would be done
+      differently.)
+
+seoTitle: "Personal Finance OS — Financial Dashboard | Rickie Cruz"
+seoDescription: "A financial management system built to track cash, debt, and spending and forecast runway — a real project, with real data, built to solve a real problem."
+tags:
+  - finance
+  - full-stack
+  - data-viz
+---
+
+## Future enhancements
+
+Bank sync (Plaid), a scenario/"what if" engine, advanced reporting, a budgeting module, net
+worth tracking over time, investment tracking, tax planning, and goal tracking are all being
+considered for future versions — none are in the MVP.

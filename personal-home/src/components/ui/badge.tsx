@@ -9,9 +9,12 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        active: "bg-green text-white uppercase",
-        featured: "bg-purple text-white uppercase",
+        active: "bg-green-solid text-white uppercase",
+        featured: "bg-purple-solid text-white uppercase",
         tech: "bg-background text-foreground border border-border",
+        experiment: "border border-purple text-purple uppercase",
+        completed: "border border-green text-green uppercase",
+        archived: "border border-muted text-muted uppercase",
       },
     },
     defaultVariants: {
