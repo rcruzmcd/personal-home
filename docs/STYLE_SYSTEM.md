@@ -22,7 +22,7 @@ modifiers, e.g. `bg-purple/10`).
 | `--color-background` | `bg-background` | `#F4F6F9` | `#0F1117` | Cool Silver (page canvas) |
 | `--color-surface` | `bg-surface` | `#FFFFFF` | `#1C1F26` | Surface (cards) |
 | `--color-border` | `border-border` | `#E0E3E8` | `#2D3139` | Divider Gray |
-| `--color-muted` | `text-muted` | `#9BA3AF` | `#6B7280` | Muted Text |
+| `--color-muted` | `text-muted` | `#6C717A` | `#7E8697` | Muted Text (darkened from the brand guide's literal `#9BA3AF`/`#6B7280` — those failed WCAG AA against Background/Surface) |
 | `--color-foreground` | `text-foreground` | `#2C3E50` | `#E0E3E8` | Strong Text |
 | `--color-purple` | `bg-purple` / `text-purple` | `#5D3A7A` | `#9B7AC9` | Deep Purple (primary) |
 | `--color-green` | `bg-green` / `text-green` | `#2D7A4A` | `#5FB876` | Rich Green (secondary) |

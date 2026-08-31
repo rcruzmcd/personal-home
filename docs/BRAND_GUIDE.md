@@ -76,9 +76,12 @@ Soft gray for lines between sections, form input borders, subtle visual breaks.
 
 **Secondary Text**
 ```
-#9BA3AF
+#6C717A
 ```
-Muted gray for labels, metadata, secondary information.
+Muted gray for labels, metadata, secondary information. Darkened from the
+original `#9BA3AF` during implementation — that value only hit a 2.4–2.5:1
+contrast ratio against Background/Surface, short of WCAG AA's 4.5:1. This is
+the nearest shade that clears AA against both.
 
 #### Strong Text
 **Primary Content**
@@ -112,7 +115,7 @@ Secondary Green:     #2D7A4A
 Background:          #F4F6F9
 Surface White:       #FFFFFF
 Divider Gray:        #E0E3E8
-Muted Text:          #9BA3AF
+Muted Text:          #6C717A
 Strong Text:         #2C3E50
 ```
 
@@ -178,7 +181,7 @@ I design and build web applications, explore new interfaces, and help small orga
 All paragraph text, body copy, case study narratives. Set in Strong Text. Extra line-height for readability.
 
 #### Small Text / Metadata
-**Inter 400 · 14px · #9BA3AF · line-height 1.5**
+**Inter 400 · 14px · #6C717A · line-height 1.5**
 
 ```
 Published September 2026 · Board Member + Director of Digital Operations
@@ -392,7 +395,7 @@ Thin accent bar above featured content.
 - Font: Inter 400, 16px, Strong Text color
 - Focus: Border becomes Deep Purple (#5D3A7A), 2px width
 - Focus shadow: Subtle glow in Purple (10% opacity)
-- Placeholder text: Muted Text (#9BA3AF)
+- Placeholder text: Muted Text (#6C717A)
 
 **Label:**
 - Font: Inter 500, 14px
@@ -460,7 +463,7 @@ Thin accent bar above featured content.
 - Page background: Cool Silver (#F4F6F9)
 - Headline: Deep Purple (#5D3A7A)
 - Body: Strong Text (#2C3E50)
-- Metadata: Muted Text (#9BA3AF)
+- Metadata: Muted Text (#6C717A)
 - Tech tags: `background: #F4F6F9, text: #2D7A4A`
 - Accent bar: Deep Purple (#5D3A7A)
 
@@ -502,7 +505,7 @@ Thin accent bar above featured content.
 
 **Spending by Category (Bar Chart)**
 - Bars: Rich Green (#2D7A4A)
-- Axis labels: Muted Text (#9BA3AF)
+- Axis labels: Muted Text (#6C717A)
 - Grid lines: Divider Gray (#E0E3E8)
 - Background: White or transparent
 
@@ -601,7 +604,7 @@ Thin accent bar above featured content.
 
 **Footer:**
 - Background: Cool Silver (#F4F6F9)
-- Text: Muted Text (#9BA3AF), Inter 400, 14px
+- Text: Muted Text (#6C717A), Inter 400, 14px
 - Dividers: Divider Gray (#E0E3E8)
 - Links: Deep Purple (#5D3A7A), underlined on hover
 
@@ -616,7 +619,7 @@ If implementing dark mode, invert intelligently:
 | #F4F6F9 (Background) | #0F1117 (Dark Background) |
 | #FFFFFF (Surface) | #1C1F26 (Dark Surface) |
 | #2C3E50 (Strong Text) | #E0E3E8 (Light Text) |
-| #9BA3AF (Muted Text) | #6B7280 (Dark Muted) |
+| #6C717A (Muted Text) | #7E8697 (Dark Muted) |
 | #E0E3E8 (Dividers) | #2D3139 (Dark Dividers) |
 | #5D3A7A (Purple) | #9B7AC9 (Lighter Purple) |
 | #2D7A4A (Green) | #5FB876 (Lighter Green) |
@@ -639,7 +642,7 @@ Secondary Green:   #2D7A4A
 Background:        #F4F6F9
 Surface White:     #FFFFFF
 Divider Gray:      #E0E3E8
-Muted Text:        #9BA3AF
+Muted Text:        #6C717A
 Strong Text:       #2C3E50
 ```
 
@@ -650,7 +653,7 @@ H1: Inter 700, 48px, #5D3A7A
 H2: Inter 600, 32px, #5D3A7A
 H3: Inter 600, 24px, #5D3A7A
 Body: Inter 400, 16px, #2C3E50, line-height 1.6
-Small: Inter 400, 14px, #9BA3AF
+Small: Inter 400, 14px, #6C717A
 Links: Inter 500, 16px, #5D3A7A, underlined
 ```
 
@@ -731,7 +734,7 @@ Elements within card: mb-4 (headings), mb-2 (secondary)
    - `color/background`: #F4F6F9
    - `color/surface-white`: #FFFFFF
    - `color/divider-gray`: #E0E3E8
-   - `color/muted-text`: #9BA3AF
+   - `color/muted-text`: #6C717A
    - `color/strong-text`: #2C3E50
 
 2. Create text styles:

@@ -19,7 +19,7 @@ This is a monorepo with two top-level parts:
 
   When implementing a feature, check the relevant doc first — these encode real product decisions (e.g. transfers between own accounts must not count as spending, cash runway is the primary finance metric, avoid positioning as "web developer"/"React developer" in copy).
 
-- **`personal-home/`** — The actual Next.js application (the personal portfolio site). This is currently a fresh `create-next-app` scaffold; almost none of the pages/content described in `docs/` have been built yet.
+- **`personal-home/`** — The actual Next.js application (the personal portfolio site). The MVP described in `docs/` has been built out: homepage, About, Work/Projects listings + MDX case study detail pages (Chatter Snow, Personal Finance OS), Consulting, Resume, Contact (with API route, spam protection, Resend email), Privacy/Terms, dark/light mode, SEO metadata/JSON-LD/sitemap/robots, and Vercel Analytics event tracking. The "Personal Finance OS" app itself (a separate project per `PERSONAL_FINANCE_REQUIREMENTS.md`) has not been started.
 
 ## Commands
 
@@ -32,9 +32,10 @@ bun dev             # start dev server (next dev)
 bun run build       # production build (next build)
 bun start           # run production build (next start)
 bun run lint        # eslint
+bun test             # vitest run
+bun run test:watch  # vitest (watch mode)
+bun run test:coverage # vitest run --coverage
 ```
-
-There is no test suite configured in this repo yet.
 
 ## Architecture Notes (`personal-home/`)
 
@@ -47,4 +48,6 @@ There is no test suite configured in this repo yet.
 
 ## Planned but not yet implemented
 
-Per the docs, the eventual site will include: MDX-based case study/project content (`content/work/`, `content/projects/`), a case study page template, a contact form with a Next.js API route, dark/light mode toggle, and a separate "Personal Finance OS" app (Next.js + Supabase/Postgres + Recharts) for personal financial tracking. None of this exists in code yet — when asked to build these, consult the corresponding doc in `docs/` for the exact schema/requirements rather than inventing structure.
+The website MVP is built (see above). Still outstanding per the docs: a separate "Personal Finance OS" app (Next.js + Supabase/Postgres + Recharts) for personal financial tracking — none of that exists in code yet. When asked to build it, consult `docs/PERSONAL_FINANCE_REQUIREMENTS.md` and `docs/TECH_STACK_AND_DOMAIN.md` for the exact schema/requirements rather than inventing structure.
+
+`docs/STYLE_SYSTEM.md` is the implementation reference for `docs/BRAND_GUIDE.md` — check it before hand-picking colors/spacing for new UI; a couple of brand-guide literal values (muted text) were adjusted during implementation for WCAG AA contrast and both docs now reflect the shipped values.
