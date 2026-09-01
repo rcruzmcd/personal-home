@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeAmount, transactionSchema } from "@/lib/validations/transaction";
 import { matchCategorizationRule } from "@/lib/categorization/rules";
+import { matchRecurringExpense } from "@/lib/recurring/matching";
+import type { CalcTransactionType } from "@/lib/calculations/types";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -36,6 +38,26 @@ async function resolveCategory(
   );
 
   return match ?? { category_id: null, subcategory: null };
+}
+
+// Auto-links a transaction to an already-tracked recurring expense
+// (transactions.recurring_expense_id) purely by merchant identity — see
+// matchRecurringExpense for why amount isn't part of the match.
+async function resolveRecurringExpenseId(
+  supabase: SupabaseClient,
+  input: { merchant?: string; amount: number; type: CalcTransactionType },
+): Promise<string | null> {
+  if (input.type !== "expense" || !input.merchant) return null;
+
+  const { data: recurringExpenses } = await supabase
+    .from("recurring_expenses")
+    .select("id, merchant, amount")
+    .eq("active", true);
+
+  return matchRecurringExpense(
+    { merchant: input.merchant, amount: input.amount, type: input.type },
+    recurringExpenses ?? [],
+  );
 }
 
 export async function createTransaction(_prevState: string | null, formData: FormData) {
@@ -71,15 +93,22 @@ export async function createTransaction(_prevState: string | null, formData: For
       merchant,
       description,
     });
+    const normalizedAmount = normalizeAmount(type, amount);
+    const recurring_expense_id = await resolveRecurringExpenseId(supabase, {
+      merchant,
+      amount: normalizedAmount,
+      type,
+    });
     const { error } = await supabase.from("transactions").insert({
       account_id,
       date,
       description,
       merchant,
       type,
-      amount: normalizeAmount(type, amount),
+      amount: normalizedAmount,
       category_id: category.category_id,
       subcategory: category.subcategory,
+      recurring_expense_id,
     });
     if (error) return error.message;
   }
@@ -106,6 +135,12 @@ export async function updateTransaction(
     merchant,
     description,
   });
+  const normalizedAmount = normalizeAmount(type, amount);
+  const recurring_expense_id = await resolveRecurringExpenseId(supabase, {
+    merchant,
+    amount: normalizedAmount,
+    type,
+  });
 
   const { error } = await supabase
     .from("transactions")
@@ -115,9 +150,10 @@ export async function updateTransaction(
       description,
       merchant,
       type,
-      amount: normalizeAmount(type, amount),
+      amount: normalizedAmount,
       category_id: category.category_id,
       subcategory: category.subcategory,
+      recurring_expense_id,
     })
     .eq("id", id);
   if (error) return error.message;

@@ -8,6 +8,7 @@ import {
   detectFinancialAlerts,
   findPossibleDuplicates,
   findPossibleRecurringExpenses,
+  findRecurringPriceChanges,
   findUncategorizedTransactions,
   type CalcAccount,
   type CalcIncomeSource,
@@ -27,7 +28,7 @@ export default async function InboxPage() {
   cutoff.setDate(cutoff.getDate() - TRANSACTION_LOOKBACK_DAYS);
   const cutoffDate = cutoff.toISOString().slice(0, 10);
 
-  const [{ data: accountRows }, { data: incomeRows }, { data: transactionRows }] =
+  const [{ data: accountRows }, { data: incomeRows }, { data: transactionRows }, { data: recurringExpenseRows }] =
     await Promise.all([
       supabase.from("accounts").select("name, type, balance, credit_limit, active, interest_rate, minimum_payment"),
       supabase
@@ -39,6 +40,7 @@ export default async function InboxPage() {
           "id, account_id, date, description, merchant, amount, type, category_id, recurring_expense_id, categories(name)",
         )
         .gte("date", cutoffDate),
+      supabase.from("recurring_expenses").select("id, name, amount, active").eq("active", true),
     ]);
 
   const accounts: CalcAccount[] = accountRows ?? [];
@@ -79,12 +81,19 @@ export default async function InboxPage() {
     forecastWarnings: forecast.warnings,
     asOfDate,
   });
+  const priceChanges = findRecurringPriceChanges(recurringExpenseRows ?? [], reviewTransactions);
+  const allAlerts = [
+    ...alerts,
+    ...priceChanges.map((change) => ({
+      message: `${change.name} increased from ${formatCurrency(change.previousAmount)} to ${formatCurrency(change.newAmount)}.`,
+    })),
+  ];
   const uncategorized = findUncategorizedTransactions(reviewTransactions);
   const duplicates = findPossibleDuplicates(reviewTransactions);
   const possibleRecurring = findPossibleRecurringExpenses(reviewTransactions);
 
   const totalItems =
-    alerts.length + uncategorized.length + duplicates.length + possibleRecurring.length;
+    allAlerts.length + uncategorized.length + duplicates.length + possibleRecurring.length;
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
@@ -97,14 +106,14 @@ export default async function InboxPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Alerts ({alerts.length})</CardTitle>
+          <CardTitle>Alerts ({allAlerts.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          {!alerts.length ? (
+          {!allAlerts.length ? (
             <p className="text-body text-muted">No active alerts.</p>
           ) : (
             <ul className="flex flex-col gap-2">
-              {alerts.map((alert, i) => (
+              {allAlerts.map((alert, i) => (
                 <li key={i} className="text-body text-foreground">
                   ⚠️ {alert.message}
                 </li>
@@ -195,14 +204,17 @@ export default async function InboxPage() {
                   className="flex items-center justify-between"
                 >
                   <span className="text-body text-foreground">
-                    {group.merchant} · seen {group.occurrences} times, last {group.lastDate}
+                    {group.merchant} · {group.frequency} · seen {group.occurrences} times, last{" "}
+                    {group.lastDate}
+                    {group.priceChange &&
+                      ` · price changed from ${formatCurrency(group.priceChange.previousAmount)}`}
                   </span>
                   <div className="flex items-center gap-3">
                     <span className="text-body text-foreground">
                       {formatCurrency(group.amount)}
                     </span>
                     <Link
-                      href={`/recurring/new?name=${encodeURIComponent(group.merchant)}&merchant=${encodeURIComponent(group.merchant)}&amount=${group.amount}`}
+                      href={`/recurring/new?name=${encodeURIComponent(group.merchant)}&merchant=${encodeURIComponent(group.merchant)}&amount=${group.amount}&frequency=${group.frequency}&transactionIds=${group.transactionIds.join(",")}`}
                       className="text-body font-medium text-purple underline"
                     >
                       Track as recurring

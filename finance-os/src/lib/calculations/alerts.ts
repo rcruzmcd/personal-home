@@ -5,6 +5,19 @@
 // Supabase.
 
 import { MS_PER_DAY } from "./date-math";
+import { inferFrequency, median, normalizeMerchant } from "./cadence";
+import type { RecurringFrequency } from "./types";
+
+// A price move smaller than this reads as noise (rounding, a tax-rate
+// tick) rather than a genuine repricing (§11 "Subscription increased from
+// $15.99 -> $18.99").
+const PRICE_CHANGE_MIN_PCT = 0.03;
+const PRICE_CHANGE_MIN_DELTA = 1;
+
+function isPriceChange(previousAmount: number, currentAmount: number): boolean {
+  const diff = Math.abs(currentAmount - previousAmount);
+  return diff > PRICE_CHANGE_MIN_DELTA && diff > previousAmount * PRICE_CHANGE_MIN_PCT;
+}
 
 export type FinancialAlert = { message: string };
 
@@ -139,15 +152,20 @@ export function findPossibleDuplicates(
 export type PossibleRecurringGroup = {
   merchant: string;
   amount: number;
+  frequency: RecurringFrequency;
   occurrences: number;
   lastDate: string;
+  transactionIds: string[];
+  priceChange?: { previousAmount: number; changedOnDate: string };
 };
 
 /**
  * Possible recurring expenses (§10 "Later: Auto-detect based on patterns",
- * §11 "Possible recurring expenses"): a merchant/amount pair that's
- * appeared at least `minOccurrences` times and isn't already tracked as a
- * recurring expense.
+ * §11 "Possible recurring expenses"): a merchant that's appeared at least
+ * `minOccurrences` times on an inferable cadence and isn't already tracked
+ * as a recurring expense. Grouped by merchant only, not amount — so a
+ * mid-series price change still reads as one continuing series instead of
+ * two sub-threshold groups that never individually reach `minOccurrences`.
  */
 export function findPossibleRecurringExpenses(
   transactions: readonly ReviewTransaction[],
@@ -157,22 +175,93 @@ export function findPossibleRecurringExpenses(
 
   for (const txn of transactions) {
     if (txn.type !== "expense" || !txn.merchant || txn.recurring_expense_id) continue;
-    const key = `${txn.merchant.toLowerCase()}|${Math.abs(txn.amount).toFixed(2)}`;
+    const key = normalizeMerchant(txn.merchant);
     const group = groups.get(key) ?? [];
     group.push(txn);
     groups.set(key, group);
   }
 
-  return Array.from(groups.values())
-    .filter((group) => group.length >= minOccurrences)
-    .map((group) => {
-      const sorted = [...group].sort((a, b) => (a.date < b.date ? 1 : -1));
-      return {
-        merchant: sorted[0].merchant!,
-        amount: Math.abs(sorted[0].amount),
-        occurrences: group.length,
-        lastDate: sorted[0].date,
-      };
-    })
-    .sort((a, b) => b.occurrences - a.occurrences);
+  const results: PossibleRecurringGroup[] = [];
+
+  for (const group of groups.values()) {
+    if (group.length < minOccurrences) continue;
+
+    const sorted = [...group].sort((a, b) => (a.date < b.date ? -1 : 1));
+    const frequency = inferFrequency(sorted.map((t) => t.date));
+    if (!frequency) continue;
+
+    const latest = sorted[sorted.length - 1];
+    const latestAmount = Math.abs(latest.amount);
+    const earlierAmounts = sorted.slice(0, -1).map((t) => Math.abs(t.amount));
+    const baselineAmount = median(earlierAmounts);
+    // Only a genuinely *stable* history breaking on the latest charge reads
+    // as a price change — a merchant whose amount was already inconsistent
+    // (groceries, gas) has no fixed price to have changed from, so flagging
+    // every visit would make the badge meaningless noise.
+    const hadStableBaseline = earlierAmounts.every((a) => !isPriceChange(baselineAmount, a));
+
+    results.push({
+      merchant: latest.merchant!,
+      amount: latestAmount,
+      frequency,
+      occurrences: group.length,
+      lastDate: latest.date,
+      transactionIds: group.map((t) => t.id),
+      ...(hadStableBaseline && isPriceChange(baselineAmount, latestAmount)
+        ? { priceChange: { previousAmount: baselineAmount, changedOnDate: latest.date } }
+        : {}),
+    });
+  }
+
+  return results.sort((a, b) => b.occurrences - a.occurrences);
+}
+
+export type RecurringExpenseForPriceCheck = {
+  id: string;
+  name: string;
+  amount: number;
+  active: boolean;
+};
+
+export type RecurringPriceChange = {
+  name: string;
+  previousAmount: number;
+  newAmount: number;
+};
+
+/**
+ * Flags an active recurring expense whose most recent linked transaction no
+ * longer matches its tracked amount (§11 "Subscription increased from
+ * $15.99 -> $18.99"). Transactions stay linked across a price change (see
+ * matchRecurringExpense in src/lib/recurring/matching.ts) — this is what
+ * actually surfaces the drift.
+ */
+export function findRecurringPriceChanges(
+  recurringExpenses: readonly RecurringExpenseForPriceCheck[],
+  linkedTransactions: readonly Pick<ReviewTransaction, "recurring_expense_id" | "date" | "amount">[],
+): RecurringPriceChange[] {
+  const latestByRecurringId = new Map<string, { date: string; amount: number }>();
+
+  for (const txn of linkedTransactions) {
+    if (!txn.recurring_expense_id) continue;
+    const current = latestByRecurringId.get(txn.recurring_expense_id);
+    if (!current || txn.date > current.date) {
+      latestByRecurringId.set(txn.recurring_expense_id, {
+        date: txn.date,
+        amount: Math.abs(txn.amount),
+      });
+    }
+  }
+
+  const changes: RecurringPriceChange[] = [];
+  for (const expense of recurringExpenses) {
+    if (!expense.active) continue;
+    const latest = latestByRecurringId.get(expense.id);
+    if (!latest) continue;
+    if (isPriceChange(expense.amount, latest.amount)) {
+      changes.push({ name: expense.name, previousAmount: expense.amount, newAmount: latest.amount });
+    }
+  }
+
+  return changes;
 }

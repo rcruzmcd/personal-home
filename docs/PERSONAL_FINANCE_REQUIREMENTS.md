@@ -600,7 +600,7 @@ Total exp:     $3,480/month
 
 ## 10. Recurring Expenses
 
-**Status:** Implemented — `/recurring` in `finance-os/` (list, add/edit/delete, monthly-equivalent total across mixed frequencies). Linking still manual: no bulk "mark these transactions as recurring" action, but the Inbox (§11) surfaces detected candidates with a one-click "Track as recurring" link.
+**Status:** Implemented — `/recurring` in `finance-os/` (list, add/edit/delete, monthly-equivalent total across mixed frequencies). Auto-detection and linking are built: the Inbox (§11) infers a cadence (weekly/monthly/annually) per merchant and surfaces candidates with a one-click "Track as recurring" link; confirming it retroactively links the matched transactions, and new/imported transactions auto-link to an already-tracked recurring expense going forward (`transactions.recurring_expense_id`).
 
 Identify and track recurring obligations.
 
@@ -608,7 +608,7 @@ Identify and track recurring obligations.
 
 For MVP: Manual entry (mark transactions as recurring when they appear)
 
-**Later:** Auto-detect based on patterns
+**Later:** Auto-detect based on patterns — done: cadence inferred from the gaps between a merchant's occurrences (`src/lib/calculations/cadence.ts`), grouped by merchant identity rather than exact amount so a mid-series price change still reads as one candidate instead of two sub-threshold groups.
 
 ### Per-Recurring-Expense Fields
 
@@ -648,7 +648,7 @@ Loan Payment              $244
 
 ## 11. Alerts & Notifications
 
-**Status:** Implemented as `/inbox` in `finance-os/` — cash runway/credit utilization/forecast shortfall/income-ending-soon alerts, uncategorized transactions, possible duplicates, and possible recurring patterns, each computed by pure, tested functions in `src/lib/calculations/alerts.ts`. Not built: subscription price-change and unusual-transaction detection, and SMS/email delivery (out of scope per §17).
+**Status:** Implemented as `/inbox` in `finance-os/` — cash runway/credit utilization/forecast shortfall/income-ending-soon alerts, uncategorized transactions, possible duplicates, possible recurring patterns, and subscription price-change alerts (comparing a tracked recurring expense's latest linked transaction against its stored amount), each computed by pure, tested functions in `src/lib/calculations/alerts.ts`. Not built: unusual-transaction detection and SMS/email delivery (out of scope per §17).
 
 The app should proactively flag things that need attention.
 
@@ -895,7 +895,7 @@ income_sources
 - [ ] Tax planning
 - [ ] Goal tracking
 - [ ] Mobile app
-- [ ] Recurring expense auto-detection
+- [x] Recurring expense auto-detection (§10)
 - [ ] Notifications/alerts (SMS/email)
 - [ ] API for external integrations
 - [ ] Data export (CSV, JSON, etc.)

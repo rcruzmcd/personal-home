@@ -3,9 +3,11 @@ import {
   detectFinancialAlerts,
   findPossibleDuplicates,
   findPossibleRecurringExpenses,
+  findRecurringPriceChanges,
   findUncategorizedTransactions,
   type FinancialAlertAccount,
   type FinancialAlertIncomeSource,
+  type RecurringExpenseForPriceCheck,
   type ReviewTransaction,
 } from "../alerts";
 
@@ -154,7 +156,7 @@ describe("findPossibleDuplicates", () => {
 });
 
 describe("findPossibleRecurringExpenses", () => {
-  test("flags a merchant/amount pair repeated at least minOccurrences times", () => {
+  test("flags a merchant repeated on a monthly cadence", () => {
     const result = findPossibleRecurringExpenses([
       txn({ id: "1", date: "2026-06-01", merchant: "Netflix", amount: -20 }),
       txn({ id: "2", date: "2026-07-01", merchant: "Netflix", amount: -20 }),
@@ -162,14 +164,63 @@ describe("findPossibleRecurringExpenses", () => {
     ]);
 
     expect(result).toEqual([
-      { merchant: "Netflix", amount: 20, occurrences: 3, lastDate: "2026-08-01" },
+      {
+        merchant: "Netflix",
+        amount: 20,
+        frequency: "monthly",
+        occurrences: 3,
+        lastDate: "2026-08-01",
+        transactionIds: ["1", "2", "3"],
+      },
     ]);
+  });
+
+  test("merges a mid-series price change into one candidate instead of splitting it", () => {
+    const result = findPossibleRecurringExpenses([
+      txn({ id: "1", date: "2026-06-01", merchant: "Netflix", amount: -15.99 }),
+      txn({ id: "2", date: "2026-07-01", merchant: "Netflix", amount: -15.99 }),
+      txn({ id: "3", date: "2026-08-01", merchant: "Netflix", amount: -18.99 }),
+    ]);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      merchant: "Netflix",
+      amount: 18.99,
+      frequency: "monthly",
+      occurrences: 3,
+      priceChange: { previousAmount: 15.99, changedOnDate: "2026-08-01" },
+    });
+  });
+
+  test("does not flag a price change for a merchant with no stable baseline to begin with", () => {
+    // A weekly grocery run naturally varies every visit — there's no fixed
+    // price to have "changed" from, so the badge would otherwise fire on
+    // nearly every occurrence.
+    const result = findPossibleRecurringExpenses([
+      txn({ id: "1", date: "2026-07-04", merchant: "Whole Foods", amount: -80 }),
+      txn({ id: "2", date: "2026-07-11", merchant: "Whole Foods", amount: -110 }),
+      txn({ id: "3", date: "2026-07-18", merchant: "Whole Foods", amount: -95 }),
+      txn({ id: "4", date: "2026-07-25", merchant: "Whole Foods", amount: -127 }),
+    ]);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].priceChange).toBeUndefined();
   });
 
   test("does not flag a merchant seen fewer than minOccurrences times", () => {
     const result = findPossibleRecurringExpenses([
       txn({ id: "1", merchant: "One-off Store", amount: -20 }),
       txn({ id: "2", merchant: "One-off Store", amount: -20 }),
+    ]);
+
+    expect(result).toEqual([]);
+  });
+
+  test("does not flag a merchant with no inferable cadence", () => {
+    const result = findPossibleRecurringExpenses([
+      txn({ id: "1", date: "2026-06-01", merchant: "Corner Store", amount: -20 }),
+      txn({ id: "2", date: "2026-06-05", merchant: "Corner Store", amount: -20 }),
+      txn({ id: "3", date: "2026-08-20", merchant: "Corner Store", amount: -20 }),
     ]);
 
     expect(result).toEqual([]);
@@ -192,5 +243,48 @@ describe("findPossibleRecurringExpenses", () => {
     ]);
 
     expect(result).toEqual([]);
+  });
+});
+
+describe("findRecurringPriceChanges", () => {
+  function recurring(overrides: Partial<RecurringExpenseForPriceCheck>): RecurringExpenseForPriceCheck {
+    return { id: "rec-1", name: "Netflix", amount: 15.99, active: true, ...overrides };
+  }
+
+  test("flags a tracked expense whose latest linked transaction amount drifted", () => {
+    const result = findRecurringPriceChanges(
+      [recurring({})],
+      [
+        txn({ id: "1", date: "2026-07-01", amount: -15.99, recurring_expense_id: "rec-1" }),
+        txn({ id: "2", date: "2026-08-01", amount: -18.99, recurring_expense_id: "rec-1" }),
+      ],
+    );
+
+    expect(result).toEqual([{ name: "Netflix", previousAmount: 15.99, newAmount: 18.99 }]);
+  });
+
+  test("ignores a small change within tolerance", () => {
+    const result = findRecurringPriceChanges(
+      [recurring({})],
+      [txn({ id: "1", date: "2026-08-01", amount: -16.1, recurring_expense_id: "rec-1" })],
+    );
+
+    expect(result).toEqual([]);
+  });
+
+  test("ignores inactive recurring expenses and unlinked transactions", () => {
+    const result = findRecurringPriceChanges(
+      [recurring({ active: false })],
+      [txn({ id: "1", date: "2026-08-01", amount: -18.99, recurring_expense_id: "rec-1" })],
+    );
+
+    expect(result).toEqual([]);
+
+    const noLink = findRecurringPriceChanges(
+      [recurring({})],
+      [txn({ id: "1", date: "2026-08-01", amount: -18.99, recurring_expense_id: null })],
+    );
+
+    expect(noLink).toEqual([]);
   });
 });

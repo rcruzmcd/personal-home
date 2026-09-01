@@ -2,10 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { RecurringExpenseForm } from "../recurring-expense-form";
 import { createRecurringExpense } from "../actions";
+import { RECURRING_FREQUENCIES } from "@/lib/validations/recurring-expense";
 
-// Supports prefill query params (name, merchant, amount) so the inbox's
-// "possible recurring expense" suggestions (§11) can hand off a detected
-// pattern without the user retyping it.
+// Supports prefill query params (name, merchant, amount, frequency,
+// transactionIds) so the inbox's "possible recurring expense" suggestions
+// (§11) can hand off a detected pattern — including its inferred cadence
+// and the transactions to retroactively link — without the user retyping it.
 export default async function NewRecurringExpensePage({
   searchParams,
 }: PageProps<"/recurring/new">) {
@@ -18,6 +20,11 @@ export default async function NewRecurringExpensePage({
 
   const first = (value: string | string[] | undefined) =>
     Array.isArray(value) ? value[0] : value;
+
+  const frequencyParam = first(params?.frequency);
+  const frequency = (RECURRING_FREQUENCIES as readonly string[]).includes(frequencyParam ?? "")
+    ? (frequencyParam as (typeof RECURRING_FREQUENCIES)[number])
+    : "monthly";
 
   return (
     <main className="flex-1 flex justify-center px-10 py-16">
@@ -34,13 +41,14 @@ export default async function NewRecurringExpensePage({
               name: first(params?.name) ?? "",
               merchant: first(params?.merchant) ?? null,
               amount: Number(first(params?.amount) ?? 0) || 0,
-              frequency: "monthly",
+              frequency,
               next_date: null,
               category_id: null,
               account_id: null,
               active: true,
             }}
             submitLabel="Add recurring expense"
+            transactionIds={first(params?.transactionIds)}
           />
         </CardContent>
       </Card>

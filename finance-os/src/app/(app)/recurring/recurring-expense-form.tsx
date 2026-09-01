@@ -27,17 +27,21 @@ export function RecurringExpenseForm({
   categories,
   defaultValues,
   submitLabel,
+  transactionIds,
 }: {
   action: (prevState: string | null, formData: FormData) => Promise<string | null>;
   accounts: AccountOption[];
   categories: CategoryOption[];
   defaultValues?: RecurringExpense;
   submitLabel: string;
+  /** Comma-joined ids of the candidate transactions to retroactively link on save (Inbox "Track as recurring"). */
+  transactionIds?: string;
 }) {
   const [error, formAction, isPending] = useActionState(action, null);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      {transactionIds && <input type="hidden" name="transactionIds" value={transactionIds} />}
       <div>
         <Label htmlFor="name" required>
           Name

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { matchCategorizationRule } from "@/lib/categorization/rules";
+import { matchRecurringExpense } from "@/lib/recurring/matching";
 import type { ImportSummary, MappedTransaction } from "@/lib/import/types";
 
 // Rows are already parsed, mapped, and client-validated by the import
@@ -38,15 +39,22 @@ export async function importTransactions(
     return { imported: 0, duplicates, total: rows.length };
   }
 
-  const { data: rules } = await supabase
-    .from("categorization_rules")
-    .select("match_field, match_operator, match_value, category_id, subcategory, priority, active")
-    .eq("active", true);
+  const [{ data: rules }, { data: recurringExpenses }] = await Promise.all([
+    supabase
+      .from("categorization_rules")
+      .select("match_field, match_operator, match_value, category_id, subcategory, priority, active")
+      .eq("active", true),
+    supabase.from("recurring_expenses").select("id, merchant, amount").eq("active", true),
+  ]);
 
   const records = toInsert.map((row) => {
     const category = matchCategorizationRule(
       { merchant: row.merchant, description: row.description },
       rules ?? [],
+    );
+    const recurring_expense_id = matchRecurringExpense(
+      { merchant: row.merchant, amount: row.amount, type: row.type },
+      recurringExpenses ?? [],
     );
     return {
       account_id: accountId,
@@ -59,6 +67,7 @@ export async function importTransactions(
       subcategory: category?.subcategory ?? null,
       import_id: row.import_id,
       original_description: row.description,
+      recurring_expense_id,
     };
   });
 
