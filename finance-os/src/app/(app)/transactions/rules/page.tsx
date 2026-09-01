@@ -1,0 +1,72 @@
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { deleteRule, toggleRuleActive } from "./actions";
+
+export default async function CategorizationRulesPage() {
+  const supabase = await createClient();
+  const { data: rules } = await supabase
+    .from("categorization_rules")
+    .select(
+      "id, match_field, match_operator, match_value, subcategory, priority, active, categories(name)",
+    )
+    .order("priority", { ascending: false });
+
+  return (
+    <main className="flex-1 flex flex-col gap-6 px-10 py-16">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-h1 font-bold text-purple">Categorization Rules</h1>
+          <Link href="/transactions" className="text-body font-medium text-purple underline">
+            Back to Transactions
+          </Link>
+        </div>
+        <Link href="/transactions/rules/new">
+          <Button>Add rule</Button>
+        </Link>
+      </div>
+
+      {!rules?.length ? (
+        <p className="text-body text-muted">No categorization rules yet.</p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {rules.map((rule) => {
+            const categoryName = (rule.categories as unknown as { name: string } | null)?.name;
+            return (
+              <Card key={rule.id} className="flex items-center justify-between">
+                <div>
+                  <p className="text-h4 font-semibold text-foreground">
+                    &ldquo;{rule.match_field}&rdquo; {rule.match_operator} &ldquo;{rule.match_value}&rdquo; →{" "}
+                    {categoryName}
+                    {rule.subcategory ? ` / ${rule.subcategory}` : ""}
+                    {!rule.active && <span className="text-small text-muted"> (inactive)</span>}
+                  </p>
+                  <p className="text-small text-muted">Priority {rule.priority}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Link
+                    href={`/transactions/rules/${rule.id}/edit`}
+                    className="text-body font-medium text-purple underline"
+                  >
+                    Edit
+                  </Link>
+                  <form action={toggleRuleActive.bind(null, rule.id, rule.active)}>
+                    <Button type="submit" variant="secondary">
+                      {rule.active ? "Deactivate" : "Activate"}
+                    </Button>
+                  </form>
+                  <form action={deleteRule.bind(null, rule.id)}>
+                    <Button type="submit" variant="tertiary">
+                      Delete
+                    </Button>
+                  </form>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </main>
+  );
+}

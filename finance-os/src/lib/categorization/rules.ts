@@ -3,8 +3,11 @@
 // logic lives here (not in the server action) so it's testable without a
 // database — callers fetch the active rules and pass them in.
 
-export type MatchField = "merchant" | "description";
-export type MatchOperator = "contains" | "equals";
+export const MATCH_FIELDS = ["merchant", "description"] as const;
+export const MATCH_OPERATORS = ["contains", "equals"] as const;
+
+export type MatchField = (typeof MATCH_FIELDS)[number];
+export type MatchOperator = (typeof MATCH_OPERATORS)[number];
 
 export type CategorizationRule = {
   match_field: MatchField;

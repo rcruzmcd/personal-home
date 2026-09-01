@@ -280,7 +280,7 @@ export function ImportWizard({ accounts }: { accounts: AccountOption[] }) {
             <Button variant="secondary" onClick={reset}>
               Import another file
             </Button>
-            <Link href="/transactions">
+            <Link href={`/transactions/account/${accountId}`}>
               <Button>View transactions</Button>
             </Link>
           </div>
