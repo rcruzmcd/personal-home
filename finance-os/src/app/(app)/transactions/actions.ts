@@ -121,6 +121,86 @@ export async function createTransaction(_prevState: string | null, formData: For
   redirect("/transactions");
 }
 
+export type AffectedTransaction = { id: string; date: string; description: string; amount: number };
+
+// Preview for the "learn from this correction" flow below: other
+// transactions sharing this exact merchant that are still uncategorized,
+// so the UI can show what a new rule would bulk-apply to before doing so.
+export async function findUncategorizedByMerchant(
+  merchant: string,
+  excludeTransactionId?: string,
+): Promise<AffectedTransaction[]> {
+  const trimmed = merchant.trim();
+  if (!trimmed) return [];
+  const supabase = await createClient();
+  let query = supabase
+    .from("transactions")
+    .select("id, date, description, amount")
+    .is("category_id", null)
+    .ilike("merchant", trimmed) // case-insensitive exact match, mirrors the "equals" rule operator
+    .order("date", { ascending: false });
+  if (excludeTransactionId) query = query.neq("id", excludeTransactionId);
+
+  const { data } = await query;
+  return data ?? [];
+}
+
+// Called when the user manually categorizes a transaction that had no
+// category (i.e. the rule engine couldn't place it): remembers the choice
+// as an exact-merchant categorization rule for future imports, and
+// optionally bulk-applies it to the other uncategorized rows the user
+// previewed and confirmed.
+export async function learnCategorizationRule(input: {
+  merchant: string;
+  category_id: string;
+  subcategory: string | null;
+  applyToTransactionIds: string[];
+}) {
+  const merchant = input.merchant.trim();
+  if (!merchant || !input.category_id) return;
+  const supabase = await createClient();
+
+  const { data: existingRules } = await supabase
+    .from("categorization_rules")
+    .select("id")
+    .eq("match_field", "merchant")
+    .eq("match_operator", "equals")
+    .ilike("match_value", merchant)
+    .limit(1);
+
+  if (existingRules?.length) {
+    await supabase
+      .from("categorization_rules")
+      .update({ category_id: input.category_id, subcategory: input.subcategory, active: true })
+      .eq("id", existingRules[0].id);
+  } else {
+    const { data: topPriority } = await supabase
+      .from("categorization_rules")
+      .select("priority")
+      .order("priority", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    await supabase.from("categorization_rules").insert({
+      match_field: "merchant",
+      match_operator: "equals",
+      match_value: merchant,
+      category_id: input.category_id,
+      subcategory: input.subcategory,
+      priority: (topPriority?.priority ?? 0) + 1,
+    });
+  }
+
+  if (input.applyToTransactionIds.length > 0) {
+    await supabase
+      .from("transactions")
+      .update({ category_id: input.category_id, subcategory: input.subcategory })
+      .in("id", input.applyToTransactionIds);
+  }
+
+  revalidatePath("/transactions");
+}
+
 export async function updateTransaction(
   id: string,
   _prevState: string | null,

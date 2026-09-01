@@ -36,6 +36,7 @@ export default async function EditTransactionPage({
             categories={categories ?? []}
             defaultValues={{ ...transaction, amount: Math.abs(transaction.amount) }}
             submitLabel="Save changes"
+            transactionId={id}
           />
         </CardContent>
       </Card>
