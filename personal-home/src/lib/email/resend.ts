@@ -3,8 +3,12 @@ import { Resend } from "resend"
 import { CONTACT_REASON_LABELS } from "@/lib/validation/contact"
 import type { ContactFormData } from "@/lib/validation/contact"
 
-const FROM_ADDRESS = "Rickie Cruz Website <noreply@rickiecruz.com>"
-const TO_ADDRESS = "hello@rickiecruz.com"
+// Temporary: Resend's shared sandbox sender + personal inbox, used until
+// rickiecruz.com's domain/email infra (noreply@rickiecruz.com,
+// hello@rickiecruz.com) is set up. Swap these back once that's ready —
+// no other code changes needed.
+const FROM_ADDRESS = "onboarding@resend.dev"
+const TO_ADDRESS = "ricardo.cruzmcdougal@gmail.com"
 
 function formatSubmissionText(data: ContactFormData): string {
   const lines = [
