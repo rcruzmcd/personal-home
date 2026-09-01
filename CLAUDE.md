@@ -17,6 +17,10 @@ This is a monorepo with three top-level parts:
   - `QUICK_START.md` — pre-launch checklist and week-by-week setup summary for both projects
   - `BRAND_GUIDE.md` — brand identity reference (color palette, typography, usage rules) for rickiecruz.com; a living doc updated as the brand evolves
 
+  Keep your replies extremely concise and focus on conveying the key information. No unnecessary fluff, no long code snippets.
+
+  Follow SOLID principles when developing.
+
   When implementing a feature, check the relevant doc first — these encode real product decisions (e.g. transfers between own accounts must not count as spending, cash runway is the primary finance metric, avoid positioning as "web developer"/"React developer" in copy).
 
 - **`personal-home/`** — The actual Next.js application (the personal portfolio site). The MVP described in `docs/` has been built out: homepage, About, Work/Projects listings + MDX case study detail pages (Chatter Snow, Personal Finance OS), Consulting, Resume, Contact (with API route, spam protection, Resend email), Privacy/Terms, dark/light mode, SEO metadata/JSON-LD/sitemap/robots, and Vercel Analytics event tracking.

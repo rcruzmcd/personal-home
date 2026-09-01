@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // CLI-generated runtime artifacts from `supabase start` / `db reset`,
+    // not source — already excluded from git via supabase/.gitignore.
+    "supabase/.temp/**",
+    "supabase/.branches/**",
   ]),
 ]);
 

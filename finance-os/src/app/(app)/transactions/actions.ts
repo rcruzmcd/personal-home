@@ -1,0 +1,127 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+import { normalizeAmount, transactionSchema } from "@/lib/validations/transaction";
+import { matchCategorizationRule } from "@/lib/categorization/rules";
+
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
+
+// A manually chosen category_id is always a user override and wins outright
+// (docs/PERSONAL_FINANCE_REQUIREMENTS.md §4, "Fallback: User can manually
+// override categorization"). Only fall back to the rule engine when the
+// user left the category on "Auto-detect".
+async function resolveCategory(
+  supabase: SupabaseClient,
+  input: {
+    category_id?: string;
+    subcategory?: string;
+    merchant?: string;
+    description: string;
+  },
+): Promise<{ category_id: string | null; subcategory: string | null }> {
+  if (input.category_id) {
+    return { category_id: input.category_id, subcategory: input.subcategory ?? null };
+  }
+
+  const { data: rules } = await supabase
+    .from("categorization_rules")
+    .select("match_field, match_operator, match_value, category_id, subcategory, priority, active")
+    .eq("active", true);
+
+  const match = matchCategorizationRule(
+    { merchant: input.merchant ?? null, description: input.description },
+    rules ?? [],
+  );
+
+  return match ?? { category_id: null, subcategory: null };
+}
+
+export async function createTransaction(_prevState: string | null, formData: FormData) {
+  const parsed = transactionSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return parsed.error.issues[0].message;
+
+  const {
+    type,
+    amount,
+    account_id,
+    to_account_id,
+    date,
+    description,
+    merchant,
+    category_id,
+    subcategory,
+  } = parsed.data;
+  const supabase = await createClient();
+
+  if (type === "transfer") {
+    const { error } = await supabase.rpc("create_transfer", {
+      p_from_account: account_id,
+      p_to_account: to_account_id!,
+      p_amount: Math.abs(amount),
+      p_date: date,
+      p_description: description,
+    });
+    if (error) return error.message;
+  } else {
+    const category = await resolveCategory(supabase, {
+      category_id,
+      subcategory,
+      merchant,
+      description,
+    });
+    const { error } = await supabase.from("transactions").insert({
+      account_id,
+      date,
+      description,
+      merchant,
+      type,
+      amount: normalizeAmount(type, amount),
+      category_id: category.category_id,
+      subcategory: category.subcategory,
+    });
+    if (error) return error.message;
+  }
+
+  revalidatePath("/transactions");
+  redirect("/transactions");
+}
+
+export async function updateTransaction(
+  id: string,
+  _prevState: string | null,
+  formData: FormData,
+) {
+  const parsed = transactionSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return parsed.error.issues[0].message;
+  if (parsed.data.type === "transfer") return "Editing transfers isn't supported yet.";
+
+  const { type, amount, account_id, date, description, merchant, category_id, subcategory } =
+    parsed.data;
+  const supabase = await createClient();
+  const category = await resolveCategory(supabase, {
+    category_id,
+    subcategory,
+    merchant,
+    description,
+  });
+
+  const { error } = await supabase
+    .from("transactions")
+    .update({
+      account_id,
+      date,
+      description,
+      merchant,
+      type,
+      amount: normalizeAmount(type, amount),
+      category_id: category.category_id,
+      subcategory: category.subcategory,
+    })
+    .eq("id", id);
+  if (error) return error.message;
+
+  revalidatePath("/transactions");
+  redirect("/transactions");
+}
