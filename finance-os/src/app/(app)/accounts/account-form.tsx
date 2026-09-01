@@ -16,6 +16,8 @@ type Account = {
   credit_limit: number | null;
   interest_rate: number | null;
   minimum_payment: number | null;
+  due_date: string | null;
+  statement_date: string | null;
   opening_date: string | null;
   notes: string | null;
 };
@@ -131,6 +133,27 @@ export function AccountForm({
           step="0.01"
           defaultValue={defaultValues?.minimum_payment ?? ""}
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="statement_date">Statement date</Label>
+          <Input
+            id="statement_date"
+            name="statement_date"
+            type="date"
+            defaultValue={defaultValues?.statement_date ?? ""}
+          />
+        </div>
+        <div>
+          <Label htmlFor="due_date">Due date</Label>
+          <Input
+            id="due_date"
+            name="due_date"
+            type="date"
+            defaultValue={defaultValues?.due_date ?? ""}
+          />
+        </div>
       </div>
 
       <div>

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { accountSchema } from "@/lib/validations/account";
 import { reconciliationSchema } from "@/lib/validations/reconciliation";
+import { statementEntrySchema } from "@/lib/validations/statement-entry";
 
 export async function createAccount(_prevState: string | null, formData: FormData) {
   const parsed = accountSchema.safeParse(Object.fromEntries(formData));
@@ -84,6 +85,31 @@ export async function reconcileAccount(
     .update({ balance: bankBalance, last_updated: new Date().toISOString() })
     .eq("id", accountId);
   if (updateError) return updateError.message;
+
+  revalidatePath("/accounts");
+  revalidatePath(`/accounts/${accountId}`);
+  redirect(`/accounts/${accountId}`);
+}
+
+// Statement/period entry tracking (docs/PERSONAL_FINANCE_REQUIREMENTS.md
+// §2): records the date the user has confirmed all transactions are
+// entered through, so account-list/detail can show whether this
+// month's/statement's transactions still need entering
+// (src/lib/calculations/statement-entry.ts).
+export async function markTransactionsEntered(
+  accountId: string,
+  _prevState: string | null,
+  formData: FormData,
+) {
+  const parsed = statementEntrySchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return parsed.error.issues[0].message;
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("accounts")
+    .update({ transactions_entered_through: parsed.data.entered_through })
+    .eq("id", accountId);
+  if (error) return error.message;
 
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${accountId}`);

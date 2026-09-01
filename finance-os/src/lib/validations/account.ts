@@ -26,6 +26,8 @@ export const accountSchema = z.object({
   credit_limit: z.preprocess(emptyToUndefined, z.coerce.number().optional()),
   interest_rate: z.preprocess(emptyToUndefined, z.coerce.number().optional()),
   minimum_payment: z.preprocess(emptyToUndefined, z.coerce.number().optional()),
+  due_date: z.preprocess(emptyToUndefined, z.string().optional()),
+  statement_date: z.preprocess(emptyToUndefined, z.string().optional()),
   opening_date: z.preprocess(emptyToUndefined, z.string().optional()),
   notes: z.preprocess(emptyToUndefined, z.string().optional()),
 });

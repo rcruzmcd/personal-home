@@ -4,8 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { formatCurrency, formatShortDate } from "@/lib/format";
-import { reconcileAccount } from "../actions";
+import { isEntryUpToDate } from "@/lib/calculations/statement-entry";
+import { reconcileAccount, markTransactionsEntered } from "../actions";
 import { ReconcileForm } from "./reconcile-form";
+import { EntryStatusForm } from "./entry-status-form";
 
 export default async function AccountDetailPage({ params }: PageProps<"/accounts/[id]">) {
   const { id } = await params;
@@ -16,7 +18,7 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
       supabase
         .from("accounts")
         .select(
-          "id, name, institution, type, balance, active, opening_date, last_updated, notes",
+          "id, name, institution, type, balance, active, opening_date, last_updated, notes, due_date, statement_date, transactions_entered_through",
         )
         .eq("id", id)
         .single(),
@@ -37,6 +39,11 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
   if (!account) notFound();
 
   const lastReconciliation = reconciliations?.[0] ?? null;
+  const upToDate = isEntryUpToDate(
+    account.transactions_entered_through,
+    account.statement_date,
+    new Date(),
+  );
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
@@ -77,6 +84,22 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
                 {formatShortDate(new Date(account.last_updated))}
               </p>
             </div>
+            {account.statement_date && (
+              <div className="flex items-center justify-between">
+                <p className="text-body text-muted">Statement date</p>
+                <p className="text-body text-foreground">
+                  {formatShortDate(new Date(account.statement_date))}
+                </p>
+              </div>
+            )}
+            {account.due_date && (
+              <div className="flex items-center justify-between">
+                <p className="text-body text-muted">Due date</p>
+                <p className="text-body text-foreground">
+                  {formatShortDate(new Date(account.due_date))}
+                </p>
+              </div>
+            )}
             {account.notes && <p className="text-small text-muted mt-2">{account.notes}</p>}
           </CardContent>
         </Card>
@@ -123,6 +146,29 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Transaction entry status</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <p className="text-body text-muted">Entered through</p>
+            <p className="text-body text-foreground">
+              {account.transactions_entered_through
+                ? formatShortDate(new Date(account.transactions_entered_through))
+                : "Never"}
+            </p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-body font-semibold text-foreground">Status</p>
+            <p className={`text-body font-semibold ${upToDate ? "text-green" : "text-purple"}`}>
+              {upToDate ? "Up to date" : "Needs entry"}
+            </p>
+          </div>
+          <EntryStatusForm action={markTransactionsEntered.bind(null, account.id)} />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

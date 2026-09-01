@@ -3,15 +3,20 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format";
+import { isEntryUpToDate } from "@/lib/calculations/statement-entry";
 import { deleteAccount } from "./actions";
 
 export default async function AccountsPage() {
   const supabase = await createClient();
   const { data: accounts } = await supabase
     .from("accounts")
-    .select("id, name, institution, type, balance, active")
+    .select(
+      "id, name, institution, type, balance, active, statement_date, transactions_entered_through",
+    )
     .order("type")
     .order("name");
+
+  const today = new Date();
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
@@ -26,7 +31,13 @@ export default async function AccountsPage() {
         <p className="text-body text-muted">No accounts yet.</p>
       ) : (
         <div className="flex flex-col gap-3">
-          {accounts.map((account) => (
+          {accounts.map((account) => {
+            const upToDate = isEntryUpToDate(
+              account.transactions_entered_through,
+              account.statement_date,
+              today,
+            );
+            return (
             <Card key={account.id} className="flex items-center justify-between">
               <div>
                 <Link href={`/accounts/${account.id}`} className="hover:underline">
@@ -40,6 +51,14 @@ export default async function AccountsPage() {
                 <p className="text-small text-muted">
                   {account.institution ? `${account.institution} · ` : ""}
                   {account.type.replace(/_/g, " ")}
+                  {account.active && (
+                    <>
+                      {" · "}
+                      <span className={upToDate ? "text-green" : "text-purple"}>
+                        {upToDate ? "Up to date" : "Needs entry"}
+                      </span>
+                    </>
+                  )}
                 </p>
               </div>
               <div className="flex items-center gap-4">
@@ -59,7 +78,8 @@ export default async function AccountsPage() {
                 </form>
               </div>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
     </main>
