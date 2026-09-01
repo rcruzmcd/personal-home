@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { inputClasses } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   TRANSACTION_LIST_PAGE_SIZES,
   transactionListHref,
@@ -31,10 +32,10 @@ export function TransactionListControls({
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center gap-3">
       <select
         aria-label="Transactions per page"
-        className={inputClasses}
+        className={cn(inputClasses, "w-auto shrink-0")}
         value={pageSize}
         onChange={(e) => go({ pageSize: Number(e.target.value) as TransactionListPageSize })}
       >
@@ -46,7 +47,7 @@ export function TransactionListControls({
       </select>
       <select
         aria-label="Sort by"
-        className={inputClasses}
+        className={cn(inputClasses, "w-auto shrink-0")}
         value={sort}
         onChange={(e) => go({ sort: e.target.value as TransactionListSort, dir: "desc" })}
       >
@@ -56,6 +57,7 @@ export function TransactionListControls({
       <Button
         type="button"
         variant="secondary"
+        className="shrink-0 whitespace-nowrap"
         onClick={() => go({ dir: dir === "asc" ? "desc" : "asc" })}
       >
         {sort === "date"
