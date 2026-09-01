@@ -241,6 +241,24 @@ All route appropriately without requiring separate inboxes initially.
 ### No Database Unless Necessary
 If you don't need one, don't build one. Contact form submissions can be handled server-side.
 
+## Internationalization (i18n)
+
+### Requirement
+Site content must be structured for translation, not hard-coded to English only.
+
+### Scope
+- Locale-based routing (e.g. `/en`, `/es`) via Next.js i18n routing
+- All UI strings and page copy sourced from translation files, not inline in components
+- MVP launch language: English. Spanish is the first additional locale to support (Rickie's bio/network skews bilingual)
+- Locale switcher in site header/footer
+- `hreflang` tags and locale-specific `sitemap.xml` entries for SEO
+- Locale-aware date/number formatting
+- MDX case studies/projects: translate frontmatter (title, description) at minimum; full-body translation is optional per entry
+
+### Out of Scope (MVP)
+- Auto-detecting locale from browser/geo and redirecting (respect explicit user choice only)
+- Machine-translated fallback content
+
 ## Accessibility (Portfolio Requirement)
 
 ### Must Support
