@@ -7,7 +7,9 @@ export default async function TransactionsPage() {
   const supabase = await createClient();
   const { data: transactions } = await supabase
     .from("transactions")
-    .select("id, date, description, merchant, amount, type, accounts(name), categories(name)")
+    .select(
+      "id, date, description, merchant, amount, type, tags, user_notes, accounts(name), categories(name)",
+    )
     .order("date", { ascending: false })
     .limit(100);
 
@@ -40,6 +42,23 @@ export default async function TransactionsPage() {
                     {(txn.accounts as unknown as { name: string } | null)?.name} · {txn.type}
                     {categoryName ? ` · ${categoryName}` : ""}
                   </p>
+                  {(txn.tags?.length || txn.user_notes) && (
+                    <div className="flex items-center gap-2 mt-1">
+                      {txn.tags?.map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="text-small text-purple bg-purple/10 rounded-full px-2 py-0.5"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {txn.user_notes && (
+                        <p className="text-small text-muted italic truncate max-w-xs">
+                          {txn.user_notes}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-4">
                   <p

@@ -10,6 +10,15 @@ export const TRANSACTION_TYPES = [
 
 const emptyToUndefined = (val: unknown) => (val === "" ? undefined : val);
 
+// Tags are entered as a comma-separated string and stored as text[].
+const tagsToArray = (val: unknown) =>
+  typeof val === "string"
+    ? val
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+    : val;
+
 export const transactionSchema = z
   .object({
     account_id: z.uuid(),
@@ -24,6 +33,8 @@ export const transactionSchema = z
     // §4, "Fallback: User can manually override categorization").
     category_id: z.preprocess(emptyToUndefined, z.uuid().optional()),
     subcategory: z.preprocess(emptyToUndefined, z.string().optional()),
+    tags: z.preprocess(tagsToArray, z.array(z.string()).default([])),
+    user_notes: z.preprocess(emptyToUndefined, z.string().optional()),
   })
   .superRefine((data, ctx) => {
     if (data.type === "transfer") {

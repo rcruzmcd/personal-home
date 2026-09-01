@@ -74,6 +74,8 @@ export async function createTransaction(_prevState: string | null, formData: For
     merchant,
     category_id,
     subcategory,
+    tags,
+    user_notes,
   } = parsed.data;
   const supabase = await createClient();
 
@@ -109,6 +111,8 @@ export async function createTransaction(_prevState: string | null, formData: For
       category_id: category.category_id,
       subcategory: category.subcategory,
       recurring_expense_id,
+      tags,
+      user_notes,
     });
     if (error) return error.message;
   }
@@ -126,8 +130,18 @@ export async function updateTransaction(
   if (!parsed.success) return parsed.error.issues[0].message;
   if (parsed.data.type === "transfer") return "Editing transfers isn't supported yet.";
 
-  const { type, amount, account_id, date, description, merchant, category_id, subcategory } =
-    parsed.data;
+  const {
+    type,
+    amount,
+    account_id,
+    date,
+    description,
+    merchant,
+    category_id,
+    subcategory,
+    tags,
+    user_notes,
+  } = parsed.data;
   const supabase = await createClient();
   const category = await resolveCategory(supabase, {
     category_id,
@@ -154,6 +168,8 @@ export async function updateTransaction(
       category_id: category.category_id,
       subcategory: category.subcategory,
       recurring_expense_id,
+      tags,
+      user_notes,
     })
     .eq("id", id);
   if (error) return error.message;

@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, inputClasses } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TRANSACTION_TYPES } from "@/lib/validations/transaction";
 
@@ -19,6 +20,8 @@ type Transaction = {
   amount: number;
   category_id: string | null;
   subcategory: string | null;
+  tags: string[] | null;
+  user_notes: string | null;
 };
 
 export function TransactionForm({
@@ -170,6 +173,29 @@ export function TransactionForm({
             />
           </div>
         </div>
+      )}
+
+      {type !== "transfer" && (
+        <>
+          <div>
+            <Label htmlFor="tags">Tags</Label>
+            <Input
+              id="tags"
+              name="tags"
+              placeholder="reimbursable, vacation"
+              defaultValue={defaultValues?.tags?.join(", ") ?? ""}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="user_notes">Notes</Label>
+            <Textarea
+              id="user_notes"
+              name="user_notes"
+              defaultValue={defaultValues?.user_notes ?? ""}
+            />
+          </div>
+        </>
       )}
 
       {error && (
