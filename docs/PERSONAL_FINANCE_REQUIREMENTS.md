@@ -15,6 +15,8 @@
 
 **Note:** This is NOT primarily a budgeting app. Budgeting is one component of a broader financial-management system.
 
+**Deployment:** Ships as two separate instances of the same app (see `docs/TECH_STACK_AND_DOMAIN.md` → "Personal Finance: Two Instances") — a private instance holding your real financial data, and a public showcase instance seeded with fake data for the portfolio case study. Everything in this spec (data model, calculations, UI) applies to both; only the underlying data and access controls differ.
+
 ---
 
 ## MVP Scope (2-Week Build)

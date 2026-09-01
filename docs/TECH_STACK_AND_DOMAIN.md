@@ -395,6 +395,22 @@ Why Vercel:
 - Environment variables management
 - Automatic SSL
 
+**Hobby plan supports this:** no cap on number of Vercel projects on the free Hobby tier — `personal-home` and both `finance-os` instances below can each be their own project. What's capped is account-wide shared usage (bandwidth, build minutes, deployments/day), pooled across all projects, not per-project; three low-traffic personal projects stay well under those limits.
+
+### Personal Finance: Two Instances
+
+`finance-os` is deployed as **two separate Vercel projects**, both built from the same repo/root directory (`finance-os/`) but pointed at different Supabase projects and different domains — not a prod/preview split of one app, since these serve two different audiences:
+
+| | Private instance | Showcase instance |
+|---|---|---|
+| **Purpose** | Your actual financial tracking | Public portfolio/case-study demo |
+| **Data** | Real Supabase project, real accounts/transactions | Separate Supabase project, seeded with fake/sample data |
+| **Domain** | Not on a discoverable `*.rickiecruz.com` subdomain — default `*.vercel.app` URL or an unadvertised subdomain, never linked from site nav | `finance.rickiecruz.com` (or `demo.rickiecruz.com`), linked from the Personal Finance OS case study |
+| **Access** | Gated behind Supabase Auth (and/or Vercel Deployment Protection until auth is built) | Public, read-only or reset-on-schedule |
+| **Env vars** | Points at the production Supabase project | Points at the demo Supabase project |
+
+This means the DNS/Cloudflare setup (CNAME to Vercel, DNS-only/grey-cloud) applies only to the showcase instance's domain — the private instance doesn't need a custom domain or public DNS record at all.
+
 ### CI/CD Pipeline
 
 **GitHub → Vercel → Production**
