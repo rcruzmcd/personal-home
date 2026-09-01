@@ -18,9 +18,15 @@ type Step = "upload" | "map" | "preview" | "done";
 
 const EMPTY_MAPPING: ColumnMapping = { date: "", description: "", amount: "", merchant: null };
 
-export function ImportWizard({ accounts }: { accounts: AccountOption[] }) {
+export function ImportWizard({
+  accounts,
+  initialAccountId,
+}: {
+  accounts: AccountOption[];
+  initialAccountId?: string;
+}) {
   const [step, setStep] = useState<Step>("upload");
-  const [accountId, setAccountId] = useState(accounts[0]?.id ?? "");
+  const [accountId, setAccountId] = useState(initialAccountId ?? accounts[0]?.id ?? "");
   const [parsed, setParsed] = useState<ParsedFile | null>(null);
   const [mapping, setMapping] = useState<ColumnMapping>(EMPTY_MAPPING);
   const [mapResult, setMapResult] = useState<MapRowsResult | null>(null);

@@ -1,10 +1,15 @@
 import Link from "next/link";
+import { Receipt, Upload, Pencil, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatCurrency } from "@/lib/format";
 import { isEntryUpToDate } from "@/lib/calculations/statement-entry";
 import { deleteAccount } from "./actions";
+
+const actionIconClasses =
+  "inline-flex items-center justify-center size-9 rounded-md text-muted hover:text-purple hover:bg-border transition-colors duration-200";
 
 export default async function AccountsPage() {
   const supabase = await createClient();
@@ -65,16 +70,51 @@ export default async function AccountsPage() {
                 <p className="text-h4 font-semibold text-foreground">
                   {formatCurrency(account.balance)}
                 </p>
-                <Link
-                  href={`/accounts/${account.id}/edit`}
-                  className="text-body font-medium text-purple underline"
-                >
-                  Edit
-                </Link>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={`/transactions/account/${account.id}`}
+                      aria-label="View transactions"
+                      className={actionIconClasses}
+                    >
+                      <Receipt className="size-4" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>View transactions</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={`/transactions/import?accountId=${account.id}`}
+                      aria-label="Import transactions"
+                      className={actionIconClasses}
+                    >
+                      <Upload className="size-4" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>Import transactions</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={`/accounts/${account.id}/edit`}
+                      aria-label="Edit account"
+                      className={actionIconClasses}
+                    >
+                      <Pencil className="size-4" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit</TooltipContent>
+                </Tooltip>
                 <form action={deleteAccount.bind(null, account.id)}>
-                  <Button type="submit" variant="tertiary">
-                    Delete
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button type="submit" aria-label="Delete account" className={actionIconClasses}>
+                        <Trash2 className="size-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Delete</TooltipContent>
+                  </Tooltip>
                 </form>
               </div>
             </Card>
