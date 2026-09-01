@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-> **Status:** The website (rickiecruz.com) side of this plan has shipped — see `personal-home/` and the root `CLAUDE.md`. It was built in a single implementation pass rather than across the calendar weeks below. Personal Finance OS has not been started; it remains a separate, not-yet-created project. Sections below are reconciled against what actually got built where that's verifiable from the repo (tech choices, file structure, feature completeness); personal/logistics items — domain registration, hosting accounts, social posts, hours spent — aren't something a repo can confirm, so those are left as originally written.
+> **Status:** The website (rickiecruz.com) side of this plan has shipped — see `personal-home/` and the root `CLAUDE.md`. It was built in a single implementation pass rather than across the calendar weeks below. Personal Finance OS now exists as `finance-os/`, but only as the unmodified `create-next-app` scaffold (Next.js 16, React 19, TypeScript, Tailwind v4, bun) — no finance features are built yet, and it's not yet wired up to Supabase or `personal-home`'s design system. Sections below are reconciled against what actually got built where that's verifiable from the repo (tech choices, file structure, feature completeness); personal/logistics items — domain registration, hosting accounts, social posts, hours spent — aren't something a repo can confirm, so those are left as originally written.
 
 ## What You're Building
 

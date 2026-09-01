@@ -233,12 +233,17 @@ Built-in support with Tailwind or CSS variables:
 
 ## Personal Finance Tech Stack
 
+> **Status:** Scaffolded as `finance-os/` (default `create-next-app` output — Next.js 16, React 19, TypeScript, Tailwind v4, bun). No finance features yet.
+
 ### Frontend
 
 **Next.js + TypeScript**
 - Same as website
 - Consistent stack
 - Full-stack capability
+
+**Design system: shared with `personal-home`, not built separately**
+- `finance-os` uses the same design system as the `personal-home` website (see `docs/BRAND_GUIDE.md` and `docs/STYLE_SYSTEM.md`) rather than the "build your own component library, document it later" plan originally sketched below — reuse `personal-home`'s Tailwind theme tokens and shadcn/ui components instead of hand-picking new ones.
 
 ### Database
 

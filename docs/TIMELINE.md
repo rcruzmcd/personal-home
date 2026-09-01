@@ -18,9 +18,11 @@ Path B: Launch website quickly with Chatter Snow case study, then build Personal
 > anything requiring an external account, a deploy, manual/device testing, or
 > a real-world action (domain, DNS, social posts, hour tracking) is left
 > unchecked since a repo can't confirm it — verify those separately.
-> **Personal Finance OS has not been started** — every finance-related task
-> below is still open; it remains a separate, not-yet-created project (see
-> `docs/PERSONAL_FINANCE_REQUIREMENTS.md`).
+> **Personal Finance OS exists as `finance-os/` but is only the default
+> `create-next-app` scaffold** — same stack as the website (Next.js 16,
+> React 19, TypeScript, Tailwind v4, bun), no finance features, Supabase, or
+> shared design system wired up yet. Every other finance-related task below
+> is still open (see `docs/PERSONAL_FINANCE_REQUIREMENTS.md`).
 
 ---
 
@@ -222,7 +224,7 @@ Path B: Launch website quickly with Chatter Snow case study, then build Personal
 
 ### Prep for Personal Finance Launch
 
-- [ ] Create repo (1 hr)
+- [x] Create repo (1 hr) — scaffolded as `finance-os/` (Next.js 16 + TypeScript + Tailwind v4, matching `personal-home`'s stack); Supabase setup and environment variables still outstanding
   - Next.js + TypeScript
   - Supabase setup
   - Environment variables
