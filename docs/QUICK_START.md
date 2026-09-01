@@ -1,5 +1,7 @@
 # Quick Start Guide
 
+> **Status:** The website (rickiecruz.com) side of this plan has shipped — see `personal-home/` and the root `CLAUDE.md`. It was built in a single implementation pass rather than across the calendar weeks below. Personal Finance OS has not been started; it remains a separate, not-yet-created project. Sections below are reconciled against what actually got built where that's verifiable from the repo (tech choices, file structure, feature completeness); personal/logistics items — domain registration, hosting accounts, social posts, hours spent — aren't something a repo can confirm, so those are left as originally written.
+
 ## What You're Building
 
 **Two projects, one timeline:**
@@ -68,62 +70,54 @@
 
 ## File Structure
 
+Planned as a Pages Router layout below. It shipped as Next.js **App Router**
+instead — the actual structure, under `personal-home/`:
+
 ```
-rickiecruz.com/
-├── pages/
-│   ├── index.tsx              (homepage)
-│   ├── about.tsx
+personal-home/
+├── src/app/
+│   ├── page.tsx                 (homepage)
+│   ├── about/page.tsx
 │   ├── work/
-│   │   ├── index.tsx          (work listing)
-│   │   └── [slug].tsx         (case study detail)
+│   │   ├── page.tsx             (work listing)
+│   │   └── [slug]/page.tsx      (case study detail)
 │   ├── projects/
-│   │   ├── index.tsx          (project listing)
-│   │   └── [slug].tsx         (project detail)
-│   ├── consulting.tsx
-│   ├── contact.tsx
-│   ├── resume.tsx
-│   └── api/
-│       └── contact.ts         (form submission)
-│
-├── components/
-│   ├── Header.tsx
-│   ├── Footer.tsx
-│   ├── ProjectCard.tsx
-│   ├── CaseStudyLayout.tsx
-│   └── ...
-│
-├── styles/
+│   │   ├── page.tsx             (project listing)
+│   │   └── [slug]/page.tsx      (project detail)
+│   ├── consulting/page.tsx
+│   ├── contact/page.tsx
+│   ├── resume/page.tsx
+│   ├── privacy/page.tsx
+│   ├── terms/page.tsx
+│   ├── robots.ts
+│   ├── sitemap.ts
 │   ├── globals.css
-│   ├── variables.css
-│   └── ...
+│   └── api/contact/route.ts     (form submission)
+│
+├── src/components/
+│   ├── site/                    (header, footer, nav-links, mobile-nav, theme-toggle, skip-link)
+│   ├── case-study/               (project-detail, decision-box, project-links)
+│   ├── contact/contact-form.tsx
+│   ├── analytics/                (track-project-view, track-consulting-view)
+│   ├── mdx/mdx-components.tsx
+│   └── ui/                       (shadcn/ui primitives)
+│
+├── src/lib/
+│   ├── content/                 (MDX loading + frontmatter parsing)
+│   ├── analytics.ts
+│   ├── email/                   (Resend integration)
+│   ├── rate-limit.ts
+│   ├── seo.ts                   (Person/WebSite/CreativeWork JSON-LD)
+│   ├── theme-store.ts
+│   └── validation/
 │
 ├── content/
-│   ├── work/
-│   │   ├── chatter-snow/
-│   │   │   ├── index.mdx
-│   │   │   └── images/
-│   │   └── ...
-│   └── projects/
-│       ├── personal-finance/
-│       │   ├── index.mdx
-│       │   └── images/
-│       └── ...
+│   ├── work/chatter-snow/index.mdx
+│   └── projects/personal-finance-os/index.mdx
 │
-├── public/
-│   ├── images/
-│   ├── favicon.ico
-│   └── robots.txt
-│
-├── lib/
-│   ├── projects.ts            (read content)
-│   ├── seo.ts                 (SEO utilities)
-│   └── ...
-│
-├── next.config.js
+├── next.config.ts
 ├── tsconfig.json
-├── tailwind.config.js          (if using Tailwind)
-├── .env.local
-└── README.md
+└── package.json                 (Tailwind v4 is CSS-first — no tailwind.config.js)
 ```
 
 ---
@@ -142,12 +136,12 @@ rickiecruz.com/
 ### Week 2
 
 ```
-✓ pages/index.tsx (homepage)
-✓ pages/work/[slug].tsx (case study template)
-✓ pages/about.tsx
-✓ pages/consulting.tsx
-✓ pages/contact.tsx
-✓ components/Header.tsx, Footer.tsx, ProjectCard.tsx
+✓ src/app/page.tsx (homepage)
+✓ src/app/work/[slug]/page.tsx (case study template)
+✓ src/app/about/page.tsx
+✓ src/app/consulting/page.tsx
+✓ src/app/contact/page.tsx
+✓ src/components/site/header.tsx, footer.tsx; case-study/project-detail.tsx
 ```
 
 ### Week 3-4
@@ -162,25 +156,25 @@ rickiecruz.com/
 
 ---
 
-## Critical Decisions (Make Before Week 1)
+## Critical Decisions (Made)
 
 1. **Styling approach?**
-   - Tailwind CSS (recommended) or CSS Modules?
+   - → Tailwind CSS v4 (CSS-first, no `tailwind.config.js` — see `docs/STYLE_SYSTEM.md`)
 
 2. **Components?**
-   - shadcn/ui (recommended) or build from scratch?
+   - → shadcn/ui, recolored to the brand tokens instead of shadcn's default palette
 
 3. **MDX or JSON for content?**
-   - MDX (recommended) for easy authoring or JSON for structure?
+   - → MDX, read via `next-mdx-remote` + `gray-matter` from `content/work/` and `content/projects/`
 
 4. **Dark mode?**
-   - Yes (recommended for portfolio) or light only?
+   - → Yes, with a manual toggle (persisted client-side) that falls back to `prefers-color-scheme`
 
 5. **Fonts?**
-   - System fonts or Google Fonts?
+   - → Google Fonts via `next/font`: Inter (body/headings), Merriweather (rare pull-quote use only), Geist Mono (code)
 
 6. **Form submission?**
-   - Email service (Resend, SendGrid) or just validation?
+   - → Resend, with a honeypot, rate limiting (`src/lib/rate-limit.ts`), and server-side validation
 
 ---
 

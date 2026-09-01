@@ -11,36 +11,49 @@ Path B: Launch website quickly with Chatter Snow case study, then build Personal
 
 ---
 
+> **Status:** The website portion of this plan (roughly the Week 1–3 website
+> tasks below) has shipped, built in a single implementation pass rather than
+> across four calendar weeks — see `personal-home/` and the root `CLAUDE.md`.
+> Checkboxes below are flipped where the task is verifiable from the repo;
+> anything requiring an external account, a deploy, manual/device testing, or
+> a real-world action (domain, DNS, social posts, hour tracking) is left
+> unchecked since a repo can't confirm it — verify those separately.
+> **Personal Finance OS has not been started** — every finance-related task
+> below is still open; it remains a separate, not-yet-created project (see
+> `docs/PERSONAL_FINANCE_REQUIREMENTS.md`).
+
+---
+
 ## Week 1: Setup + Content (Sept 1-7)
 
 ### Website Setup
 
 **Tasks:**
 
-- [ ] Create Next.js repo: `rickiecruz.com` (1 hr)
+- [x] Create Next.js repo: `rickiecruz.com` (1 hr)
   - TypeScript configuration
   - ESLint/Prettier setup
-  - Basic folder structure (components, pages, public, styles)
+  - Basic folder structure — shipped as App Router (`src/app/`), not Pages Router
 
-- [ ] Set up Vercel project (30 min)
+- [ ] Set up Vercel project (30 min) — not verifiable from the repo; confirm separately
   - Connect GitHub repo
   - Set environment variables
   - Configure domain rickiecruz.com
 
-- [ ] Set up DNS with Cloudflare (1 hr)
+- [ ] Set up DNS with Cloudflare (1 hr) — not verifiable from the repo; confirm separately
   - Point rickiecruz.com to Vercel
   - Set up email routing (hello@, rickie@)
   - Configure www redirect
 
-- [ ] Basic styling setup (1 hr)
-  - Choose CSS-in-JS or Tailwind
-  - Set up dark mode support
-  - Create design tokens/variables
+- [x] Basic styling setup (1 hr)
+  - Tailwind CSS v4 (CSS-first, `docs/STYLE_SYSTEM.md`)
+  - Dark mode support (auto via `prefers-color-scheme` + manual toggle)
+  - Design tokens/variables in `src/app/globals.css`
 
-- [ ] Project scaffolding (1-2 hrs)
-  - Create page components (index, about, work, projects, consulting, contact, resume)
-  - Create layout component
-  - Set up SEO metadata structure
+- [x] Project scaffolding (1-2 hrs)
+  - Page components: home, about, work, projects, consulting, contact, resume, privacy, terms
+  - Layout component (`src/app/layout.tsx`)
+  - SEO metadata structure (`src/lib/seo.ts`)
 
 **Time: 5.5-6.5 hours**
 
@@ -48,17 +61,14 @@ Path B: Launch website quickly with Chatter Snow case study, then build Personal
 
 **Chatter Snow:**
 
-- [ ] Gather all materials (2-3 hrs)
-  - Screenshots of key interfaces (admin, community view, dashboard)
+- [ ] Gather all materials (2-3 hrs) — narrative content (problem, goals, decisions) is written and shipped in `content/work/chatter-snow/index.mdx`; no screenshots were ever added (the shipped MDX has no `heroImage`/`images` fields)
+  - Screenshots of key interfaces (admin, community view, dashboard) — still outstanding
   - List all features built
   - Find any metrics or impact data
   - Collect technical documentation
   - Note any architectural decisions you remember
 
-- [ ] Organize materials (1 hr)
-  - Create `/content/case-studies/chatter-snow/` folder
-  - Save screenshots with descriptive names
-  - Create rough outline of case study
+- [x] Organize materials (1 hr) — shipped at `content/work/chatter-snow/` (not the originally-planned `content/case-studies/chatter-snow/`), with the case study written in full rather than as a rough outline
 
 **Personal Finance:**
 
@@ -86,11 +96,11 @@ Path B: Launch website quickly with Chatter Snow case study, then build Personal
 
 **This is the most important task of the week.**
 
-- [ ] Write case study (rough draft) (4-5 hrs)
+- [x] Write case study (rough draft) (4-5 hrs) — shipped as a full case study, not a rough draft, in `content/work/chatter-snow/index.mdx`
   - Follow case study template in CASE_STUDIES.md
   - Sections: Overview, Problem, Context, Goals, Constraints, Architecture, Design, Implementation, Challenges, Decisions, Result, Lessons
   - Don't aim for perfection, aim for clarity
-  - Include screenshots at key points
+  - Include screenshots at key points — still outstanding, no screenshots were added
   - Note where data/metrics are TBD
 
 **Key points to cover:**
@@ -104,65 +114,65 @@ Path B: Launch website quickly with Chatter Snow case study, then build Personal
 
 **Homepage:**
 
-- [ ] Hero section (2 hrs)
+- [x] Hero section (2 hrs)
   - Name + tagline
   - Supporting copy
   - CTAs: "View my work" + "Let's talk"
 
-- [ ] Featured work section (2 hrs)
+- [x] Featured work section (2 hrs)
   - Show Chatter Snow case study preview
   - Show Personal Finance project preview (can be placeholder initially)
   - Use grid layout, responsive
 
 **Case Study Page:**
 
-- [ ] Case study template (2 hrs)
+- [x] Case study template (2 hrs) — `src/components/case-study/` (`project-detail.tsx`, `decision-box.tsx`, `project-links.tsx`)
   - Create re-usable case study layout
   - Sections for each part (problem, solution, tech decisions, etc.)
-  - Image gallery for screenshots
+  - Image gallery for screenshots — no gallery built; no screenshots exist for either project yet
   - Related projects links
 
-- [ ] Publish Chatter Snow case study (2 hrs)
+- [x] Publish Chatter Snow case study (2 hrs)
   - Convert markdown to component/MDX
-  - Add screenshots
-  - Test responsiveness
+  - Add screenshots — not done, no screenshots exist
+  - Test responsiveness — not independently verified; do a manual pass
 
 **Supporting Pages:**
 
-- [ ] About page (2 hrs)
+- [x] About page (2 hrs)
   - Who I am, What I do, How I work
   - Experience, Currently, Outside of work
   - Make it personal
 
-- [ ] Consulting page (1.5 hrs)
+- [x] Consulting page (1.5 hrs)
   - Services overview
   - Nonprofit/community support info
   - Starting prices
 
-- [ ] Contact page (1 hr)
+- [x] Contact page (1 hr)
   - Form with fields: name, email, organization, category, message
   - Category selector
-  - Form handling (setup server-side submission)
+  - Form handling (setup server-side submission) — `src/app/api/contact/route.ts`, with tests
 
 **Supporting:**
 
-- [ ] Resume page (1 hr)
+- [x] Resume page (1 hr)
   - Online version
   - Download PDF link
 
-- [ ] Navigation (1 hr)
-  - Header/nav component
-  - Mobile menu
-  - Dark mode toggle
+- [x] Navigation (1 hr)
+  - Header/nav component (`src/components/site/header.tsx`, `nav-links.tsx`)
+  - Mobile menu (`mobile-nav.tsx`)
+  - Dark mode toggle (`theme-toggle.tsx`)
 
 ### Styling & Polish
 
-- [ ] Responsive design pass (2 hrs)
+- [ ] Responsive design pass (2 hrs) — Tailwind responsive utilities are used throughout, but breakpoints haven't been independently verified with a manual/device pass
   - Mobile-first review
   - Test all breakpoints
   - Fix spacing, typography
 
-- [ ] Dark mode implementation (1 hr)
+- [x] Dark mode implementation (1 hr)
   - Dark theme CSS variables
   - Toggle functionality
   - Persist preference (localStorage)
@@ -179,33 +189,32 @@ Path B: Launch website quickly with Chatter Snow case study, then build Personal
 
 **SEO & Metadata:**
 
-- [ ] SEO setup (2 hrs)
+- [x] SEO setup (2 hrs)
   - Meta tags for each page
-  - Open Graph images (social preview)
-  - sitemap.xml
-  - robots.txt
-  - Structured data (Person, WebSite schemas)
+  - Open Graph images (social preview) — `openGraph` metadata (title/description/url) present on work & project pages; no dedicated OG image is generated yet
+  - sitemap.xml — `src/app/sitemap.ts`
+  - robots.txt — `src/app/robots.ts`
+  - Structured data (Person, WebSite schemas) — `src/lib/seo.ts` (`buildPersonJsonLd`, `buildWebsiteJsonLd`), plus CreativeWork/SoftwareApplication per project
 
 **Accessibility:**
 
-- [ ] Accessibility audit (2 hrs)
+- [x] Accessibility audit (2 hrs) — addressed at the code level (WCAG AA contrast fix in `globals.css`, corrected heading hierarchy on listing pages, skip link, visible focus states); not run through a screen reader or axe/WAVE
   - Keyboard navigation (Tab, Enter, focus visible)
-  - Screen reader testing (semantic HTML)
-  - Color contrast check
-  - Heading hierarchy
+  - Screen reader testing (semantic HTML) — not run
+  - Color contrast check — done (see `docs/BRAND_GUIDE.md` muted-text fix)
+  - Heading hierarchy — fixed a skip on the listing pages
   - Alt text for images
   - Form labels
 
 **Analytics:**
 
-- [ ] Set up analytics (1 hr)
-  - Privacy-conscious option (Plausible, Fathom, or similar)
-  - Event tracking (project_view, contact_started, etc.)
+- [x] Set up analytics (1 hr) — shipped with **Vercel Analytics**, not Plausible/Fathom as originally suggested
+  - Event tracking (project_view, contact_started, etc.) — all 8 named events from `docs/WEBSITE_REQUIREMENTS.md` are wired in `src/lib/analytics.ts` (github_click/linkedin_click exist but aren't attached to a link yet — no real profile URLs in the site content)
   - No unnecessary cookies
 
 **Performance:**
 
-- [ ] Performance optimization (2 hrs)
+- [ ] Performance optimization (2 hrs) — not benchmarked; no Lighthouse run recorded
   - Image optimization (next/image)
   - Lazy loading where appropriate
   - Remove unnecessary dependencies
@@ -283,10 +292,10 @@ Path B: Launch website quickly with Chatter Snow case study, then build Personal
 
 **Testing:**
 
-- [ ] Full site testing (2 hrs)
+- [ ] Full site testing (2 hrs) — automated coverage exists for the contact API route (Vitest + Testing Library, `src/app/api/contact/__tests__/route.test.ts`); the rest below is manual and unverified
   - Cross-browser testing (Chrome, Firefox, Safari, Edge)
   - Mobile testing (iOS Safari, Android Chrome)
-  - Form submission testing
+  - Form submission testing — covered by automated tests
   - Link validation
   - Dark/light mode toggle
 
