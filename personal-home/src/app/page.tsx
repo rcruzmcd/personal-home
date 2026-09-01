@@ -14,11 +14,18 @@ export default function Home() {
         <AccentBar width="md" className="mb-6" />
         <h1 className="text-h1 font-bold text-purple">Rickie Cruz</h1>
         <p className="mt-4 max-w-2xl text-h4 font-semibold text-foreground">
-          Software engineer building digital products, systems, and experiences.
+          I help you figure out reasonable technology solutions.
         </p>
         <p className="mt-4 max-w-2xl text-body text-foreground">
-          I design and build web applications, explore new interfaces, and help small
-          organizations make sense of their technology.
+          Software engineer and technology strategist. I design and build web applications,
+          operations platforms, and tools that solve real problems. I help small organizations
+          and nonprofits navigate technology without the corporate overhead or unnecessary
+          complexity.
+        </p>
+        <p className="mt-4 max-w-2xl text-small text-muted">
+          Currently: rebuilding after a layoff, solving my own financial challenges with code,
+          and helping Chatter Snow scale their operations as Board Member + Director of Digital
+          Ops.
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <Button asChild variant="primary">

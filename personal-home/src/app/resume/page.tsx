@@ -394,10 +394,7 @@ export default function ResumePage() {
 
         <Section title="Contact">
           <p>
-            <a href="mailto:hello@rickiecruz.com" className="text-purple underline hover:italic">
-              hello@rickiecruz.com
-            </a>{" "}
-            · <Link href="/contact" className="text-purple underline hover:italic">
+            <Link href="/contact" className="text-purple underline hover:italic">
               Start a conversation
             </Link>
           </p>

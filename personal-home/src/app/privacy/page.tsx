@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 
 import { AccentBar } from "@/components/ui/accent-bar"
 import { Section } from "@/components/content/section"
@@ -69,13 +70,10 @@ export default function PrivacyPage() {
 
         <Section title="Contact">
           <p>
-            Questions about this policy can be sent to{" "}
-            <a
-              href="mailto:hello@rickiecruz.com"
-              className="text-purple underline hover:italic"
-            >
-              hello@rickiecruz.com
-            </a>
+            Questions about this policy can be sent via the{" "}
+            <Link href="/contact" className="text-purple underline hover:italic">
+              contact form
+            </Link>
             .
           </p>
         </Section>

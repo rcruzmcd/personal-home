@@ -22,9 +22,9 @@ export function Footer() {
               {link.label}
             </Link>
           ))}
-          <a href="mailto:hello@rickiecruz.com" className="text-purple hover:underline">
-            hello@rickiecruz.com
-          </a>
+          <Link href="/contact" className="text-purple hover:underline">
+            Contact
+          </Link>
         </nav>
       </div>
     </footer>
