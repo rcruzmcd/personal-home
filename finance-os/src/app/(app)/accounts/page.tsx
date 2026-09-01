@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Receipt, Upload, Pencil, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
 import { formatCurrency } from "@/lib/format";
@@ -36,7 +36,7 @@ export default async function AccountsPage() {
       {!accounts?.length ? (
         <p className="text-body text-muted">No accounts yet.</p>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {accounts.map((account) => {
             const upToDate = isEntryUpToDate(
               account.transactions_entered_through,
@@ -44,33 +44,32 @@ export default async function AccountsPage() {
               today,
             );
             return (
-            <Card key={account.id} className="flex items-center justify-between">
-              <div>
-                <Link href={`/accounts/${account.id}`} className="hover:underline">
-                  <p className="text-h4 font-semibold text-foreground">
+            <Card key={account.id} className="flex flex-col h-full">
+              <CardHeader>
+                <CardTitle>
+                  <Link href={`/accounts/${account.id}`} className="hover:underline">
                     {account.name}
-                    {!account.active && (
-                      <span className="text-small text-muted"> (inactive)</span>
-                    )}
-                  </p>
-                </Link>
-                <p className="text-small text-muted">
+                  </Link>
+                  {!account.active && (
+                    <span className="text-small font-normal text-muted"> (inactive)</span>
+                  )}
+                </CardTitle>
+                <CardDescription>
                   {account.institution ? `${account.institution} · ` : ""}
                   {account.type.replace(/_/g, " ")}
-                  {account.active && (
-                    <>
-                      {" · "}
-                      <span className={upToDate ? "text-green" : "text-purple"}>
-                        {upToDate ? "Up to date" : "Needs entry"}
-                      </span>
-                    </>
-                  )}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <p className="text-h4 font-semibold text-foreground">
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col gap-2">
+                <p className="text-h2 font-bold text-foreground">
                   {formatCurrency(account.balance)}
                 </p>
+                {account.active && (
+                  <span className={`text-small ${upToDate ? "text-green" : "text-purple"}`}>
+                    {upToDate ? "Up to date" : "Needs entry"}
+                  </span>
+                )}
+              </CardContent>
+              <CardFooter className="justify-end gap-1 border-t border-border pt-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
@@ -118,7 +117,7 @@ export default async function AccountsPage() {
                     </button>
                   }
                 />
-              </div>
+              </CardFooter>
             </Card>
             );
           })}

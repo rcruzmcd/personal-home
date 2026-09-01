@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -95,6 +95,30 @@ export function ListCardsSkeleton({
               )}
             </div>
           )}
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+export function AccountCardsSkeleton({ count }: { count: number }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: count }).map((_, i) => (
+        <Card key={i} className="flex flex-col h-full">
+          <CardHeader>
+            <Skeleton className="h-5 w-32 mb-2" />
+            <Skeleton className="h-3.5 w-24" />
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col gap-2">
+            <Skeleton className="h-8 w-28" />
+            <Skeleton className="h-3.5 w-20" />
+          </CardContent>
+          <CardFooter className="justify-end gap-1 border-t border-border pt-4">
+            {Array.from({ length: 4 }).map((_, j) => (
+              <Skeleton key={j} className="size-9 rounded-md" />
+            ))}
+          </CardFooter>
         </Card>
       ))}
     </div>
