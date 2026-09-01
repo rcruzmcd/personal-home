@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
 import { formatCurrency } from "@/lib/format";
 import { isEntryUpToDate } from "@/lib/calculations/statement-entry";
 import { deleteAccount } from "./actions";
@@ -106,16 +107,17 @@ export default async function AccountsPage() {
                   </TooltipTrigger>
                   <TooltipContent>Edit</TooltipContent>
                 </Tooltip>
-                <form action={deleteAccount.bind(null, account.id)}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button type="submit" aria-label="Delete account" className={actionIconClasses}>
-                        <Trash2 className="size-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Delete</TooltipContent>
-                  </Tooltip>
-                </form>
+                <DeleteConfirmDialog
+                  onConfirm={deleteAccount.bind(null, account.id)}
+                  tooltipLabel="Delete"
+                  title="Delete this account?"
+                  description={`This permanently deletes "${account.name}" and all of its transactions and reconciliation history. This cannot be undone.`}
+                  trigger={
+                    <button type="button" aria-label="Delete account" className={actionIconClasses}>
+                      <Trash2 className="size-4" />
+                    </button>
+                  }
+                />
               </div>
             </Card>
             );

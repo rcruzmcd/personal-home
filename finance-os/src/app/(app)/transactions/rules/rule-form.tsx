@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input, inputClasses } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoadingOverlay } from "@/components/loading-overlay";
+import { UnsavedChangesDialog } from "@/components/unsaved-changes-dialog";
+import { useDirtyFormTracking, useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import { MATCH_FIELDS, MATCH_OPERATORS, type MatchField, type MatchOperator } from "@/lib/categorization/rules";
 
 type CategoryOption = { id: string; name: string };
@@ -31,9 +34,12 @@ export function RuleForm({
   submitLabel: string;
 }) {
   const [error, formAction, isPending] = useActionState(action, null);
+  const { ref: formRef, isDirty } = useDirtyFormTracking();
+  const { isConfirmOpen, confirmLeave, cancelLeave } = useUnsavedChangesGuard(isDirty);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <>
+    <form ref={formRef} action={formAction} className="relative flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="match_field" required>
@@ -153,6 +159,9 @@ export function RuleForm({
       <Button type="submit" disabled={isPending}>
         {isPending ? "Saving…" : submitLabel}
       </Button>
+      <LoadingOverlay show={isPending} />
     </form>
+    <UnsavedChangesDialog open={isConfirmOpen} onConfirm={confirmLeave} onCancel={cancelLeave} />
+    </>
   );
 }

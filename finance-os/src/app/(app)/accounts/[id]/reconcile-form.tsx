@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input, inputClasses } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoadingOverlay } from "@/components/loading-overlay";
 import { formatCurrency } from "@/lib/format";
 import { RECONCILIATION_EXPLANATIONS } from "@/lib/validations/reconciliation";
 
@@ -25,7 +26,7 @@ export function ReconcileForm({
   const [error, formAction, isPending] = useActionState(action, null);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="relative flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <p className="text-body text-muted">Expected balance</p>
         <p className="text-body font-medium text-foreground">{formatCurrency(expectedBalance)}</p>
@@ -64,6 +65,7 @@ export function ReconcileForm({
       <Button type="submit" disabled={isPending}>
         {isPending ? "Reconciling…" : "Reconcile"}
       </Button>
+      <LoadingOverlay show={isPending} />
     </form>
   );
 }

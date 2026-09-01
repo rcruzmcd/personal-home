@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
 import { formatCurrency } from "@/lib/format";
 import { deleteIncomeSource } from "./actions";
 
@@ -56,11 +57,16 @@ export default async function IncomePage() {
                 >
                   Edit
                 </Link>
-                <form action={deleteIncomeSource.bind(null, source.id)}>
-                  <Button type="submit" variant="tertiary">
-                    Delete
-                  </Button>
-                </form>
+                <DeleteConfirmDialog
+                  onConfirm={deleteIncomeSource.bind(null, source.id)}
+                  title="Delete this income source?"
+                  description={`This permanently deletes "${source.name}". This cannot be undone.`}
+                  trigger={
+                    <Button type="button" variant="tertiary">
+                      Delete
+                    </Button>
+                  }
+                />
               </div>
             </Card>
           ))}

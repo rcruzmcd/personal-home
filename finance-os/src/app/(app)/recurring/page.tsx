@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
 import { formatCurrency } from "@/lib/format";
 import { calculateMonthlyRecurringTotal, type CalcRecurringExpense } from "@/lib/calculations";
 import { deleteRecurringExpense } from "./actions";
@@ -81,11 +82,16 @@ export default async function RecurringExpensesPage() {
                   >
                     Edit
                   </Link>
-                  <form action={deleteRecurringExpense.bind(null, expense.id)}>
-                    <Button type="submit" variant="tertiary">
-                      Delete
-                    </Button>
-                  </form>
+                  <DeleteConfirmDialog
+                    onConfirm={deleteRecurringExpense.bind(null, expense.id)}
+                    title="Delete this recurring expense?"
+                    description={`This permanently deletes "${expense.name}". This cannot be undone.`}
+                    trigger={
+                      <Button type="button" variant="tertiary">
+                        Delete
+                      </Button>
+                    }
+                  />
                 </div>
               </Card>
             );

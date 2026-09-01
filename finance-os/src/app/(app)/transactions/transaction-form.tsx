@@ -6,6 +6,9 @@ import { Input, inputClasses } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoadingOverlay } from "@/components/loading-overlay";
+import { UnsavedChangesDialog } from "@/components/unsaved-changes-dialog";
+import { useDirtyFormTracking, useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import { TRANSACTION_TYPES } from "@/lib/validations/transaction";
 import { formatCurrency } from "@/lib/format";
 import {
@@ -60,6 +63,9 @@ export function TransactionForm({
   );
   const [isCheckingRule, setIsCheckingRule] = useState(false);
   const [rulePreview, setRulePreview] = useState<RulePreview | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
+  const { ref: formRef, isDirty } = useDirtyFormTracking();
+  const { isConfirmOpen, confirmLeave, cancelLeave } = useUnsavedChangesGuard(isDirty);
   // Transfers are two linked ledger rows (see create_transfer) — editing
   // one leg in place isn't supported yet, so an edit form never offers it.
   const availableTypes = defaultValues
@@ -106,14 +112,22 @@ export function TransactionForm({
 
   async function applyToAllAndSave() {
     if (!rulePreview) return;
-    await learnCategorizationRule({
-      merchant: rulePreview.merchant,
-      category_id: rulePreview.categoryId,
-      subcategory: rulePreview.subcategory,
-      applyToTransactionIds: rulePreview.matches.map((m) => m.id),
-    });
-    startTransition(() => formAction(rulePreview.formData));
-    setRulePreview(null);
+    setIsApplying(true);
+    try {
+      await learnCategorizationRule({
+        merchant: rulePreview.merchant,
+        category_id: rulePreview.categoryId,
+        subcategory: rulePreview.subcategory,
+        applyToTransactionIds: rulePreview.matches.map((m) => m.id),
+      });
+      startTransition(() => formAction(rulePreview.formData));
+      setRulePreview(null);
+    } finally {
+      // Harmless if this branch already unmounted via setRulePreview(null)
+      // above; needed to re-enable the buttons if learnCategorizationRule
+      // threw before reaching that point.
+      setIsApplying(false);
+    }
   }
 
   function saveJustThisOne() {
@@ -124,7 +138,8 @@ export function TransactionForm({
 
   if (rulePreview) {
     return (
-      <div className="flex flex-col gap-4">
+      <>
+      <div className="relative flex flex-col gap-4">
         <p className="text-body text-foreground">
           {rulePreview.matches.length} other uncategorized transaction
           {rulePreview.matches.length === 1 ? "" : "s"} from{" "}
@@ -143,27 +158,41 @@ export function TransactionForm({
           ))}
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button type="button" onClick={applyToAllAndSave} disabled={isPending}>
+          <Button type="button" onClick={applyToAllAndSave} disabled={isPending || isApplying}>
             Apply to all {rulePreview.matches.length} & save
           </Button>
-          <Button type="button" variant="secondary" onClick={saveJustThisOne} disabled={isPending}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={saveJustThisOne}
+            disabled={isPending || isApplying}
+          >
             Just this transaction
           </Button>
           <Button
             type="button"
             variant="secondary"
             onClick={() => setRulePreview(null)}
-            disabled={isPending}
+            disabled={isPending || isApplying}
           >
             Cancel
           </Button>
         </div>
+        <LoadingOverlay show={isPending || isApplying} />
       </div>
+      <UnsavedChangesDialog open={isConfirmOpen} onConfirm={confirmLeave} onCancel={cancelLeave} />
+      </>
     );
   }
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <>
+    <form
+      ref={formRef}
+      action={formAction}
+      onSubmit={handleSubmit}
+      className="relative flex flex-col gap-4"
+    >
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="type" required>
@@ -322,6 +351,9 @@ export function TransactionForm({
       <Button type="submit" disabled={isPending || isCheckingRule}>
         {isCheckingRule ? "Checking…" : isPending ? "Saving…" : submitLabel}
       </Button>
+      <LoadingOverlay show={isPending || isCheckingRule} />
     </form>
+    <UnsavedChangesDialog open={isConfirmOpen} onConfirm={confirmLeave} onCancel={cancelLeave} />
+    </>
   );
 }

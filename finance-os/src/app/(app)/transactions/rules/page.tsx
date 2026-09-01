@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
+import { ToggleActiveButton } from "@/components/toggle-active-button";
 import { deleteRule, toggleRuleActive } from "./actions";
 
 export default async function CategorizationRulesPage() {
@@ -51,16 +53,20 @@ export default async function CategorizationRulesPage() {
                   >
                     Edit
                   </Link>
-                  <form action={toggleRuleActive.bind(null, rule.id, rule.active)}>
-                    <Button type="submit" variant="secondary">
-                      {rule.active ? "Deactivate" : "Activate"}
-                    </Button>
-                  </form>
-                  <form action={deleteRule.bind(null, rule.id)}>
-                    <Button type="submit" variant="tertiary">
-                      Delete
-                    </Button>
-                  </form>
+                  <ToggleActiveButton
+                    active={rule.active}
+                    onToggle={toggleRuleActive.bind(null, rule.id, rule.active)}
+                  />
+                  <DeleteConfirmDialog
+                    onConfirm={deleteRule.bind(null, rule.id)}
+                    title="Delete this rule?"
+                    description="This permanently deletes this categorization rule. This cannot be undone."
+                    trigger={
+                      <Button type="button" variant="tertiary">
+                        Delete
+                      </Button>
+                    }
+                  />
                 </div>
               </Card>
             );

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoadingOverlay } from "@/components/loading-overlay";
 
 export function EntryStatusForm({
   action,
@@ -15,7 +16,7 @@ export function EntryStatusForm({
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form action={formAction} className="flex items-end gap-3">
+    <form action={formAction} className="relative flex items-end gap-3">
       <div className="flex-1">
         <Label htmlFor="entered_through">Entered through</Label>
         <Input id="entered_through" name="entered_through" type="date" required defaultValue={today} />
@@ -30,6 +31,7 @@ export function EntryStatusForm({
       <Button type="submit" disabled={isPending}>
         {isPending ? "Saving…" : "Mark entered"}
       </Button>
+      <LoadingOverlay show={isPending} />
     </form>
   );
 }
