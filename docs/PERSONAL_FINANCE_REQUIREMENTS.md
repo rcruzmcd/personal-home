@@ -17,6 +17,8 @@
 
 **Deployment:** Ships as two separate instances of the same app (see `docs/TECH_STACK_AND_DOMAIN.md` → "Personal Finance: Two Instances") — a private instance holding your real financial data, and a public showcase instance seeded with fake data for the portfolio case study. Everything in this spec (data model, calculations, UI) applies to both; only the underlying data and access controls differ.
 
+> **Status:** Built in `finance-os/` — Supabase auth/schema/RLS, dashboard, accounts (incl. reconciliation), transactions (manual entry + CSV/XLSX import + dedup + rule-based categorization), income sources, cash flow/forecast engine, and all three MVP nice-to-haves (recurring expenses, alerts/inbox, reconciliation). Not yet built: debt payoff calculator (avalanche/snowball), a dedicated debt dashboard, transaction search/filter, and deployment. See §15 for the itemized checklist.
+
 ---
 
 ## MVP Scope (2-Week Build)
@@ -598,6 +600,8 @@ Total exp:     $3,480/month
 
 ## 10. Recurring Expenses
 
+**Status:** Implemented — `/recurring` in `finance-os/` (list, add/edit/delete, monthly-equivalent total across mixed frequencies). Linking still manual: no bulk "mark these transactions as recurring" action, but the Inbox (§11) surfaces detected candidates with a one-click "Track as recurring" link.
+
 Identify and track recurring obligations.
 
 ### Recurring Expense Detection
@@ -644,6 +648,8 @@ Loan Payment              $244
 
 ## 11. Alerts & Notifications
 
+**Status:** Implemented as `/inbox` in `finance-os/` — cash runway/credit utilization/forecast shortfall/income-ending-soon alerts, uncategorized transactions, possible duplicates, and possible recurring patterns, each computed by pure, tested functions in `src/lib/calculations/alerts.ts`. Not built: subscription price-change and unusual-transaction detection, and SMS/email delivery (out of scope per §17).
+
 The app should proactively flag things that need attention.
 
 ### Alert Types
@@ -686,6 +692,8 @@ FINANCIAL DATA INBOX
 ---
 
 ## 12. Data Quality / Reconciliation
+
+**Status:** Reconciliation UI implemented — an account detail page (`/accounts/[id]` in `finance-os/`) with reconciliation status/history, a reconcile form (bank balance + explanation reason), and recent transactions; reconciling logs a `reconciliations` row and updates the account balance to match the bank. Data-quality flags beyond reconciliation (missing transactions, merchant-name inconsistencies) live in the Inbox (§11) where they overlap with duplicate/recurring detection; standalone flags for those two aren't built.
 
 Important but easy to overlook.
 
@@ -831,31 +839,37 @@ income_sources
 
 ### Week 1
 
-- [ ] Next.js + TypeScript repo created
-- [ ] Supabase project set up
-- [ ] Database schema created
-- [ ] Authentication set up (simple)
-- [ ] Dashboard layout (HTML/CSS)
-- [ ] Net worth calculation engine
-- [ ] Cash runway calculation
-- [ ] Accounts: Create/read/update/delete
-- [ ] Transaction: Manual entry form
-- [ ] Transaction: CSV import (basic)
+- [x] Next.js + TypeScript repo created
+- [x] Supabase project set up — local dev stack; hosted project still outstanding
+- [x] Database schema created
+- [x] Authentication set up (simple)
+- [x] Dashboard layout (HTML/CSS)
+- [x] Net worth calculation engine
+- [x] Cash runway calculation
+- [x] Accounts: Create/read/update/delete
+- [x] Transaction: Manual entry form
+- [x] Transaction: CSV import (basic) — shipped with XLSX import too, plus dedup
 
 ### Week 2
 
-- [ ] Categories and rules engine
-- [ ] Categorization UI (assign/override)
+- [x] Categories and rules engine — rules are seeded via SQL; no rules-admin UI yet
+- [x] Categorization UI (assign/override) — per-transaction manual override in the transaction form
 - [ ] Debt payoff calculator (avalanche/snowball)
 - [ ] Debt dashboard
-- [ ] Cash flow calculation
-- [ ] Forecast: 30/60/90 days + 6/12 months
-- [ ] Income sources: Add/track
+- [x] Cash flow calculation
+- [x] Forecast: 30/60/90 days + 6/12 months
+- [x] Income sources: Add/track
 - [ ] Search/filter transactions
-- [ ] Styling and responsive design
+- [x] Styling and responsive design — brand design system ported from `personal-home`; not verified on real devices
 - [ ] Test across devices
 - [ ] Deploy to Vercel
 - [ ] Add to rickiecruz.com
+
+### Nice-to-haves (originally "skip for MVP")
+
+- [x] Recurring expenses (§10)
+- [x] Alerts / inbox (§11)
+- [x] Reconciliation UI (§12)
 
 ---
 
