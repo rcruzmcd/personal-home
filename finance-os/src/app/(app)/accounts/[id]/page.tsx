@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { Stat } from "@/components/ui/stat";
-import { formatCurrency, formatShortDate } from "@/lib/format";
+import { formatCurrency, formatDayOfMonth, formatShortDate } from "@/lib/format";
 import { parseDateOnly } from "@/lib/date";
 import { isEntryUpToDate } from "@/lib/calculations/statement-entry";
+import { nextOccurrence } from "@/lib/calculations/day-of-month";
 import { reconcileAccount, markTransactionsEntered } from "../actions";
 import { ReconcileForm } from "./reconcile-form";
 import { EntryStatusForm } from "./entry-status-form";
@@ -21,7 +22,7 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
       supabase
         .from("accounts")
         .select(
-          "id, name, institution, type, balance, active, opening_date, last_updated, notes, due_date, statement_date, transactions_entered_through",
+          "id, name, institution, type, balance, active, opening_date, last_updated, notes, due_day, statement_day, transactions_entered_through",
         )
         .eq("id", id)
         .single(),
@@ -42,10 +43,11 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
   if (!account) notFound();
 
   const lastReconciliation = reconciliations?.[0] ?? null;
+  const today = new Date();
   const upToDate = isEntryUpToDate(
     account.transactions_entered_through,
-    account.statement_date,
-    new Date(),
+    account.statement_day,
+    today,
   );
 
   return (
@@ -96,19 +98,30 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
                 {formatShortDate(new Date(account.last_updated))}
               </p>
             </div>
-            {account.statement_date && (
+            {/* A day of the month recurs, so it reads as the rule plus the
+                date it next resolves to — which is where the short-month
+                clamp becomes visible (the 31st lands on Feb 28). */}
+            {account.statement_day && (
               <div className="flex items-center justify-between">
-                <p className="text-body text-muted">Statement date</p>
+                <p className="text-body text-muted">Statement day</p>
                 <p className="text-body text-foreground">
-                  {formatShortDate(parseDateOnly(account.statement_date))}
+                  {formatDayOfMonth(account.statement_day)}
+                  <span className="text-muted">
+                    {" · next "}
+                    {formatShortDate(nextOccurrence(account.statement_day, today))}
+                  </span>
                 </p>
               </div>
             )}
-            {account.due_date && (
+            {account.due_day && (
               <div className="flex items-center justify-between">
-                <p className="text-body text-muted">Due date</p>
+                <p className="text-body text-muted">Due day</p>
                 <p className="text-body text-foreground">
-                  {formatShortDate(parseDateOnly(account.due_date))}
+                  {formatDayOfMonth(account.due_day)}
+                  <span className="text-muted">
+                    {" · next "}
+                    {formatShortDate(nextOccurrence(account.due_day, today))}
+                  </span>
                 </p>
               </div>
             )}

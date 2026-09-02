@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parseDateOnly } from "../date";
+import { parseDateOnly, startOfDay } from "../date";
 
 describe("parseDateOnly", () => {
   test("reads a date-only column as local midnight, not UTC midnight", () => {
@@ -17,5 +17,22 @@ describe("parseDateOnly", () => {
 
   test("leaves values that carry a time to the platform parser", () => {
     expect(parseDateOnly("2026-08-31T12:30:00Z")).toEqual(new Date("2026-08-31T12:30:00Z"));
+  });
+});
+
+describe("startOfDay", () => {
+  test("drops the time of day, keeping the local calendar date", () => {
+    expect(startOfDay(new Date(2026, 8, 20, 23, 45, 12))).toEqual(new Date(2026, 8, 20));
+  });
+
+  test("is already the answer for a value parsed from a date column", () => {
+    const parsed = parseDateOnly("2026-08-31");
+    expect(startOfDay(parsed)).toEqual(parsed);
+  });
+
+  test("lets 'now' compare equal to the same day from a date column", () => {
+    // The whole point: without this, a 14:00 'today' sorts after midnight
+    // today and an on-time statement reads as not yet reached.
+    expect(startOfDay(new Date(2026, 7, 31, 14, 0))).toEqual(parseDateOnly("2026-08-31"));
   });
 });

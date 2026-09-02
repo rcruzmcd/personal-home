@@ -12,7 +12,7 @@ export default async function EditAccountPage({
   const { data: account } = await supabase
     .from("accounts")
     .select(
-      "name, institution, type, subtype, balance, credit_limit, interest_rate, minimum_payment, due_date, statement_date, opening_date, notes"
+      "name, institution, type, subtype, balance, credit_limit, interest_rate, minimum_payment, due_day, statement_day, opening_date, notes"
     )
     .eq("id", id)
     .single();

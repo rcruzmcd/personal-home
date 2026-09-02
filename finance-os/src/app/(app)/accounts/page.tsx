@@ -20,7 +20,7 @@ export default async function AccountsPage() {
     supabase
       .from("accounts")
       .select(
-        "id, name, institution, type, balance, active, statement_date, transactions_entered_through",
+        "id, name, institution, type, balance, active, statement_day, transactions_entered_through",
       )
       .order("type")
       .order("name"),
@@ -68,7 +68,7 @@ export default async function AccountsPage() {
           {accounts.map((account) => {
             const upToDate = isEntryUpToDate(
               account.transactions_entered_through,
-              account.statement_date,
+              account.statement_day,
               today,
             );
             return (

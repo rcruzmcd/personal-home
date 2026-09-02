@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: "/transactions", label: "Transactions" },
   { href: "/income", label: "Income" },
   { href: "/recurring", label: "Recurring" },
+  { href: "/calendar", label: "Calendar" },
   { href: "/debt", label: "Debt" },
   { href: "/forecast", label: "Forecast" },
   { href: "/inbox", label: "Inbox" },
