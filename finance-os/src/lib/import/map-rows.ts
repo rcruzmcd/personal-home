@@ -47,6 +47,37 @@ function isValidCalendarDate(iso: string): boolean {
   );
 }
 
+type AmountResult = { amount: number } | { error: string };
+
+/**
+ * Resolves a row's signed amount from either a single signed column or a
+ * separate debit/credit pair. Debit is money out (always stored negative)
+ * and credit is money in (always positive), regardless of how the bank
+ * signed them — some export debits as positive magnitudes, some as
+ * negatives. A zero or blank cell reads as "not this column", which is how
+ * banks that fill both columns mark the unused side.
+ */
+function resolveAmount(
+  cells: string[],
+  mapping: ColumnMapping,
+  indexes: { amount: number; debit: number; credit: number },
+): AmountResult {
+  if (mapping.amountMode === "single") {
+    const amount = parseAmount(cells[indexes.amount] ?? "");
+    return amount === null ? { error: "Invalid or missing amount" } : { amount };
+  }
+
+  const debit = indexes.debit >= 0 ? parseAmount(cells[indexes.debit] ?? "") : null;
+  const credit = indexes.credit >= 0 ? parseAmount(cells[indexes.credit] ?? "") : null;
+
+  if (debit !== null && credit !== null) {
+    return { error: "Row has both a debit and a credit amount" };
+  }
+  if (debit !== null) return { amount: -Math.abs(debit) };
+  if (credit !== null) return { amount: Math.abs(credit) };
+  return { error: "Invalid or missing debit/credit amount" };
+}
+
 export function mapRowsToTransactions(
   parsed: ParsedFile,
   mapping: ColumnMapping,
@@ -54,8 +85,12 @@ export function mapRowsToTransactions(
 ): MapRowsResult {
   const dateIdx = parsed.headers.indexOf(mapping.date);
   const descIdx = parsed.headers.indexOf(mapping.description);
-  const amountIdx = parsed.headers.indexOf(mapping.amount);
   const merchantIdx = mapping.merchant ? parsed.headers.indexOf(mapping.merchant) : -1;
+  const amountIndexes = {
+    amount: parsed.headers.indexOf(mapping.amount),
+    debit: mapping.debit ? parsed.headers.indexOf(mapping.debit) : -1,
+    credit: mapping.credit ? parsed.headers.indexOf(mapping.credit) : -1,
+  };
 
   const transactions: MappedTransaction[] = [];
   const errors: MapRowsResult["errors"] = [];
@@ -65,7 +100,6 @@ export function mapRowsToTransactions(
     const row = index + 1;
     const description = (cells[descIdx] ?? "").trim();
     const date = parseImportDate(cells[dateIdx] ?? "");
-    const amount = parseAmount(cells[amountIdx] ?? "");
     const merchant = merchantIdx >= 0 ? (cells[merchantIdx] ?? "").trim() || null : null;
 
     if (!date) {
@@ -76,10 +110,13 @@ export function mapRowsToTransactions(
       errors.push({ row, message: "Missing description" });
       return;
     }
-    if (amount === null) {
-      errors.push({ row, message: "Invalid or missing amount" });
+
+    const resolved = resolveAmount(cells, mapping, amountIndexes);
+    if ("error" in resolved) {
+      errors.push({ row, message: resolved.error });
       return;
     }
+    const { amount } = resolved;
 
     const import_id = `${accountId}|${date}|${amount}|${description}`;
     const duplicateInFile = seenImportIds.has(import_id);

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { FormPage } from "@/components/form-page";
 import { TransactionForm } from "../transaction-form";
 import { createTransaction } from "../actions";
 
@@ -11,20 +11,16 @@ export default async function NewTransactionPage() {
   ]);
 
   return (
-    <main className="flex-1 flex justify-center px-10 py-16">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Add transaction</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TransactionForm
-            action={createTransaction}
-            accounts={accounts ?? []}
-            categories={categories ?? []}
-            submitLabel="Add transaction"
-          />
-        </CardContent>
-      </Card>
-    </main>
+    <FormPage
+      title="Add transaction"
+      breadcrumb={[{ label: "Transactions", href: "/transactions" }]}
+    >
+      <TransactionForm
+        action={createTransaction}
+        accounts={accounts ?? []}
+        categories={categories ?? []}
+        submitLabel="Add transaction"
+      />
+    </FormPage>
   );
 }

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { normalizeAmount, transactionSchema } from "@/lib/validations/transaction";
 import { matchCategorizationRule } from "@/lib/categorization/rules";
 import { matchRecurringExpense } from "@/lib/recurring/matching";
+import { findTransferPartnerIds, type TransferLeg } from "@/lib/transactions/transfer-legs";
 import type { CalcTransactionType } from "@/lib/calculations/types";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
@@ -119,6 +120,107 @@ export async function createTransaction(_prevState: string | null, formData: For
 
   revalidatePath("/transactions");
   redirect("/transactions");
+}
+
+const TRANSFER_LEG_COLUMNS = "id, account_id, date, description, amount, type";
+
+// Deleting a transfer leg has to take its partner on the other account with
+// it (see lib/transactions/transfer-legs.ts). The candidate rows are fetched
+// in one query — narrowed to transfers sharing a selected date — so bulk
+// deletes stay at a fixed query count rather than one per selected row.
+async function expandWithTransferPartners(
+  supabase: SupabaseClient,
+  ids: string[],
+): Promise<string[]> {
+  const { data: selected } = await supabase
+    .from("transactions")
+    .select(TRANSFER_LEG_COLUMNS)
+    .in("id", ids);
+
+  const transfers = (selected ?? []).filter((row) => row.type === "transfer") as TransferLeg[];
+  if (transfers.length === 0) return ids;
+
+  const { data: candidates } = await supabase
+    .from("transactions")
+    .select(TRANSFER_LEG_COLUMNS)
+    .eq("type", "transfer")
+    .in("date", [...new Set(transfers.map((row) => row.date))]);
+
+  const partnerIds = findTransferPartnerIds(transfers, (candidates ?? []) as TransferLeg[]);
+  return [...new Set([...ids, ...partnerIds])];
+}
+
+function revalidateTransactionViews(accountId?: string) {
+  revalidatePath("/transactions");
+  revalidatePath("/accounts");
+  if (accountId) {
+    revalidatePath(`/transactions/account/${accountId}`);
+    revalidatePath(`/accounts/${accountId}`);
+  }
+}
+
+// Deletes throw on failure rather than returning an error string: the
+// callers are confirmation dialogs, which surface a thrown rejection to the
+// user (see components/delete-confirm-dialog.tsx) instead of silently
+// reporting success.
+export async function deleteTransactions(ids: string[], accountId?: string) {
+  if (ids.length === 0) return;
+  const supabase = await createClient();
+  const withPartners = await expandWithTransferPartners(supabase, ids);
+  const { error } = await supabase.from("transactions").delete().in("id", withPartners);
+  if (error) throw new Error(error.message);
+  revalidateTransactionViews(accountId);
+}
+
+export async function deleteTransaction(id: string, accountId?: string) {
+  await deleteTransactions([id], accountId);
+}
+
+// "Delete all transactions" on the account/transaction list screens: clears
+// an account's ledger without touching the account itself, so a bad import
+// can be wiped and redone. Balances aren't derived from transactions
+// (accounts.balance is maintained by reconciliation), so nothing else needs
+// recomputing here.
+//
+// The rows are deleted by account_id in a single statement rather than by
+// collecting every id first — an account with thousands of transactions
+// would otherwise build a request URL out of thousands of uuids.
+export async function deleteAllAccountTransactions(accountId: string) {
+  const supabase = await createClient();
+
+  // Partner legs live on *other* accounts, so they have to be identified
+  // before this account's rows are gone.
+  const { data: transfers } = await supabase
+    .from("transactions")
+    .select(TRANSFER_LEG_COLUMNS)
+    .eq("account_id", accountId)
+    .eq("type", "transfer");
+
+  let partnerIds: string[] = [];
+  if (transfers?.length) {
+    const { data: candidates } = await supabase
+      .from("transactions")
+      .select(TRANSFER_LEG_COLUMNS)
+      .eq("type", "transfer")
+      .in("date", [...new Set(transfers.map((row) => row.date))]);
+    partnerIds = findTransferPartnerIds(
+      transfers as TransferLeg[],
+      (candidates ?? []) as TransferLeg[],
+    );
+  }
+
+  const { error } = await supabase.from("transactions").delete().eq("account_id", accountId);
+  if (error) throw new Error(error.message);
+
+  if (partnerIds.length > 0) {
+    const { error: partnerError } = await supabase
+      .from("transactions")
+      .delete()
+      .in("id", partnerIds);
+    if (partnerError) throw new Error(partnerError.message);
+  }
+
+  revalidateTransactionViews(accountId);
 }
 
 export type AffectedTransaction = { id: string; date: string; description: string; amount: number };

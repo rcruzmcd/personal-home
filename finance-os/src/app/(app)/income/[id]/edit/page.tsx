@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { FormPage } from "@/components/form-page";
 import { IncomeSourceForm } from "../../income-source-form";
 import { updateIncomeSource } from "../../actions";
 
@@ -20,19 +20,15 @@ export default async function EditIncomeSourcePage({
   if (!incomeSource) notFound();
 
   return (
-    <main className="flex-1 flex justify-center px-10 py-16">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Edit income source</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <IncomeSourceForm
-            action={updateIncomeSource.bind(null, id)}
-            defaultValues={incomeSource}
-            submitLabel="Save changes"
-          />
-        </CardContent>
-      </Card>
-    </main>
+    <FormPage
+      title="Edit income source"
+      breadcrumb={[{ label: "Income", href: "/income" }]}
+    >
+      <IncomeSourceForm
+        action={updateIncomeSource.bind(null, id)}
+        defaultValues={incomeSource}
+        submitLabel="Save changes"
+      />
+    </FormPage>
   );
 }

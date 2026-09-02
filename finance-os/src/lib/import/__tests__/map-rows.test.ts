@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { mapRowsToTransactions, parseAmount, parseImportDate } from "../map-rows";
+import type { ColumnMapping } from "../types";
 
 describe("parseAmount", () => {
   test("parses plain numbers", () => {
@@ -41,7 +42,15 @@ describe("parseImportDate", () => {
 });
 
 describe("mapRowsToTransactions", () => {
-  const mapping = { date: "Date", description: "Description", amount: "Amount", merchant: null };
+  const mapping: ColumnMapping = {
+    date: "Date",
+    description: "Description",
+    merchant: null,
+    amountMode: "single",
+    amount: "Amount",
+    debit: "",
+    credit: "",
+  };
   const headers = ["Date", "Description", "Amount"];
 
   test("maps valid rows and infers type from amount sign", () => {
@@ -80,5 +89,67 @@ describe("mapRowsToTransactions", () => {
     );
     expect(result.transactions[0].duplicateInFile).toBe(false);
     expect(result.transactions[1].duplicateInFile).toBe(true);
+  });
+});
+
+describe("mapRowsToTransactions with separate debit/credit columns", () => {
+  const headers = ["Date", "Description", "Debit", "Credit"];
+  const mapping: ColumnMapping = {
+    date: "Date",
+    description: "Description",
+    merchant: null,
+    amountMode: "credit_debit",
+    amount: "",
+    debit: "Debit",
+    credit: "Credit",
+  };
+
+  function map(rows: string[][]) {
+    return mapRowsToTransactions({ headers, rows }, mapping, "acct-1");
+  }
+
+  test("signs debits negative and credits positive", () => {
+    const result = map([
+      ["2026-08-01", "Whole Foods", "45.20", ""],
+      ["2026-08-02", "Payroll", "", "1500.00"],
+    ]);
+    expect(result.errors).toEqual([]);
+    expect(result.transactions[0]).toMatchObject({ amount: -45.2, type: "expense" });
+    expect(result.transactions[1]).toMatchObject({ amount: 1500, type: "income" });
+  });
+
+  test("normalizes a bank that already signs its debit column negative", () => {
+    expect(map([["2026-08-01", "Whole Foods", "-45.20", ""]]).transactions[0].amount).toBe(-45.2);
+  });
+
+  test("treats a zero-filled unused column as empty", () => {
+    const result = map([["2026-08-01", "Whole Foods", "45.20", "0.00"]]);
+    expect(result.errors).toEqual([]);
+    expect(result.transactions[0].amount).toBe(-45.2);
+  });
+
+  test("skips rows with neither a debit nor a credit", () => {
+    const result = map([["2026-08-01", "Whole Foods", "", ""]]);
+    expect(result.transactions).toEqual([]);
+    expect(result.errors).toEqual([
+      { row: 1, message: "Invalid or missing debit/credit amount" },
+    ]);
+  });
+
+  test("skips ambiguous rows that fill both columns", () => {
+    const result = map([["2026-08-01", "Whole Foods", "45.20", "10.00"]]);
+    expect(result.transactions).toEqual([]);
+    expect(result.errors).toEqual([
+      { row: 1, message: "Row has both a debit and a credit amount" },
+    ]);
+  });
+
+  test("works when the bank only exports one of the two columns", () => {
+    const result = mapRowsToTransactions(
+      { headers: ["Date", "Description", "Debit"], rows: [["2026-08-01", "Rent", "1200"]] },
+      { ...mapping, credit: "" },
+      "acct-1",
+    );
+    expect(result.transactions[0].amount).toBe(-1200);
   });
 });

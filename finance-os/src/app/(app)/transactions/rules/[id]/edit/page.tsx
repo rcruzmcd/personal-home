@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { FormPage } from "@/components/form-page";
 import { RuleForm } from "../../rule-form";
 import { updateRule } from "../../actions";
 
@@ -21,20 +21,19 @@ export default async function EditCategorizationRulePage({
   if (!rule) notFound();
 
   return (
-    <main className="flex-1 flex justify-center px-10 py-16">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Edit categorization rule</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <RuleForm
-            action={updateRule.bind(null, id)}
-            categories={categories ?? []}
-            defaultValues={rule}
-            submitLabel="Save changes"
-          />
-        </CardContent>
-      </Card>
-    </main>
+    <FormPage
+      title="Edit categorization rule"
+      breadcrumb={[
+        { label: "Transactions", href: "/transactions" },
+        { label: "Categorization Rules", href: "/transactions/rules" },
+      ]}
+    >
+      <RuleForm
+        action={updateRule.bind(null, id)}
+        categories={categories ?? []}
+        defaultValues={rule}
+        submitLabel="Save changes"
+      />
+    </FormPage>
   );
 }

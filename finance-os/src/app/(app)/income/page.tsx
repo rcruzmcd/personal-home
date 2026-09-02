@@ -3,7 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
+import { PageHeader } from "@/components/page-header";
+import { Stat } from "@/components/ui/stat";
 import { formatCurrency } from "@/lib/format";
+import { projectIncomeForPeriod, type CalcIncomeSource } from "@/lib/calculations";
 import { deleteIncomeSource } from "./actions";
 
 const FREQUENCY_LABEL: Record<string, string> = {
@@ -20,14 +23,27 @@ export default async function IncomePage() {
     .order("start_date", { ascending: false, nullsFirst: false })
     .order("expected_date", { ascending: false, nullsFirst: false });
 
+  // Headline figure for the header: what these sources are expected to pay
+  // out over the current calendar month, mixed frequencies normalized.
+  const now = new Date();
+  const monthlyIncome = projectIncomeForPeriod((incomeSources ?? []) as CalcIncomeSource[], {
+    start: new Date(now.getFullYear(), now.getMonth(), 1),
+    end: new Date(now.getFullYear(), now.getMonth() + 1, 1),
+  });
+
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-      <div className="flex items-center justify-between">
-        <h1 className="text-h1 font-bold text-purple">Income</h1>
-        <Link href="/income/new">
-          <Button>Add income source</Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Income"
+        stats={
+          <Stat label="Expected this month" value={formatCurrency(monthlyIncome)} tone="positive" />
+        }
+        actions={
+          <Link href="/income/new">
+            <Button>Add income source</Button>
+          </Link>
+        }
+      />
 
       {!incomeSources?.length ? (
         <p className="text-body text-muted">No income sources yet.</p>

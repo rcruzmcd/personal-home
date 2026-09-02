@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
+import { PageHeader } from "@/components/page-header";
+import { Stat } from "@/components/ui/stat";
 import { formatCurrency } from "@/lib/format";
 import { calculateMonthlyRecurringTotal, type CalcRecurringExpense } from "@/lib/calculations";
 import { deleteRecurringExpense } from "./actions";
@@ -31,23 +33,23 @@ export default async function RecurringExpensesPage() {
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-      <div className="flex items-center justify-between">
-        <h1 className="text-h1 font-bold text-purple">Recurring Expenses</h1>
-        <Link href="/recurring/new">
-          <Button>Add recurring expense</Button>
-        </Link>
-      </div>
-
-      <Card variant="featured">
-        <CardHeader>
-          <CardTitle>Monthly recurring obligations</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-h2 font-bold text-foreground">
-            {formatCurrency(calculateMonthlyRecurringTotal(monthlyTotal))}
-          </p>
-        </CardContent>
-      </Card>
+      {/* The monthly total was a whole card containing one number; as a
+          header stat it says the same thing without a card's worth of
+          vertical space above the list it describes. */}
+      <PageHeader
+        title="Recurring Expenses"
+        stats={
+          <Stat
+            label="Monthly obligations"
+            value={formatCurrency(calculateMonthlyRecurringTotal(monthlyTotal))}
+          />
+        }
+        actions={
+          <Link href="/recurring/new">
+            <Button>Add recurring expense</Button>
+          </Link>
+        }
+      />
 
       {!rows.length ? (
         <p className="text-body text-muted">No recurring expenses yet.</p>

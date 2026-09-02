@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/page-header";
+import { Stat } from "@/components/ui/stat";
 import { formatCurrency, formatShortDate } from "@/lib/format";
+import { parseDateOnly } from "@/lib/date";
 import { isEntryUpToDate } from "@/lib/calculations/statement-entry";
 import { reconcileAccount, markTransactionsEntered } from "../actions";
 import { ReconcileForm } from "./reconcile-form";
@@ -47,18 +50,33 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-h1 font-bold text-purple">{account.name}</h1>
-          <p className="text-small text-muted">
-            {[account.institution, account.type.replace(/_/g, " ")].filter(Boolean).join(" · ")}
-            {!account.active && " · inactive"}
-          </p>
-        </div>
-        <Link href={`/accounts/${account.id}/edit`}>
-          <Button variant="secondary">Edit</Button>
-        </Link>
-      </div>
+      <PageHeader
+        breadcrumb={[{ label: "Accounts", href: "/accounts" }]}
+        title={account.name}
+        description={`${[account.institution, account.type.replace(/_/g, " ")]
+          .filter(Boolean)
+          .join(" · ")}${!account.active ? " · inactive" : ""}`}
+        stats={
+          <>
+            <Stat label="Balance" value={formatCurrency(account.balance)} />
+            <Stat
+              label="Entry status"
+              value={upToDate ? "Up to date" : "Needs entry"}
+              tone={upToDate ? "positive" : "accent"}
+            />
+          </>
+        }
+        actions={
+          <>
+            <Link href={`/transactions/account/${account.id}`}>
+              <Button variant="secondary">Transactions</Button>
+            </Link>
+            <Link href={`/accounts/${account.id}/edit`}>
+              <Button>Edit</Button>
+            </Link>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -66,12 +84,6 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
             <CardTitle>Account info</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <p className="text-body text-muted">Balance</p>
-              <p className="text-body font-medium text-foreground">
-                {formatCurrency(account.balance)}
-              </p>
-            </div>
             <div className="flex items-center justify-between">
               <p className="text-body text-muted">Opened</p>
               <p className="text-body text-foreground">
@@ -88,7 +100,7 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
               <div className="flex items-center justify-between">
                 <p className="text-body text-muted">Statement date</p>
                 <p className="text-body text-foreground">
-                  {formatShortDate(new Date(account.statement_date))}
+                  {formatShortDate(parseDateOnly(account.statement_date))}
                 </p>
               </div>
             )}
@@ -96,7 +108,7 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
               <div className="flex items-center justify-between">
                 <p className="text-body text-muted">Due date</p>
                 <p className="text-body text-foreground">
-                  {formatShortDate(new Date(account.due_date))}
+                  {formatShortDate(parseDateOnly(account.due_date))}
                 </p>
               </div>
             )}
@@ -156,14 +168,8 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
             <p className="text-body text-muted">Entered through</p>
             <p className="text-body text-foreground">
               {account.transactions_entered_through
-                ? formatShortDate(new Date(account.transactions_entered_through))
+                ? formatShortDate(parseDateOnly(account.transactions_entered_through))
                 : "Never"}
-            </p>
-          </div>
-          <div className="flex items-center justify-between">
-            <p className="text-body font-semibold text-foreground">Status</p>
-            <p className={`text-body font-semibold ${upToDate ? "text-green" : "text-purple"}`}>
-              {upToDate ? "Up to date" : "Needs entry"}
             </p>
           </div>
           <EntryStatusForm action={markTransactionsEntered.bind(null, account.id)} />

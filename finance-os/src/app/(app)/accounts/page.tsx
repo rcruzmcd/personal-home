@@ -5,33 +5,61 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
+import { DeleteAllTransactionsDialog } from "@/components/delete-all-transactions-dialog";
+import { iconActionClasses as actionIconClasses } from "@/components/ui/icon-action";
+import { PageHeader } from "@/components/page-header";
+import { Stat } from "@/components/ui/stat";
 import { formatCurrency } from "@/lib/format";
+import { calculateNetWorth, type CalcAccount } from "@/lib/calculations";
 import { isEntryUpToDate } from "@/lib/calculations/statement-entry";
 import { deleteAccount } from "./actions";
 
-const actionIconClasses =
-  "inline-flex items-center justify-center size-9 rounded-md text-muted hover:text-purple hover:bg-border transition-colors duration-200";
-
 export default async function AccountsPage() {
   const supabase = await createClient();
-  const { data: accounts } = await supabase
-    .from("accounts")
-    .select(
-      "id, name, institution, type, balance, active, statement_date, transactions_entered_through",
-    )
-    .order("type")
-    .order("name");
+  const [{ data: accounts }, { data: counts }] = await Promise.all([
+    supabase
+      .from("accounts")
+      .select(
+        "id, name, institution, type, balance, active, statement_date, transactions_entered_through",
+      )
+      .order("type")
+      .order("name"),
+    // One aggregate query covering every account; omitted if the RPC is
+    // missing (migration not applied yet).
+    supabase.rpc("transaction_counts_by_account"),
+  ]);
+
+  const countByAccount = new Map<string, number>(
+    ((counts ?? []) as { account_id: string; transaction_count: number }[]).map((row) => [
+      row.account_id,
+      row.transaction_count,
+    ]),
+  );
 
   const today = new Date();
+  // The header answers "how are these accounts doing?" with the same figure
+  // the dashboard leads on, rather than leaving the band empty.
+  const activeAccounts = (accounts ?? []).filter((account) => account.active);
+  const { netWorth } = calculateNetWorth((accounts ?? []) as CalcAccount[]);
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-      <div className="flex items-center justify-between">
-        <h1 className="text-h1 font-bold text-purple">Accounts</h1>
-        <Link href="/accounts/new">
-          <Button>Add account</Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Accounts"
+        description={`${activeAccounts.length} active account${activeAccounts.length === 1 ? "" : "s"}`}
+        stats={
+          <Stat
+            label="Net worth"
+            value={formatCurrency(netWorth)}
+            tone={netWorth >= 0 ? "positive" : "neutral"}
+          />
+        }
+        actions={
+          <Link href="/accounts/new">
+            <Button>Add account</Button>
+          </Link>
+        }
+      />
 
       {!accounts?.length ? (
         <p className="text-body text-muted">No accounts yet.</p>
@@ -106,6 +134,11 @@ export default async function AccountsPage() {
                   </TooltipTrigger>
                   <TooltipContent>Edit</TooltipContent>
                 </Tooltip>
+                <DeleteAllTransactionsDialog
+                  accountId={account.id}
+                  accountName={account.name}
+                  count={countByAccount.get(account.id)}
+                />
                 <DeleteConfirmDialog
                   onConfirm={deleteAccount.bind(null, account.id)}
                   tooltipLabel="Delete"

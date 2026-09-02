@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, inputClasses } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { pillVariant } from "@/components/ui/pill";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoadingOverlay } from "@/components/loading-overlay";
 import { UnsavedChangesDialog } from "@/components/unsaved-changes-dialog";
@@ -48,16 +49,36 @@ function groupByHeaders(uploads: ParsedUpload[]): FileGroup[] {
         headers: upload.parsed.headers,
         fileNames: [upload.fileName],
         sample: upload.parsed,
-        mapping: {
-          date: guessColumn(upload.parsed.headers, ["date"]) ?? "",
-          description: guessColumn(upload.parsed.headers, ["description", "memo", "name"]) ?? "",
-          amount: guessColumn(upload.parsed.headers, ["amount"]) ?? "",
-          merchant: guessColumn(upload.parsed.headers, ["merchant", "payee"]),
-        },
+        mapping: guessMapping(upload.parsed.headers),
       });
     }
   }
   return groups;
+}
+
+// A single signed "Amount" column is the common case, so it wins when
+// present; a file that instead splits money out/in across debit and credit
+// columns starts in credit/debit mode. Either way the user can switch.
+function guessMapping(headers: string[]): ColumnMapping {
+  const amount = guessColumn(headers, ["amount"]);
+  const debit = guessColumn(headers, ["debit", "withdrawal", "money out"]);
+  const credit = guessColumn(headers, ["credit", "deposit", "money in"]);
+
+  return {
+    date: guessColumn(headers, ["date"]) ?? "",
+    description: guessColumn(headers, ["description", "memo", "name"]) ?? "",
+    merchant: guessColumn(headers, ["merchant", "payee"]),
+    amountMode: !amount && (debit || credit) ? "credit_debit" : "single",
+    amount: amount ?? "",
+    debit: debit ?? "",
+    credit: credit ?? "",
+  };
+}
+
+function isAmountMapped(mapping: ColumnMapping): boolean {
+  return mapping.amountMode === "single"
+    ? Boolean(mapping.amount)
+    : Boolean(mapping.debit || mapping.credit);
 }
 
 export function ImportWizard({
@@ -120,8 +141,12 @@ export function ImportWizard({
 
   function handleNextGroup() {
     const group = fileGroups[mapGroupIndex];
-    if (!group.mapping.date || !group.mapping.description || !group.mapping.amount) {
-      setError("Map the Date, Description, and Amount columns to continue.");
+    if (!group.mapping.date || !group.mapping.description || !isAmountMapped(group.mapping)) {
+      setError(
+        group.mapping.amountMode === "single"
+          ? "Map the Date, Description, and Amount columns to continue."
+          : "Map the Date and Description columns, plus a Debit and/or Credit column, to continue.",
+      );
       return;
     }
     setError(null);
@@ -278,18 +303,70 @@ export function ImportWizard({
               onChange={(v) => updateGroupMapping({ ...currentGroup.mapping, description: v })}
             />
             <ColumnSelect
-              label="Amount"
-              required
-              headers={currentGroup.headers}
-              value={currentGroup.mapping.amount}
-              onChange={(v) => updateGroupMapping({ ...currentGroup.mapping, amount: v })}
-            />
-            <ColumnSelect
               label="Merchant (optional)"
               headers={currentGroup.headers}
               value={currentGroup.mapping.merchant ?? ""}
               onChange={(v) => updateGroupMapping({ ...currentGroup.mapping, merchant: v || null })}
             />
+          </div>
+
+          <div className="flex flex-col gap-3 border-t border-border pt-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <Label className="mb-0 mr-1" required>
+                Amount format
+              </Label>
+              <button
+                type="button"
+                className={pillVariant(currentGroup.mapping.amountMode === "single")}
+                onClick={() =>
+                  updateGroupMapping({ ...currentGroup.mapping, amountMode: "single" })
+                }
+              >
+                One signed column
+              </button>
+              <button
+                type="button"
+                className={pillVariant(currentGroup.mapping.amountMode === "credit_debit")}
+                onClick={() =>
+                  updateGroupMapping({ ...currentGroup.mapping, amountMode: "credit_debit" })
+                }
+              >
+                Separate debit &amp; credit
+              </button>
+            </div>
+
+            {currentGroup.mapping.amountMode === "single" ? (
+              <div className="grid grid-cols-2 gap-4">
+                <ColumnSelect
+                  label="Amount"
+                  required
+                  headers={currentGroup.headers}
+                  value={currentGroup.mapping.amount}
+                  onChange={(v) => updateGroupMapping({ ...currentGroup.mapping, amount: v })}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <ColumnSelect
+                    label="Debit (money out)"
+                    headers={currentGroup.headers}
+                    value={currentGroup.mapping.debit}
+                    onChange={(v) => updateGroupMapping({ ...currentGroup.mapping, debit: v })}
+                  />
+                  <ColumnSelect
+                    label="Credit (money in)"
+                    headers={currentGroup.headers}
+                    value={currentGroup.mapping.credit}
+                    onChange={(v) => updateGroupMapping({ ...currentGroup.mapping, credit: v })}
+                  />
+                </div>
+                <p className="text-small text-muted">
+                  Debits import as expenses and credits as income, whichever way the bank signs
+                  them. Rows only need one of the two filled in.
+                </p>
+              </>
+            )}
           </div>
 
           <SamplePreview parsed={currentGroup.sample} />

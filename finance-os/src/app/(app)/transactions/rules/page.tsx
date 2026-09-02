@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/page-header";
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
 import { ToggleActiveButton } from "@/components/toggle-active-button";
 import { deleteRule, toggleRuleActive } from "./actions";
@@ -17,17 +18,16 @@ export default async function CategorizationRulesPage() {
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-h1 font-bold text-purple">Categorization Rules</h1>
-          <Link href="/transactions" className="text-body font-medium text-purple underline">
-            Back to Transactions
+      <PageHeader
+        breadcrumb={[{ label: "Transactions", href: "/transactions" }]}
+        title="Categorization Rules"
+        description="Rules that auto-categorize transactions on import, highest priority first."
+        actions={
+          <Link href="/transactions/rules/new">
+            <Button>Add rule</Button>
           </Link>
-        </div>
-        <Link href="/transactions/rules/new">
-          <Button>Add rule</Button>
-        </Link>
-      </div>
+        }
+      />
 
       {!rules?.length ? (
         <p className="text-body text-muted">No categorization rules yet.</p>
