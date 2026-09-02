@@ -65,6 +65,10 @@ export const ProjectFrontmatterSchema = z.object({
   startDate: isoDate,
   endDate: isoDate.optional(),
   publishedDate: isoDate,
+  // Optional: only set once a published case study has been revised. Absent
+  // means "never revised", so the page shows the published date alone rather
+  // than an "Updated" line that just repeats it.
+  updatedDate: isoDate.optional(),
 
   role: z.string().optional(),
   organization: z.string().optional(),

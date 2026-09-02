@@ -1,7 +1,8 @@
 import { MDXRemote } from "next-mdx-remote/rsc"
 
-import { AccentBar } from "@/components/ui/accent-bar"
 import { Badge } from "@/components/ui/badge"
+import { Stat } from "@/components/ui/stat"
+import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
 import { DecisionBox } from "@/components/case-study/decision-box"
 import { ProjectLinks } from "@/components/case-study/project-links"
@@ -9,6 +10,7 @@ import { mdxComponents } from "@/components/mdx/mdx-components"
 import { JsonLd } from "@/components/seo/json-ld"
 import { TrackProjectView } from "@/components/analytics/track-project-view"
 import type { Project } from "@/lib/content/types"
+import { formatDate, lastModified } from "@/lib/date"
 import { statusBadgeVariant, statusLabel } from "@/lib/status"
 import { buildProjectJsonLd } from "@/lib/seo"
 
@@ -26,31 +28,47 @@ export function ProjectDetail({
     <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-10">
       <JsonLd data={buildProjectJsonLd(project)} />
       <TrackProjectView slug={project.slug} category={project.category} />
-      <AccentBar width="md" className="mb-6" />
-
-      <div className="flex flex-wrap items-center gap-3">
-        <Badge variant={statusBadgeVariant(project.status)}>
-          {statusLabel(project.status)}
-        </Badge>
-        {project.technologies.map((tech) => (
-          <Badge key={tech} variant="tech">
-            {tech}
-          </Badge>
-        ))}
-      </div>
-
-      <h1 className="mt-4 text-h1 font-bold text-purple">{project.title}</h1>
-
-      {project.role ? (
-        <p className="mt-2 text-small text-muted">
-          {project.role}
-          {project.organization ? ` · ${project.organization}` : ""}
-        </p>
-      ) : null}
-
-      <p className="mt-6 max-w-2xl text-h4 font-semibold text-foreground">
-        {project.description}
-      </p>
+      {/* The trail sits above the title, not as a "Back to Work" link below it
+          — it's this page's location cue and its way out (docs/UX_PATTERNS.md). */}
+      <PageHeader
+        title={project.title}
+        breadcrumb={[
+          project.category === "work"
+            ? { label: "Work", href: "/work" }
+            : { label: "Projects", href: "/projects" },
+        ]}
+        eyebrow={
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge variant={statusBadgeVariant(project.status)}>
+              {statusLabel(project.status)}
+            </Badge>
+            {project.technologies.map((tech) => (
+              <Badge key={tech} variant="tech">
+                {tech}
+              </Badge>
+            ))}
+          </div>
+        }
+        description={
+          <>
+            {project.role ? (
+              <p className="text-small text-muted">
+                {project.role}
+                {project.organization ? ` · ${project.organization}` : ""}
+              </p>
+            ) : null}
+            {/* Case studies here are living documents — an active project's
+                page gets revised as the work does, so say when it last was. */}
+            <p className="text-small text-muted">
+              {project.updatedDate ? "Updated " : "Published "}
+              <time dateTime={lastModified(project)}>
+                {formatDate(lastModified(project))}
+              </time>
+            </p>
+            <p className="mt-4 text-h4 font-semibold">{project.description}</p>
+          </>
+        }
+      />
 
       <ProjectLinks slug={project.slug} links={project.links} />
 
@@ -124,16 +142,20 @@ export function ProjectDetail({
 
           {cs.metrics && cs.metrics.length > 0 ? (
             <Section title="Metrics">
-              <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {/* These stay in the body rather than moving into the page
+                  header: a figure belongs in one place, and here it's evidence
+                  in the narrative, not the page's status. */}
+              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
                 {cs.metrics.map((metric) => (
-                  <div key={metric.metric}>
-                    <dt className="text-small text-muted">{metric.metric}</dt>
-                    <dd className="text-h4 font-semibold text-foreground">
-                      {metric.value}
-                    </dd>
-                  </div>
+                  <Stat
+                    key={metric.metric}
+                    label={metric.metric}
+                    value={metric.value}
+                    tone="accent"
+                    size="sm"
+                  />
                 ))}
-              </dl>
+              </div>
             </Section>
           ) : null}
 
