@@ -10,7 +10,7 @@ status: active
 
 startDate: "2025-01-15"
 publishedDate: "2026-08-31"
-updatedDate: "2026-09-01"
+updatedDate: "2026-09-02"
 
 role: "Board Member + Director of Digital Operations"
 organization: "Chatter Snow"
@@ -28,9 +28,9 @@ links:
   - title: "Live Site"
     url: "https://chattersnow.org"
     type: live
-  - title: "Ops Portal (Demo Account)"
+  - title: "Ops Portal (Login Required)"
     url: "https://portal.chattersnow.org"
-    type: demo
+    type: live
   - title: "GitHub (Private)"
     url: "#"
     type: github
@@ -92,19 +92,17 @@ casestudy:
     understand the system quickly. The public site tells the community who Chatter is and what
     gear is available. The ops portal is where the organization actually runs: inventory
     management, volunteer coordination and shift signup, event creation, and financial tracking
-    for donations and expenses. The portal ships with a built-in demo account seeded with
-    representative data, so a prospective volunteer, board member, or funder can walk through
-    the whole system without an invite or a production login.
+    for donations and expenses. Portal access is invite-only and role-based — it holds real
+    member and financial data, so there is no public entry point into it.
   implementation: >
     Phase zero was infrastructure that didn't exist: registering chattersnow.org, moving off the
     shared Gmail account to organizational email, and setting up DNS, hosting, and accounts. The
     initial build covered inventory management (the core problem), the community-facing gear
     view, and basic volunteer coordination. The platform then evolved into the ops portal —
-    event management, donation and financial tracking, and member communication — plus the demo
-    account that makes it walkable from the outside. Rough timeline: about two weeks of
-    discovery and planning, three to four weeks for the MVP build, two weeks of testing and
-    iteration, and one week to launch — built with volunteer time alongside the technical lead
-    role.
+    event management, donation and financial tracking, and member communication. Rough
+    timeline: about two weeks of discovery and planning, three to four weeks for the MVP build,
+    two weeks of testing and iteration, and one week to launch — built with volunteer time
+    alongside the technical lead role.
   challenges:
     - Starting from zero — no domain, no org email, no records to migrate or learn from
     - Requirement creep — once people saw the system working, everyone wanted new features
@@ -129,12 +127,13 @@ casestudy:
       tradeoffs: >
         Simple, focused experience for members and an easier boundary to secure and scale, at
         the cost of some code duplication.
-    - title: "Ship a demo account with the portal"
-      description: "Built a permanent demo login into the ops portal, seeded with representative data."
+    - title: "Keep the portal invite-only for now"
+      description: "Left the ops portal fully gated rather than shipping a public demo login alongside it."
       tradeoffs: >
-        Anyone — a prospective volunteer, a board candidate, a funder — can see how the
-        organization runs without an invite or exposure to real member data, at the cost of
-        maintaining a second seeded dataset alongside production.
+        No risk of exposing real member or financial data, at the cost of not being able to
+        show the system to a prospective volunteer, board candidate, or funder without
+        provisioning them an account — a public demo needs a separate seeded dataset, which is
+        deferred work rather than solved work.
     - title: "Start with inventory, design for expansion"
       description: "Scoped the initial build to inventory management only, but architected it to support more."
       tradeoffs: >
@@ -149,8 +148,7 @@ casestudy:
   result: >
     A group that ran on a shared Gmail account and an Instagram profile now has a domain,
     organizational email, a public site, and an operations portal at portal.chattersnow.org
-    covering inventory, volunteers, events, donations, and financials — with a built-in demo
-    account so anyone can see how it works. The community can see available gear without
+    covering inventory, volunteers, events, donations, and financials. The community can see available gear without
     sending a DM, and for the first time the organization is generating the operational record
     it needs to show its impact as it organizes toward nonprofit status. Specific figures are
     still TBD, pending more usage data.
@@ -159,7 +157,7 @@ casestudy:
     - "Start narrow, design wide — focusing on inventory first made launch possible, but the architecture allowed for expansion"
     - "Buy the commodity — a paid mailbox and managed hosting cost less than the volunteer hours self-administering them would have"
     - "Design for your actual users — volunteers have limited patience for complexity, so every feature needs to be justified"
-    - "A demo account is documentation — showing the portal beats describing it, to volunteers, board candidates, and funders alike"
+    - "Access boundaries are a product decision — a system holding real member and financial data can't be casually opened up, and showing it to outsiders is its own piece of work"
     - "Get hands dirty — being on the board meant understanding real problems firsthand, an edge an outside consultant wouldn't have"
 
 seoTitle: "Chatter Snow — Digital Operations Platform | Rickie Cruz"
@@ -175,9 +173,11 @@ tags:
 - **[chattersnow.org](https://chattersnow.org)** — the public site: who Chatter is, and what
   gear is available to the community.
 - **[portal.chattersnow.org](https://portal.chattersnow.org)** — the operations portal, where
-  inventory, volunteers, events, and finances are actually managed. It ships with a built-in
-  demo account seeded with representative data, so you can walk the whole system without an
-  invite or any exposure to real member data.
+  inventory, volunteers, events, and finances are actually managed. It holds real member and
+  financial data, so access is invite-only and role-based; there's no public login. A seeded
+  demo instance is planned but not live yet. For a system you can walk through end to end, see
+  the [Personal Finance OS](/projects/personal-finance-os) case study, which has a public demo
+  account.
 
 ## Metrics
 
@@ -189,6 +189,7 @@ record the portal generates is what that case will be built on.
 
 ## What's next
 
-Near-term: optimize based on feedback from live usage. Medium-term: reporting and analytics
-aimed squarely at the nonprofit application — gear distributed, members served, events run,
-money in and out. Long-term: potentially a mobile app and fundraising integrations.
+Near-term: optimize based on feedback from live usage, and stand up a seeded demo instance of
+the portal so the system can be shown to prospective volunteers, board candidates, and funders
+without provisioning real accounts. Medium-term: reporting and analytics aimed squarely at the
+nonprofit application — gear distributed, members served, events run, money in and out. Long-term: potentially a mobile app and fundraising integrations.
