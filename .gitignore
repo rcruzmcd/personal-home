@@ -1,0 +1,18 @@
+# Repo-wide ignores. Each app (personal-home/, finance-os/) keeps its own
+# .gitignore for build output and tooling; this file covers what can appear
+# anywhere in the monorepo, including at the root.
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Secrets — a safety net outside the apps' own env rules
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
