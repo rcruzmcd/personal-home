@@ -1,3 +1,5 @@
+import { parseDateOnly } from "@/lib/date";
+
 // Per-account "have this period's transactions been entered" status
 // (docs/PERSONAL_FINANCE_REQUIREMENTS.md §2 "Account Fields" — due date /
 // statement date). An account with a statement_date is expected to have
@@ -7,7 +9,10 @@
 
 /** The date an account's transactions are expected to be entered through. */
 export function expectedEntryThrough(statementDate: string | null, today: Date): Date {
-  if (statementDate) return new Date(statementDate);
+  // Both branches must produce a *local* midnight, or the fallback (built
+  // from local parts) and the statement date (a date-only column) would be
+  // measured on different clocks — see parseDateOnly.
+  if (statementDate) return parseDateOnly(statementDate);
   return new Date(today.getFullYear(), today.getMonth(), 0);
 }
 
@@ -24,5 +29,5 @@ export function isEntryUpToDate(
   today: Date,
 ): boolean {
   if (!transactionsEnteredThrough) return false;
-  return new Date(transactionsEnteredThrough) >= expectedEntryThrough(statementDate, today);
+  return parseDateOnly(transactionsEnteredThrough) >= expectedEntryThrough(statementDate, today);
 }

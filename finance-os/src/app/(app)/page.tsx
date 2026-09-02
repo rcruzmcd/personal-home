@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/page-header";
 import { formatCurrency, formatMonths, formatShortDate } from "@/lib/format";
 import {
   calculateCashRunway,
@@ -55,7 +56,7 @@ export default async function DashboardPage() {
   if (!accounts.length) {
     return (
       <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-        <h1 className="text-h1 font-bold text-purple">Dashboard</h1>
+        <PageHeader title="Dashboard" />
         <p className="text-body text-muted">
           Add an account to see your net worth and cash runway.
         </p>
@@ -85,7 +86,10 @@ export default async function DashboardPage() {
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-      <h1 className="text-h1 font-bold text-purple">Dashboard</h1>
+      {/* No header stats here: the dashboard's body *is* the headline
+          figures, and repeating net worth or runway above the cards that
+          derive them would state each number twice. */}
+      <PageHeader title="Dashboard" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card variant="featured">

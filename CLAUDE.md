@@ -16,6 +16,7 @@ This is a monorepo with three top-level parts:
   - `TIMELINE.md` — week-by-week build/launch plan
   - `QUICK_START.md` — pre-launch checklist and week-by-week setup summary for both projects
   - `BRAND_GUIDE.md` — brand identity reference (color palette, typography, usage rules) for rickiecruz.com; a living doc updated as the brand evolves
+  - `UX_PATTERNS.md` — where things go on `finance-os` app screens (breadcrumb/heading order, header stats, filter vs. sort placement, pagination); check it before laying out a new list or detail screen
 
   Keep your replies extremely concise and focus on conveying the key information. No unnecessary fluff, no long code snippets.
 

@@ -2,9 +2,12 @@ import { describe, expect, test } from "vitest";
 import { expectedEntryThrough, isEntryUpToDate } from "../statement-entry";
 
 describe("expectedEntryThrough", () => {
+  // Local midnight, not `new Date("2026-09-14")` (UTC midnight): the
+  // fallback branch builds its date from local parts, so both have to be on
+  // the same clock or the comparison is off by a day west of Greenwich.
   test("uses the statement date when set", () => {
     expect(expectedEntryThrough("2026-09-14", new Date(2026, 8, 20))).toEqual(
-      new Date("2026-09-14"),
+      new Date(2026, 8, 14),
     );
   });
 

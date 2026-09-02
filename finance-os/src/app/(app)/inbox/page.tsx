@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/page-header";
 import { formatCurrency } from "@/lib/format";
 import {
   calculateCashRunway,
@@ -97,12 +98,14 @@ export default async function InboxPage() {
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-      <div>
-        <h1 className="text-h1 font-bold text-purple">Inbox</h1>
-        <p className="text-body text-muted">
-          {totalItems === 0 ? "Nothing needs review." : `${totalItems} items need review`}
-        </p>
-      </div>
+      <PageHeader
+        title="Inbox"
+        description={
+          totalItems === 0
+            ? "Nothing needs review."
+            : `${totalItems} item${totalItems === 1 ? "" : "s"} need review`
+        }
+      />
 
       <Card>
         <CardHeader>

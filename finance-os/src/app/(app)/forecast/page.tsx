@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { PageHeader } from "@/components/page-header";
 import { formatCurrency, formatMonthYear } from "@/lib/format";
 import {
   calculateForecast,
@@ -79,7 +80,7 @@ export default async function ForecastPage() {
   if (!accounts.length) {
     return (
       <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-        <h1 className="text-h1 font-bold text-purple">Forecast</h1>
+        <PageHeader title="Forecast" />
         <p className="text-body text-muted">
           Add an account to see your projected financial position.
         </p>
@@ -96,7 +97,10 @@ export default async function ForecastPage() {
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
-      <h1 className="text-h1 font-bold text-purple">Forecast</h1>
+      <PageHeader
+        title="Forecast"
+        description="Projected cash, debt and net worth if today's income and burn hold."
+      />
 
       {forecast.warnings.map((warning) => (
         <Alert key={warning.message} variant="callout">

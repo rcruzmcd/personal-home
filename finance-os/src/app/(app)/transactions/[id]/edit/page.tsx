@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { FormPage } from "@/components/form-page";
 import { TransactionForm } from "../../transaction-form";
 import { updateTransaction } from "../../actions";
 
@@ -24,22 +24,18 @@ export default async function EditTransactionPage({
   if (!transaction || transaction.type === "transfer") notFound();
 
   return (
-    <main className="flex-1 flex justify-center px-10 py-16">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Edit transaction</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TransactionForm
-            action={updateTransaction.bind(null, id)}
-            accounts={accounts ?? []}
-            categories={categories ?? []}
-            defaultValues={{ ...transaction, amount: Math.abs(transaction.amount) }}
-            submitLabel="Save changes"
-            transactionId={id}
-          />
-        </CardContent>
-      </Card>
-    </main>
+    <FormPage
+      title="Edit transaction"
+      breadcrumb={[{ label: "Transactions", href: "/transactions" }]}
+    >
+      <TransactionForm
+        action={updateTransaction.bind(null, id)}
+        accounts={accounts ?? []}
+        categories={categories ?? []}
+        defaultValues={{ ...transaction, amount: Math.abs(transaction.amount) }}
+        submitLabel="Save changes"
+        transactionId={id}
+      />
+    </FormPage>
   );
 }

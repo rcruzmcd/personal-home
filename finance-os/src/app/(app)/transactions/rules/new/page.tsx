@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { FormPage } from "@/components/form-page";
 import { RuleForm } from "../rule-form";
 import { createRule } from "../actions";
 
@@ -11,15 +11,14 @@ export default async function NewCategorizationRulePage() {
     .order("position");
 
   return (
-    <main className="flex-1 flex justify-center px-10 py-16">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Add categorization rule</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <RuleForm action={createRule} categories={categories ?? []} submitLabel="Add rule" />
-        </CardContent>
-      </Card>
-    </main>
+    <FormPage
+      title="Add categorization rule"
+      breadcrumb={[
+        { label: "Transactions", href: "/transactions" },
+        { label: "Categorization Rules", href: "/transactions/rules" },
+      ]}
+    >
+      <RuleForm action={createRule} categories={categories ?? []} submitLabel="Add rule" />
+    </FormPage>
   );
 }
