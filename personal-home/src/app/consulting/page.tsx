@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { AccentBar } from "@/components/ui/accent-bar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
 import { TrackConsultingView } from "@/components/analytics/track-consulting-view"
 
@@ -83,15 +83,19 @@ export default function ConsultingPage() {
   return (
     <main id="main-content" className="mx-auto max-w-5xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
       <TrackConsultingView />
-      <AccentBar width="md" className="mb-6" />
-      <h1 className="text-h1 font-bold text-purple">Consulting</h1>
-
-      <p className="mt-6 max-w-2xl font-serif text-h4 text-foreground">
-        Technology shouldn&apos;t be a source of confusion. I help small organizations and
-        nonprofits figure out what you actually need—without unnecessary complexity or
-        corporate overhead. I&apos;ve done this work (Board Member + Director of Digital Ops
-        at Chatter Snow), and I understand your constraints.
-      </p>
+      {/* No header action here: the page's one primary action is "Start a
+          conversation" at the foot of the body (docs/UX_PATTERNS.md §2a). */}
+      <PageHeader
+        title="Consulting"
+        description={
+          <p className="font-serif text-h4">
+            Technology shouldn&apos;t be a source of confusion. I help small organizations
+            and nonprofits figure out what you actually need—without unnecessary complexity
+            or corporate overhead. I&apos;ve done this work (Board Member + Director of
+            Digital Ops at Chatter Snow), and I understand your constraints.
+          </p>
+        }
+      />
 
       <Section title="How this works">
         <p>
