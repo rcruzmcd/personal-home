@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 export async function signIn(_prevState: string | null, formData: FormData) {
@@ -18,6 +19,10 @@ export async function signIn(_prevState: string | null, formData: FormData) {
     return error.message;
   }
 
+  // Without this, the client Router Cache can serve the pre-sign-in RSC
+  // payload for "/" (rendered before the auth cookie existed), landing on
+  // a stale/empty dashboard until a manual reload.
+  revalidatePath("/", "layout");
   redirect("/");
 }
 
@@ -39,5 +44,6 @@ export async function signInDemo(_prevState: string | null, _formData: FormData)
     return error.message;
   }
 
+  revalidatePath("/", "layout");
   redirect("/");
 }
