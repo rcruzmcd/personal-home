@@ -1,4 +1,5 @@
 import type { Project } from "@/lib/content/types"
+import { lastModified } from "@/lib/date"
 
 export const SITE_URL = "https://rickiecruz.com"
 export const SITE_NAME = "Rickie Cruz"
@@ -38,6 +39,8 @@ export function buildProjectJsonLd(project: Project) {
     name: project.title,
     description: project.seoDescription ?? project.description,
     url,
+    datePublished: project.publishedDate,
+    dateModified: lastModified(project),
     ...(project.heroImage ? { image: absoluteUrl(project.heroImage) } : {}),
   }
 }

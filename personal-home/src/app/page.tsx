@@ -2,6 +2,7 @@ import Link from "next/link"
 
 import { AccentBar } from "@/components/ui/accent-bar"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/content/page-header"
 import { ProjectCard } from "@/components/project/project-card"
 import { getFeaturedProjects } from "@/lib/content/projects"
 
@@ -11,22 +12,30 @@ export default function Home() {
   return (
     <main id="main-content" className="flex-1">
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
-        <AccentBar width="md" className="mb-6" />
-        <h1 className="text-h1 font-bold text-purple">Rickie Cruz</h1>
-        <p className="mt-4 max-w-2xl text-h4 font-semibold text-foreground">
-          I help you figure out reasonable technology solutions.
-        </p>
-        <p className="mt-4 max-w-2xl text-body text-foreground">
-          Software engineer and technology strategist. I design and build web applications,
-          operations platforms, and tools that solve real problems. I help small organizations
-          and nonprofits navigate technology without the corporate overhead or unnecessary
-          complexity.
-        </p>
-        <p className="mt-4 max-w-2xl text-small text-muted">
-          Currently: rebuilding after a layoff, solving my own financial challenges with code,
-          and helping Chatter Snow scale their operations as Board Member + Director of Digital
-          Ops.
-        </p>
+        {/* No header stats or header actions here: the hero *is* the page's
+            headline content, and its CTAs stack below the copy rather than
+            being pulled into the title row (docs/UX_PATTERNS.md §2). */}
+        <PageHeader
+          title="Rickie Cruz"
+          description={
+            <>
+              <p className="text-h4 font-semibold">
+                I help you figure out reasonable technology solutions.
+              </p>
+              <p className="mt-4">
+                Software engineer and technology strategist. I design and build web
+                applications, operations platforms, and tools that solve real problems. I
+                help small organizations and nonprofits navigate technology without the
+                corporate overhead or unnecessary complexity.
+              </p>
+              <p className="mt-4 text-small text-muted">
+                Currently: rebuilding after a layoff, solving my own financial challenges
+                with code, and helping Chatter Snow scale their operations as Board Member +
+                Director of Digital Ops.
+              </p>
+            </>
+          }
+        />
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <Button asChild variant="primary">
             <Link href="/work">View my work</Link>

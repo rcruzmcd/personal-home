@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { AccentBar } from "@/components/ui/accent-bar"
+import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
 import { PlaceholderNote } from "@/components/content/placeholder-note"
 
@@ -13,11 +13,14 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
-      <AccentBar width="md" className="mb-6" />
-      <h1 className="text-h1 font-bold text-purple">Terms</h1>
-      <p className="mt-4 text-small text-muted">
-        Last updated: [Placeholder — set this when the terms are finalized]
-      </p>
+      <PageHeader
+        title="Terms"
+        description={
+          <p className="text-small text-muted">
+            Last updated: [Placeholder — set this when the terms are finalized]
+          </p>
+        }
+      />
 
       <div className="mt-4 divide-y divide-border">
         <Section title="Use of This Site">

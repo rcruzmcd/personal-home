@@ -1,21 +1,27 @@
 # UX Patterns
 
-Interaction/layout conventions for `finance-os` app screens. `BRAND_GUIDE.md`
-covers *what things look like* and `STYLE_SYSTEM.md` *how that's wired into
-Tailwind*; this doc covers **where things go on the page** — heading, actions,
-filters, sorting and pagination — so every list screen is laid out the same way
-and the decisions don't get re-litigated per page.
+Interaction/layout conventions for both apps — `finance-os` app screens and the
+`personal-home` site. `BRAND_GUIDE.md` covers *what things look like* and
+`STYLE_SYSTEM.md` *how that's wired into Tailwind*; this doc covers **where
+things go on the page** — heading, actions, filters, sorting and pagination —
+so every screen is laid out the same way and the decisions don't get
+re-litigated per page.
 
-These rules are applied across every `(app)` screen. Three shared components
-carry them, so a new page gets the layout by using them rather than by
-re-deriving it:
+Rules 1, 2, 2a, 7 and 8 are general and hold in both apps; 3–6 are list-screen
+rules and only bite where there are filters, sorting or pagination (today, only
+`finance-os`). See "Applying this to `personal-home`" at the end for what the
+marketing site does with them.
 
-| Component | File | Use for |
-|---|---|---|
-| `PageHeader` | `src/components/page-header.tsx` | Every screen's top: breadcrumb → title → description, with `stats` and `actions` slots on the opposite end of the title row. `compact` drops the title to h2. |
-| `Stat` | `src/components/ui/stat.tsx` | A labelled headline number (label above value). `tone`: `neutral` / `positive` / `accent`. |
-| `Breadcrumb` | `src/components/ui/breadcrumb.tsx` | The trail itself; usually reached through `PageHeader`'s `breadcrumb` prop. |
-| `FormPage` | `src/components/form-page.tsx` | The single-form add/edit screens — compact header + breadcrumb above a `max-w-lg` card. |
+These rules are applied across every `finance-os` `(app)` screen and every
+`personal-home` page. Shared components carry them, so a new page gets the
+layout by using them rather than by re-deriving it:
+
+| Component | File (`finance-os`) | File (`personal-home`) | Use for |
+|---|---|---|---|
+| `PageHeader` | `src/components/page-header.tsx` | `src/components/content/page-header.tsx` | Every screen's top: breadcrumb → title → description, with `stats` and `actions` slots on the opposite end of the title row. `compact` drops the title to h2. The `personal-home` version also renders the brand accent bar above the title and takes an `eyebrow` slot (status/tech badges). |
+| `Stat` | `src/components/ui/stat.tsx` | `src/components/ui/stat.tsx` | A labelled headline number (label above value). `tone`: `neutral` / `positive` / `accent`; `personal-home` adds `size: sm` for in-body grids. |
+| `Breadcrumb` | `src/components/ui/breadcrumb.tsx` | `src/components/ui/breadcrumb.tsx` | The trail itself; reached through `PageHeader`'s `breadcrumb` prop. `personal-home`'s is the shadcn/ui breadcrumb restyled onto the brand tokens. |
+| `FormPage` | `src/components/form-page.tsx` | — | The single-form add/edit screens — compact header + breadcrumb above a `max-w-lg` card. |
 
 ---
 
@@ -126,6 +132,41 @@ page, and the trail is `text-small text-muted` so it never competes with the
 title or the primary action.
 
 ---
+
+## Applying this to `personal-home`
+
+The site has no filtered lists, so rules 3–6 have nothing to act on yet. What
+the general rules produced:
+
+- **Every page goes through `PageHeader`.** Home, About, Work, Projects,
+  Consulting, Resume, Contact, Privacy, Terms and the two project detail
+  templates previously repeated `AccentBar → h1 → paragraph` by hand, which is
+  how the Resume page ended up with its own bespoke title/button row. The
+  header now owns that markup, so the accent bar, title scale and description
+  width can't drift page to page.
+- **Case study and project pages carry a breadcrumb** (`Work › Chatter Snow`,
+  `Projects › Personal Finance OS`) where they previously offered no way back
+  to the listing at all. The node label is the destination's own page title
+  (rule 8), and the detail page's status and tech badges sit in the header's
+  `eyebrow` slot above the title.
+- **Resume's Download PDF button is a header action** (rule 2a) — the only
+  header action on the site. Consulting deliberately has none: its one primary
+  action, "Start a conversation", is at the foot of the body, and a second
+  primary in the header would compete with it.
+- **Case study metrics use `Stat`** but stay in the body (`size="sm"`) rather
+  than moving into the header. On a narrative page a metric is evidence inside
+  the argument, not the page's status — and rule 2 forbids saying the same
+  figure in both places.
+- **The homepage is the site's Dashboard exception** (rule 2): its hero *is*
+  the headline content, so it takes no header stats, and its two CTAs stack
+  below the copy rather than being pulled into a right-aligned action cluster.
+- **Empty states name the way out.** The Work and Projects listings used to end
+  at "No case studies published yet."; each now pairs that with the links that
+  fix it (the other listing, plus Contact).
+
+Not done: the marketing site keeps `text-h1` (48px) everywhere, including the
+Contact form page. The "form screens are compact" part of rule 7 is an app-screen
+rule — on a marketing page the 48px heading is the brand voice, not chrome.
 
 ## Open items
 

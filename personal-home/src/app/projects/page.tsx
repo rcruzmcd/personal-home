@@ -1,6 +1,9 @@
 import type { Metadata } from "next"
 
-import { AccentBar } from "@/components/ui/accent-bar"
+import Link from "next/link"
+
+import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/content/page-header"
 import { ProjectCard } from "@/components/project/project-card"
 import { getPersonalProjects } from "@/lib/content/projects"
 
@@ -14,12 +17,10 @@ export default function ProjectsPage() {
 
   return (
     <main id="main-content" className="mx-auto max-w-5xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
-      <AccentBar width="md" className="mb-6" />
-      <h1 className="text-h1 font-bold text-purple">Projects</h1>
-      <p className="mt-4 max-w-2xl text-body text-foreground">
-        Personal projects, separate from professional work — built to learn something, solve a
-        real problem, or explore an idea.
-      </p>
+      <PageHeader
+        title="Projects"
+        description="Personal projects, separate from professional work — built to learn something, solve a real problem, or explore an idea."
+      />
 
       {projects.length > 0 ? (
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
@@ -28,7 +29,22 @@ export default function ProjectsPage() {
           ))}
         </div>
       ) : (
-        <p className="mt-12 text-body text-muted">No projects published yet.</p>
+        // An empty state names the way out of it, rather than stopping at the
+        // bare sentence (docs/UX_PATTERNS.md).
+        <div className="mt-12">
+          <p className="text-body text-muted">
+            No projects published yet — the professional case studies are the fuller read
+            for now.
+          </p>
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row">
+            <Button asChild variant="secondary">
+              <Link href="/work">View case studies</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/contact">Get in touch</Link>
+            </Button>
+          </div>
+        </div>
       )}
     </main>
   )

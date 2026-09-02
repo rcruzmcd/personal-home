@@ -4,9 +4,9 @@ import path from "node:path"
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { AccentBar } from "@/components/ui/accent-bar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
 import { DownloadResumeButton } from "@/components/content/download-resume-button"
 import { getAllProjects } from "@/lib/content/projects"
@@ -26,25 +26,24 @@ export default function ResumePage() {
 
   return (
     <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
-      <AccentBar width="md" className="mb-6" />
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-h1 font-bold text-purple">Resume</h1>
-        {hasPdf ? (
-          <DownloadResumeButton />
-        ) : (
-          <Button
-            variant="secondary"
-            disabled
-            title="PDF version coming soon"
-            aria-disabled="true"
-          >
-            Download PDF (coming soon)
-          </Button>
-        )}
-      </div>
-      <p className="mt-4 max-w-2xl text-body text-foreground">
-        Senior Full-Stack Software Engineer · Technical Lead · Engineering Leader
-      </p>
+      <PageHeader
+        title="Resume"
+        description="Senior Full-Stack Software Engineer · Technical Lead · Engineering Leader"
+        actions={
+          hasPdf ? (
+            <DownloadResumeButton />
+          ) : (
+            <Button
+              variant="secondary"
+              disabled
+              title="PDF version coming soon"
+              aria-disabled="true"
+            >
+              Download PDF (coming soon)
+            </Button>
+          )
+        }
+      />
 
       <div className="mt-4 divide-y divide-border">
         <Section title="Professional Summary">

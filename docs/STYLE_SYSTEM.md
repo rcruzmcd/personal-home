@@ -62,6 +62,11 @@ the brand guide. Font family utilities: `font-sans` (Inter, default body),
 Max 2 fonts per page (per brand guide §09) — Merriweather only for a single
 pull quote, never alongside body copy on the same block.
 
+These size names are registered with tailwind-merge in `src/lib/utils.ts`
+(`extendTailwindMerge`, `font-size` group). Without that, `cn()` can't tell
+`text-small` from a text *color* like `text-muted` and silently drops the size
+when both appear in one merged class string.
+
 ## Spacing & radius
 
 **No custom tokens needed** — Tailwind v4's defaults already match
@@ -132,6 +137,12 @@ bg-background border-l-4 border-green p-6 text-body text-foreground
 **Key decision box**
 ```
 bg-surface border border-border border-l-[3px] border-l-purple p-6
+```
+
+**Breadcrumb trail** (above the page title — see `UX_PATTERNS.md` §1)
+```
+text-small text-muted   {/* links: hover:text-purple transition-colors duration-200 */}
+                        {/* current page: text-foreground, not a link */}
 ```
 
 **Form input**

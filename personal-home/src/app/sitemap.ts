@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 
 import { getAllProjects } from "@/lib/content/projects"
+import { lastModified } from "@/lib/date"
 import { SITE_URL } from "@/lib/seo"
 
 const STATIC_ROUTES = [
@@ -27,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const projectEntries: MetadataRoute.Sitemap = getAllProjects().map((project) => ({
     url: `${SITE_URL}/${project.category === "work" ? "work" : "projects"}/${project.slug}`,
-    lastModified: new Date(project.publishedDate),
+    lastModified: new Date(lastModified(project)),
     changeFrequency: "monthly",
     priority: 0.8,
   }))

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { AccentBar } from "@/components/ui/accent-bar"
+import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
 
 export const metadata: Metadata = {
@@ -12,11 +12,10 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
-      <AccentBar width="md" className="mb-6" />
-      <h1 className="text-h1 font-bold text-purple">About</h1>
-      <p className="mt-4 max-w-2xl text-body text-foreground">
-        The person behind the work, not just the resume.
-      </p>
+      <PageHeader
+        title="About"
+        description="The person behind the work, not just the resume."
+      />
 
       <div className="mt-4 divide-y divide-border">
         <Section title="Who I am">
