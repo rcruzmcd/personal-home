@@ -409,6 +409,26 @@ For each debt account:
 - Promotional APR (if applicable)
 - Promotional APR expiration
 
+### Statement History
+
+Due date and statement date are stored as a **day of the month** (1-31), not a date:
+a card closes and falls due on the same day every cycle, so a single stored date
+goes stale after one month. A day past the 28th resolves to the last day of
+shorter months, the way an issuer actually bills.
+
+Each closed cycle is recorded in its own row (`statements`): closing date, due
+date, the statement balance, and the minimum then due. This is the audit trail;
+`accounts.minimum_payment` remains the *standing* figure the forecast and
+debt-payoff engines project future months with, and recording a statement
+updates it. The same split as `reconciliations` vs. `accounts.balance`.
+
+**Prompt to record.** A statement row exists only once the user has entered it,
+so an outstanding cycle is derived rather than stored — the close implied by the
+account's statement day, minus the rows on file. Only the most recent close is
+raised, so a long-neglected account produces one prompt rather than a backlog.
+It surfaces in three places: the Inbox (as an actionable alert), the account's
+own page, and the Dashboard.
+
 ### Payoff Strategies
 
 Calculate different payoff approaches:

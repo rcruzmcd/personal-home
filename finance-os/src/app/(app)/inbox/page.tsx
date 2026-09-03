@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatShortDate } from "@/lib/format";
 import {
   calculateCashRunway,
   calculateForecast,
@@ -10,11 +10,14 @@ import {
   findPossibleDuplicates,
   findPossibleRecurringExpenses,
   findRecurringPriceChanges,
+  findPendingStatements,
   findUncategorizedTransactions,
   type CalcAccount,
   type CalcIncomeSource,
   type CalcTransaction,
+  type FinancialAlert,
   type ReviewTransaction,
+  type StatementAccount,
 } from "@/lib/calculations";
 
 // Wide enough to catch three occurrences of a monthly bill for the
@@ -29,9 +32,18 @@ export default async function InboxPage() {
   cutoff.setDate(cutoff.getDate() - TRANSACTION_LOOKBACK_DAYS);
   const cutoffDate = cutoff.toISOString().slice(0, 10);
 
-  const [{ data: accountRows }, { data: incomeRows }, { data: transactionRows }, { data: recurringExpenseRows }] =
-    await Promise.all([
-      supabase.from("accounts").select("name, type, balance, credit_limit, active, interest_rate, minimum_payment"),
+  const [
+    { data: accountRows },
+    { data: incomeRows },
+    { data: transactionRows },
+    { data: recurringExpenseRows },
+    { data: statementRows },
+  ] = await Promise.all([
+      supabase
+        .from("accounts")
+        .select(
+          "id, name, type, balance, credit_limit, active, interest_rate, minimum_payment, statement_day, due_day",
+        ),
       supabase
         .from("income_sources")
         .select("name, amount, frequency, start_date, end_date, expected_date"),
@@ -42,6 +54,7 @@ export default async function InboxPage() {
         )
         .gte("date", cutoffDate),
       supabase.from("recurring_expenses").select("id, name, amount, active").eq("active", true),
+      supabase.from("statements").select("account_id, closing_date"),
     ]);
 
   const accounts: CalcAccount[] = accountRows ?? [];
@@ -83,7 +96,21 @@ export default async function InboxPage() {
     asOfDate,
   });
   const priceChanges = findRecurringPriceChanges(recurringExpenseRows ?? [], reviewTransactions);
-  const allAlerts = [
+  // A closed statement nobody has entered is the most actionable thing in the
+  // inbox, so it leads (§6 per-debt tracking).
+  const pendingStatements = findPendingStatements({
+    accounts: (accountRows ?? []) as StatementAccount[],
+    recorded: statementRows ?? [],
+    asOfDate,
+  });
+  const allAlerts: FinancialAlert[] = [
+    ...pendingStatements.map((statement) => ({
+      message: `${statement.accountName} statement closed ${formatShortDate(statement.closingDate)}${
+        statement.dueDate ? `, due ${formatShortDate(statement.dueDate)}` : ""
+      }.`,
+      href: `/accounts/${statement.accountId}/statement`,
+      actionLabel: "Record statement",
+    })),
     ...alerts,
     ...priceChanges.map((change) => ({
       message: `${change.name} increased from ${formatCurrency(change.previousAmount)} to ${formatCurrency(change.newAmount)}.`,
@@ -117,8 +144,13 @@ export default async function InboxPage() {
           ) : (
             <ul className="flex flex-col gap-2">
               {allAlerts.map((alert, i) => (
-                <li key={i} className="text-body text-foreground">
-                  ⚠️ {alert.message}
+                <li key={i} className="flex flex-wrap items-center gap-x-3 text-body text-foreground">
+                  <span>⚠️ {alert.message}</span>
+                  {alert.href && (
+                    <Link href={alert.href} className="font-medium text-purple underline">
+                      {alert.actionLabel ?? "Review"}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

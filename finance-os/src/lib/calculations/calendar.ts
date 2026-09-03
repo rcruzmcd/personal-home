@@ -22,7 +22,12 @@ export type CalendarEvent = {
   /** Local midnight. */
   date: Date;
   label: string;
-  /** Positive magnitude, or null where there is no figure — a statement close is a date, not an amount. */
+  /**
+   * Positive magnitude, or null where the event carries no figure. Statement
+   * closes are null here: the amount lives on the recorded statements row
+   * (src/lib/calculations/statements.ts), which this builder does not read
+   * yet — surfacing it on the calendar is a follow-up.
+   */
   amount: number | null;
   href: string | null;
 };

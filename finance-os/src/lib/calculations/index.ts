@@ -15,3 +15,4 @@ export * from "./statement-entry";
 export * from "./day-of-month";
 export * from "./occurrences";
 export * from "./calendar";
+export * from "./statements";

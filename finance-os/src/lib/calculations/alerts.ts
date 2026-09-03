@@ -19,7 +19,12 @@ function isPriceChange(previousAmount: number, currentAmount: number): boolean {
   return diff > PRICE_CHANGE_MIN_DELTA && diff > previousAmount * PRICE_CHANGE_MIN_PCT;
 }
 
-export type FinancialAlert = { message: string };
+export type FinancialAlert = {
+  message: string;
+  /** Where to go to resolve it. Alerts that are purely informational have none. */
+  href?: string;
+  actionLabel?: string;
+};
 
 export type FinancialAlertAccount = {
   name: string;

@@ -7,8 +7,10 @@ import { formatCurrency, formatMonths, formatShortDate } from "@/lib/format";
 import {
   calculateCashRunway,
   calculateNetWorth,
+  findPendingStatements,
   type CalcAccount,
   type CalcTransaction,
+  type StatementAccount,
 } from "@/lib/calculations";
 
 // calculateCashRunway only looks back 3 months by default — fetch a wider
@@ -32,13 +34,17 @@ export default async function DashboardPage() {
   cutoff.setDate(cutoff.getDate() - TRANSACTION_LOOKBACK_DAYS);
   const cutoffDate = cutoff.toISOString().slice(0, 10);
 
-  const [{ data: accountRows }, { data: transactionRows }] = await Promise.all([
-    supabase.from("accounts").select("type, balance, active"),
+  const [{ data: accountRows }, { data: transactionRows }, { data: statementRows }] =
+    await Promise.all([
+    supabase
+      .from("accounts")
+      .select("id, name, type, balance, active, statement_day, due_day"),
     supabase
       .from("transactions")
       .select("date, amount, type, categories(name)")
       .eq("type", "expense")
       .gte("date", cutoffDate),
+    supabase.from("statements").select("account_id, closing_date"),
   ]);
 
   const accounts: CalcAccount[] = accountRows ?? [];
@@ -53,10 +59,17 @@ export default async function DashboardPage() {
     categoryName: (txn.categories as unknown as { name: string } | null)?.name ?? null,
   }));
 
+  const pendingStatements = findPendingStatements({
+    accounts: (accountRows ?? []) as StatementAccount[],
+    recorded: statementRows ?? [],
+    asOfDate,
+  });
+
   if (!accounts.length) {
     return (
       <main className="flex-1 flex flex-col gap-6 px-10 py-16">
         <PageHeader title="Dashboard" />
+
         <p className="text-body text-muted">
           Add an account to see your net worth and cash runway.
         </p>
@@ -90,6 +103,42 @@ export default async function DashboardPage() {
           figures, and repeating net worth or runway above the cards that
           derive them would state each number twice. */}
       <PageHeader title="Dashboard" />
+
+      {/* The "needs attention" slot: full width between the header and the
+          figures, rather than a third card that would orphan in a 2-col grid.
+          Absent entirely when there is nothing to do. */}
+      {pendingStatements.length > 0 && (
+        <Card variant="featured">
+          <CardHeader>
+            <CardTitle>
+              {pendingStatements.length === 1
+                ? "A statement needs recording"
+                : `${pendingStatements.length} statements need recording`}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            {pendingStatements.map((statement) => (
+              <div
+                key={statement.accountId}
+                className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1"
+              >
+                <p className="text-body text-muted">
+                  <span className="text-foreground">{statement.accountName}</span>
+                  {" closed "}
+                  {formatShortDate(statement.closingDate)}
+                  {statement.dueDate && ` · due ${formatShortDate(statement.dueDate)}`}
+                </p>
+                <Link
+                  href={`/accounts/${statement.accountId}/statement`}
+                  className="text-body font-medium text-purple underline"
+                >
+                  Record statement
+                </Link>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card variant="featured">

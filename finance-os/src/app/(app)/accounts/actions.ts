@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { accountSchema } from "@/lib/validations/account";
 import { reconciliationSchema } from "@/lib/validations/reconciliation";
 import { statementEntrySchema } from "@/lib/validations/statement-entry";
+import { statementSchema } from "@/lib/validations/statement";
 
 export async function createAccount(_prevState: string | null, formData: FormData) {
   const parsed = accountSchema.safeParse(Object.fromEntries(formData));
@@ -113,5 +114,55 @@ export async function markTransactionsEntered(
 
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${accountId}`);
+  redirect(`/accounts/${accountId}`);
+}
+
+// Records one closed billing cycle (docs/PERSONAL_FINANCE_REQUIREMENTS.md §6).
+// Mirrors reconcileAccount: the child row is the history, and the parent
+// account is synced to the latest known figures so the projection engines
+// (forecast, debt-payoff) and the calendar keep reading one current value.
+export async function recordStatement(
+  accountId: string,
+  _prevState: string | null,
+  formData: FormData,
+) {
+  const parsed = statementSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return parsed.error.issues[0].message;
+
+  const { closing_date, due_date, statement_balance, minimum_payment, notes } = parsed.data;
+
+  const supabase = await createClient();
+  const { error: insertError } = await supabase.from("statements").insert({
+    account_id: accountId,
+    closing_date,
+    due_date,
+    statement_balance,
+    minimum_payment,
+    notes,
+  });
+  if (insertError) {
+    // unique (account_id, closing_date) — the expected double-submit, worth a
+    // sentence rather than a raw Postgres constraint message.
+    if (insertError.code === "23505") {
+      return "That statement has already been recorded.";
+    }
+    return insertError.message;
+  }
+
+  const { error: updateError } = await supabase
+    .from("accounts")
+    .update({
+      balance: statement_balance,
+      minimum_payment,
+      last_updated: new Date().toISOString(),
+    })
+    .eq("id", accountId);
+  if (updateError) return updateError.message;
+
+  revalidatePath("/");
+  revalidatePath("/accounts");
+  revalidatePath(`/accounts/${accountId}`);
+  revalidatePath("/inbox");
+  revalidatePath("/calendar");
   redirect(`/accounts/${accountId}`);
 }
