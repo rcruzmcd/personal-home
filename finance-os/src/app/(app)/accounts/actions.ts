@@ -17,7 +17,10 @@ export async function createAccount(_prevState: string | null, formData: FormDat
   if (error) return error.message;
 
   revalidatePath("/accounts");
-  redirect("/accounts");
+  // "replace", not the Server Action default of "push": when this form was
+  // reached as an intercepted sheet, pushing would leave the sheet's URL on the
+  // history stack, so Back would reopen a sheet for a record already saved.
+  redirect("/accounts", "replace");
 }
 
 export async function updateAccount(
@@ -36,7 +39,7 @@ export async function updateAccount(
   if (error) return error.message;
 
   revalidatePath("/accounts");
-  redirect("/accounts");
+  redirect("/accounts", "replace");
 }
 
 export async function deleteAccount(id: string) {
@@ -89,7 +92,7 @@ export async function reconcileAccount(
 
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${accountId}`);
-  redirect(`/accounts/${accountId}`);
+  redirect(`/accounts/${accountId}`, "replace");
 }
 
 // Statement/period entry tracking (docs/PERSONAL_FINANCE_REQUIREMENTS.md
@@ -114,7 +117,7 @@ export async function markTransactionsEntered(
 
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${accountId}`);
-  redirect(`/accounts/${accountId}`);
+  redirect(`/accounts/${accountId}`, "replace");
 }
 
 // Records one closed billing cycle (docs/PERSONAL_FINANCE_REQUIREMENTS.md §6).
@@ -164,5 +167,5 @@ export async function recordStatement(
   revalidatePath(`/accounts/${accountId}`);
   revalidatePath("/inbox");
   revalidatePath("/calendar");
-  redirect(`/accounts/${accountId}`);
+  redirect(`/accounts/${accountId}`, "replace");
 }

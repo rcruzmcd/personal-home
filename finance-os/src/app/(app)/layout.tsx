@@ -4,7 +4,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { NAV_LINKS } from "@/lib/nav";
 import { signOut } from "../logout/actions";
 
-export default function AppLayout({ children }: LayoutProps<"/">) {
+export default function AppLayout({ children, modal }: LayoutProps<"/">) {
   return (
     <div className="flex-1 flex flex-col">
       <header className="border-b border-border bg-surface">
@@ -31,6 +31,9 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
         </div>
       </header>
       <div className="flex-1 flex flex-col">{children}</div>
+      {/* Add/edit routes render here as a sheet when reached from inside the
+          app; a direct visit or refresh falls through to the full page. */}
+      {modal}
     </div>
   );
 }

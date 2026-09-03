@@ -38,12 +38,19 @@ const sheetContentVariants = cva(
     variants: {
       side: {
         right:
-          "inset-y-0 right-0 h-full w-3/4 max-w-sm border-l border-border data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:animate-in data-[state=open]:slide-in-from-right",
-        left: "inset-y-0 left-0 h-full w-3/4 max-w-sm border-r border-border data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:animate-in data-[state=open]:slide-in-from-left",
+          "inset-y-0 right-0 h-full w-3/4 border-l border-border data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:animate-in data-[state=open]:slide-in-from-right",
+        left: "inset-y-0 left-0 h-full w-3/4 border-r border-border data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:animate-in data-[state=open]:slide-in-from-left",
+      },
+      // The nav drawer only holds a list of links; a form needs the same
+      // measure the full-page form screens use (FormPage's max-w-lg).
+      size: {
+        default: "max-w-sm",
+        form: "max-w-lg",
       },
     },
     defaultVariants: {
       side: "right",
+      size: "default",
     },
   }
 )
@@ -51,6 +58,7 @@ const sheetContentVariants = cva(
 function SheetContent({
   className,
   side,
+  size,
   children,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> &
@@ -60,7 +68,7 @@ function SheetContent({
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
-        className={cn(sheetContentVariants({ side }), className)}
+        className={cn(sheetContentVariants({ side, size }), className)}
         {...props}
       >
         {children}
