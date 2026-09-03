@@ -65,7 +65,7 @@ export default function ResumePage() {
                 <span className="font-medium text-foreground">
                   Lead Application Developer, ADP
                 </span>
-                <span className="text-small text-muted">Feb 2020 – 2026</span>
+                <span className="text-small text-muted">Feb 2020 – Jul 2026</span>
               </div>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-small text-foreground">
                 <li>

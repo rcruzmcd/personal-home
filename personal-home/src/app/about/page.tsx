@@ -24,8 +24,6 @@ export default function AboutPage() {
             consulting, financial services, HR technology, and engineering leadership. I got
             my start building data integrations at Accenture, grew from developer into a team
             lead and manager at Fiserv, and most recently led application development at ADP.
-            Outside of work, I&apos;m a skier and a volunteer with the LGBTQ+ ski and snowboard
-            community.
           </p>
         </Section>
 
@@ -67,7 +65,7 @@ export default function AboutPage() {
             grew into a UI team lead role leading distributed onshore/offshore teams, then into
             a team lead/manager role running a cross-functional engineering team on Fiserv&apos;s
             fraud alert platform. From there I moved to ADP as a lead application developer,
-            focused on hands-on development, from 2020 until being laid off this year.
+            focused on hands-on development, from 2020 until July 2026.
           </p>
           <p>
             For the full breakdown, see my{" "}
@@ -80,37 +78,38 @@ export default function AboutPage() {
 
         <Section title="Currently">
           <p>
-            I was laid off from ADP last month, and I&apos;m currently looking for what&apos;s
-            next. In the meantime, I&apos;m building out this site, doing early work on a
-            personal finance app I&apos;ve wanted to build for years, and volunteering behind
-            the scenes for Chatter — building their website and the systems that keep events
-            running.
+            I&apos;m looking for what&apos;s next, whether that&apos;s a full-time role or
+            consulting work with a team that needs it. In the meantime, I&apos;m building out
+            this site and doing early work on a personal finance app I&apos;ve wanted to build
+            for years. I&apos;m also a Board Member and Director of Digital Operations at
+            Chatter, an LGBTQ+ ski and snowboard community organizing toward nonprofit status,
+            where I lead the technical side of things.
           </p>
         </Section>
 
         <Section title="Outside of work">
           <p>
-            I&apos;m a skier — or, as my friend Sofie likes to say, &ldquo;our token
-            skier.&rdquo;
+            I ski. I found Chatter at a moment when I didn&apos;t have gear or know many queer
+            people in the sport, and left that first event with friendships and my first Burton
+            jacket. These days I&apos;m involved well beyond the mountain — helping plan
+            events, setting up infrastructure, and working toward nonprofit status. (More on
+            that in the{" "}
+            <Link href="/work/chatter-snow" className="text-purple underline hover:italic">
+              Chatter case study
+            </Link>
+            .)
           </p>
           <p>
-            I have a special relationship with Chatter, an LGBTQ+ ski and snowboard community.
-            We both got serious around the same time: when Chatter held its first event, I had
-            no gear of my own and knew very few queer people in the ski and snowboard
-            community. By the end of that event, I&apos;d made friendships that have helped me
-            become a better skier — and somehow walked away with my first Burton jacket.
+            When I&apos;m not skiing, I play tennis (not as often as I&apos;d like, but I hold
+            my own), and I&apos;ve been consistently training at the gym for three years now —
+            this year I picked running back up as my knee&apos;s gotten stronger. I&apos;m
+            happiest near water or outdoors in general, which makes paddleboarding a favorite
+            summer activity — it&apos;s basically all of the above at once.
           </p>
           <p>
-            I got involved with Chatter in late 2025, initially helping with social media and
-            eventually helping put events together. Behind the scenes, I get to put my
-            engineering experience to use building the website, organizing systems, and
-            figuring out how to make all the moving pieces work.
-          </p>
-          <p>
-            For me, Chatter is about more than just getting on the mountain. It&apos;s about
-            the people you meet, the friendships you make, and finding a community that makes
-            you want to keep showing up — on and off the mountain. And yes, I&apos;m still one
-            of the token skiers... for now.
+            I also read a lot, somewhere between 5 and 50 books a year depending on how
+            life&apos;s going, and I share my apartment with Cleo, a 12-year-old calico who
+            runs the place.
           </p>
         </Section>
       </div>
