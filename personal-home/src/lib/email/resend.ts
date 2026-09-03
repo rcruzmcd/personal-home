@@ -3,12 +3,24 @@ import { Resend } from "resend"
 import { CONTACT_REASON_LABELS } from "@/lib/validation/contact"
 import type { ContactFormData } from "@/lib/validation/contact"
 
-// rickiecruz.com is a verified Resend domain. Sending from hello@ (rather
-// than a dedicated noreply@) until that mailbox exists; only FROM_ADDRESS
-// needs to change when it does. replyTo is set per-send to the visitor's
-// address, so replying from the inbox reaches them, not this address.
-const FROM_ADDRESS = "Rickie Cruz <hello@rickiecruz.com>"
-const TO_ADDRESS = "hello@rickiecruz.com"
+// Resend's shared sandbox sender, which only delivers to the Resend account
+// owner's own verified address — hence the personal inbox below.
+//
+// rickiecruz.com is NOT yet a verified sending domain in Resend: its DNS has
+// Zoho's MX/SPF/DKIM for receiving mail, but no Resend DKIM record and no
+// Resend/SES include in the SPF record. Sending from an address at that
+// domain gets a 403 from Resend, which this module swallows into
+// { delivered: false } — so the form would look healthy while every message
+// went nowhere but the server log.
+//
+// To switch: verify the domain (or a send.* subdomain) in Resend, add its
+// DKIM record, and MERGE its include into the existing SPF record rather
+// than replacing it — dropping include:zohomail.com would break the actual
+// inbox. Then set FROM_ADDRESS to noreply@rickiecruz.com and TO_ADDRESS to
+// hello@rickiecruz.com. noreply@ needs no mailbox: sending depends only on
+// the domain's DNS, and replyTo is set per-send to the visitor's address.
+const FROM_ADDRESS = "onboarding@resend.dev"
+const TO_ADDRESS = "ricardo.cruzmcdougal@gmail.com"
 
 function formatSubmissionText(data: ContactFormData): string {
   const lines = [
