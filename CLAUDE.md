@@ -26,7 +26,7 @@ This is a monorepo with three top-level parts:
 
 - **`personal-home/`** — The actual Next.js application (the personal portfolio site). The MVP described in `docs/` has been built out: homepage, About, Work/Projects listings + MDX case study detail pages (Chatter Snow, Personal Finance OS), Consulting, Resume, Contact (with API route, spam protection, Resend email), Privacy/Terms, dark/light mode, SEO metadata/JSON-LD/sitemap/robots, and Vercel Analytics event tracking.
 
-- **`finance-os/`** — The "Personal Finance OS" app (per `docs/PERSONAL_FINANCE_REQUIREMENTS.md`). Currently just the default `create-next-app` scaffold (Next.js 16, React 19, TypeScript, Tailwind v4, bun) — none of the actual finance features (accounts, transactions, net worth, cash runway, forecasting) are built yet. It's intended to share `personal-home`'s design system (see `docs/BRAND_GUIDE.md` / `docs/STYLE_SYSTEM.md`) rather than invent its own, so port/reuse tokens and shadcn/ui components from `personal-home` when building it out instead of hand-picking new ones.
+- **`finance-os/`** — The "Personal Finance OS" app (per `docs/PERSONAL_FINANCE_REQUIREMENTS.md`), built out and deployed at `finance.rickiecruz.com`. Accounts, transactions (with CSV/XLSX import, categorization rules, and transfer handling), recurring items, income, statements/reconciliations, a bill calendar, debt payoff, forecasting, and cash runway are all implemented on Supabase/Postgres with Recharts. It shares `personal-home`'s design system (see `docs/BRAND_GUIDE.md` / `docs/STYLE_SYSTEM.md`) rather than inventing its own — port/reuse tokens and shadcn/ui components from `personal-home` instead of hand-picking new ones.
 
 ## Commands
 
@@ -41,13 +41,25 @@ bun start           # run production build (next start)
 bun run lint        # eslint
 ```
 
-`personal-home/` additionally has a test suite:
+Both apps have a test suite. Use `bun run test`, **not** `bun test` — the latter
+invokes bun's own test runner, which doesn't read `vitest.config.mts` and fails on
+the jsdom-dependent component tests.
 
 ```bash
-cd personal-home
-bun test             # vitest run
-bun run test:watch  # vitest (watch mode)
+cd personal-home      # or finance-os
+bun run test          # vitest run
+bun run test:watch    # vitest (watch mode)
 bun run test:coverage # vitest run --coverage
+```
+
+`finance-os/` also wraps the Supabase CLI for local database work:
+
+```bash
+cd finance-os
+bun run db:start      # supabase start
+bun run db:reset      # supabase db reset (re-applies migrations + seed)
+bun run db:migration:new <name>
+bun run db:types      # regenerate src/lib/supabase/types.ts from the local DB
 ```
 
 ## Architecture Notes (`personal-home/`)
@@ -61,11 +73,29 @@ bun run test:coverage # vitest run --coverage
 
 ## Architecture Notes (`finance-os/`)
 
-- Same Next.js 16 / React 19 / TypeScript / Tailwind v4 / bun stack as `personal-home`, currently at the unmodified `create-next-app` starter (default `page.tsx`, default `globals.css` tokens).
-- Per `docs/PERSONAL_FINANCE_REQUIREMENTS.md` and `docs/TECH_STACK_AND_DOMAIN.md`: planned additions are Supabase/Postgres (data + auth), Recharts (net worth/cash runway/spending charts), react-hook-form, Zod, and TanStack Query/Table — none of these are installed yet.
+- Same Next.js 16 / React 19 / TypeScript / Tailwind v4 / bun stack as `personal-home`.
+- **Supabase/Postgres** for data and auth (`@supabase/ssr`), with the schema owned by
+  versioned migrations in `supabase/migrations/` — change the schema by adding a
+  migration and regenerating types (`bun run db:types`), never by editing
+  `src/lib/supabase/types.ts` by hand.
+- **Recharts** for charts, **Zod** for validation, **papaparse**/**xlsx** for statement
+  import. No react-hook-form or TanStack Query/Table despite what
+  `docs/TECH_STACK_AND_DOMAIN.md` proposed — forms are server actions plus native form
+  state.
+- Routes live under a `(app)` group with a parallel `@modal` slot: add/edit screens are
+  intercepting routes that render as sheets over the list, and the same route renders
+  standalone on a direct visit. A new add/edit screen needs both the real route and the
+  `@modal/(.)` interception.
+- Pure calculation logic (cash runway, burn, net worth, debt payoff, forecasting,
+  statements, recurring occurrences) lives in `src/lib/calculations/` and is unit-tested
+  there — keep it out of components.
 
-## Planned but not yet implemented
+## Docs vs. reality
 
-The website MVP is built (see above). `finance-os/` has been scaffolded but is still just the starter template — none of the actual finance features (accounts, transactions, categorization, net worth, cash runway, debt payoff, forecasting) exist yet. When building it out, consult `docs/PERSONAL_FINANCE_REQUIREMENTS.md` and `docs/TECH_STACK_AND_DOMAIN.md` for the exact schema/requirements rather than inventing structure, and reuse `personal-home`'s design system/components (`docs/BRAND_GUIDE.md`, `docs/STYLE_SYSTEM.md`) rather than starting a new one.
+Both apps are built and in production. The `docs/` folder describes the *intended*
+product and predates much of the implementation, so where a doc and the code disagree,
+the code is current — but consult `docs/PERSONAL_FINANCE_REQUIREMENTS.md` for the
+product decisions behind the finance logic (transfers between own accounts must not
+count as spending; cash runway is the primary metric) rather than re-deriving them.
 
 `docs/STYLE_SYSTEM.md` is the implementation reference for `docs/BRAND_GUIDE.md` — check it before hand-picking colors/spacing for new UI; a couple of brand-guide literal values (muted text) were adjusted during implementation for WCAG AA contrast and both docs now reflect the shipped values.
