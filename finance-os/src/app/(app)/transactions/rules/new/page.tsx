@@ -1,24 +1,16 @@
-import { createClient } from "@/lib/supabase/server";
 import { FormPage } from "@/components/form-page";
-import { RuleForm } from "../rule-form";
-import { createRule } from "../actions";
+import { NewRuleContent } from "../rule-form-content";
 
-export default async function NewCategorizationRulePage() {
-  const supabase = await createClient();
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("id, name")
-    .order("position");
-
+export default function NewRulePage() {
   return (
     <FormPage
-      title="Add categorization rule"
+      title="Add rule"
       breadcrumb={[
         { label: "Transactions", href: "/transactions" },
         { label: "Categorization Rules", href: "/transactions/rules" },
       ]}
     >
-      <RuleForm action={createRule} categories={categories ?? []} submitLabel="Add rule" />
+      <NewRuleContent />
     </FormPage>
   );
 }

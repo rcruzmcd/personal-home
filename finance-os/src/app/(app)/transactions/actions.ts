@@ -119,7 +119,10 @@ export async function createTransaction(_prevState: string | null, formData: For
   }
 
   revalidatePath("/transactions");
-  redirect("/transactions");
+  // "replace", not the Server Action default of "push": when this form was
+  // reached as an intercepted sheet, pushing would leave the sheet's URL on the
+  // history stack, so Back would reopen a sheet for an already-saved record.
+  redirect("/transactions", "replace");
 }
 
 const TRANSFER_LEG_COLUMNS = "id, account_id, date, description, amount, type";
@@ -357,5 +360,5 @@ export async function updateTransaction(
   if (error) return error.message;
 
   revalidatePath("/transactions");
-  redirect("/transactions");
+  redirect("/transactions", "replace");
 }

@@ -38,14 +38,16 @@ const sheetContentVariants = cva(
     variants: {
       side: {
         right:
-          "inset-y-0 right-0 h-full w-3/4 border-l border-border data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:animate-in data-[state=open]:slide-in-from-right",
-        left: "inset-y-0 left-0 h-full w-3/4 border-r border-border data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:animate-in data-[state=open]:slide-in-from-left",
+          "inset-y-0 right-0 h-full border-l border-border data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:animate-in data-[state=open]:slide-in-from-right",
+        left: "inset-y-0 left-0 h-full border-r border-border data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:animate-in data-[state=open]:slide-in-from-left",
       },
       // The nav drawer only holds a list of links; a form needs the same
       // measure the full-page form screens use (FormPage's max-w-lg).
       size: {
-        default: "max-w-sm",
-        form: "max-w-lg",
+        default: "w-3/4 max-w-sm",
+        // Full width on a phone: at w-3/4 a form is ~290px and its paired
+        // fields wrap badly. Wide enough for two columns from sm up.
+        form: "w-full max-w-lg sm:w-3/4",
       },
     },
     defaultVariants: {
