@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/site/theme-toggle"
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 bg-surface border-b border-border">
+    <header className="sticky top-0 z-40 bg-surface border-b border-border print:hidden">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-8 px-4 py-4 sm:px-6 lg:px-10">
         <Link
           href="/"

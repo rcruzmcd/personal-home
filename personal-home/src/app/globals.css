@@ -110,3 +110,96 @@
 body {
   font-family: var(--font-sans);
 }
+
+/*
+ * Print. The resume page is the reason this exists — "Print / Save as PDF"
+ * on /resume is the PDF, so there is no separate document to keep in sync
+ * with the page. The rules are page-agnostic, though: any page prints
+ * cleanly. Site chrome opts out at the component level with Tailwind's
+ * `print:hidden` (header, footer, skip link) rather than being selected by
+ * tag name here.
+ */
+@media print {
+  /*
+   * Force the light palette regardless of the visitor's theme. Browsers
+   * omit background colors when printing but keep text colors, so a
+   * dark-mode visitor would otherwise print near-white text onto white
+   * paper. Pure black on white also reads better in print than the screen
+   * palette's softened #2c3e50.
+   */
+  :root,
+  :root[data-theme="dark"],
+  :root[data-theme="light"] {
+    --background: #ffffff;
+    --surface: #ffffff;
+    --border: #cccccc;
+    --muted: #444444;
+    --foreground: #000000;
+    --purple: #000000;
+    --green: #000000;
+    --purple-solid: #ffffff;
+    --green-solid: #ffffff;
+  }
+
+  @page {
+    margin: 0.6in 0.65in;
+  }
+
+  html,
+  body {
+    background: #ffffff;
+    font-size: 10.5pt;
+  }
+
+  /* The page's own max-width and horizontal padding fight the @page margin
+     and waste an inch of paper on each side. */
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Only nested items get break-inside: avoid. A top-level <li> on the resume
+     is a whole job — nearly a full page for the longest one — and forcing
+     those to stay whole pushes each to a fresh page and leaves most of the
+     previous one blank. Let a role split; keep its individual bullets whole. */
+  li li {
+    break-inside: avoid;
+  }
+
+  h2,
+  h3 {
+    break-inside: avoid;
+    break-after: avoid;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* The accent bar is a brand flourish that reads as a stray black dash once
+     --purple collapses to black for print. */
+  [data-slot="accent-bar"] {
+    display: none !important;
+  }
+
+  /* Screen section rhythm (py-8) is generous for paper. */
+  section {
+    padding-top: 0.6rem !important;
+    padding-bottom: 0.6rem !important;
+  }
+
+  /* Underlining every internal link is noise on paper, where none of them
+     are clickable. */
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+
+  /* Badges are solid-filled pills on screen; on paper the fill drops out and
+     they need a visible edge to still read as discrete tags. */
+  [data-slot="badge"] {
+    border: 1px solid #999999 !important;
+    color: #000000 !important;
+  }
+}

@@ -18,6 +18,8 @@ export function ProjectLinks({
         <a
           key={link.url}
           href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
           onClick={() =>
             trackExternalProjectClick({ slug, url: link.url, linkType: link.type })
           }

@@ -3,12 +3,12 @@ import { Resend } from "resend"
 import { CONTACT_REASON_LABELS } from "@/lib/validation/contact"
 import type { ContactFormData } from "@/lib/validation/contact"
 
-// Temporary: Resend's shared sandbox sender + personal inbox, used until
-// rickiecruz.com's domain/email infra (noreply@rickiecruz.com,
-// hello@rickiecruz.com) is set up. Swap these back once that's ready —
-// no other code changes needed.
-const FROM_ADDRESS = "onboarding@resend.dev"
-const TO_ADDRESS = "ricardo.cruzmcdougal@gmail.com"
+// rickiecruz.com is a verified Resend domain. Sending from hello@ (rather
+// than a dedicated noreply@) until that mailbox exists; only FROM_ADDRESS
+// needs to change when it does. replyTo is set per-send to the visitor's
+// address, so replying from the inbox reaches them, not this address.
+const FROM_ADDRESS = "Rickie Cruz <hello@rickiecruz.com>"
+const TO_ADDRESS = "hello@rickiecruz.com"
 
 function formatSubmissionText(data: ContactFormData): string {
   const lines = [

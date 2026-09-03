@@ -4,11 +4,11 @@ import path from "node:path"
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
 import { DownloadResumeButton } from "@/components/content/download-resume-button"
+import { PrintResumeButton } from "@/components/content/print-resume-button"
 import { getAllProjects } from "@/lib/content/projects"
 
 export const metadata: Metadata = {
@@ -26,24 +26,28 @@ export default function ResumePage() {
 
   return (
     <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
-      <PageHeader
-        title="Resume"
-        description="Senior Full-Stack Software Engineer · Technical Lead · Engineering Leader"
-        actions={
-          hasPdf ? (
-            <DownloadResumeButton />
-          ) : (
-            <Button
-              variant="secondary"
-              disabled
-              title="PDF version coming soon"
-              aria-disabled="true"
-            >
-              Download PDF (coming soon)
-            </Button>
-          )
-        }
-      />
+      {/* The site header is hidden when printing, so the printed page would
+          otherwise carry no name. This block only exists on paper. */}
+      <div className="hidden print:block">
+        <h1 className="text-h2 font-semibold text-foreground">Rickie Cruz</h1>
+        <p className="text-small text-muted">
+          Senior Full-Stack Software Engineer · Technical Lead · Engineering Leader
+        </p>
+        <p className="text-small text-muted">rickiecruz.com</p>
+      </div>
+
+      <div className="print:hidden">
+        <PageHeader
+          title="Resume"
+          description="Senior Full-Stack Software Engineer · Technical Lead · Engineering Leader"
+          actions={
+            <div className="flex flex-wrap gap-3">
+              <PrintResumeButton />
+              {hasPdf ? <DownloadResumeButton /> : null}
+            </div>
+          }
+        />
+      </div>
 
       <div className="mt-4 divide-y divide-border">
         <Section title="Professional Summary">
@@ -59,7 +63,7 @@ export default function ResumePage() {
         </Section>
 
         <Section title="Experience">
-          <ul className="space-y-8">
+          <ul className="space-y-8 print:space-y-6">
             <li>
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="font-medium text-foreground">

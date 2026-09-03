@@ -3,7 +3,9 @@ import Link from "next/link"
 
 import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
-import { PlaceholderNote } from "@/components/content/placeholder-note"
+
+// The one value here that isn't derived from how the site actually works.
+const GOVERNING_STATE = "New York"
 
 export const metadata: Metadata = {
   title: "Terms",
@@ -17,7 +19,7 @@ export default function TermsPage() {
         title="Terms"
         description={
           <p className="text-small text-muted">
-            Last updated: [Placeholder — set this when the terms are finalized]
+            Last updated: September 3, 2026
           </p>
         }
       />
@@ -40,11 +42,21 @@ export default function TermsPage() {
         </Section>
 
         <Section title="Consulting Engagements">
-          <PlaceholderNote>
-            [Placeholder — Rickie to confirm whether a separate services agreement governs
-            paid consulting engagements, or whether these terms should cover that scope
-            directly.]
-          </PlaceholderNote>
+          <p>
+            Nothing on this site is an offer, a quote, or a contract. The service descriptions
+            and starting rates on the{" "}
+            <Link href="/consulting" className="text-purple underline hover:italic">
+              consulting page
+            </Link>{" "}
+            are a starting point for a conversation and are subject to change — actual pricing
+            depends on scope.
+          </p>
+          <p>
+            Paid work is governed by a separate written agreement covering scope, deliverables,
+            timeline, fees, payment terms, ownership of the work, and confidentiality, signed
+            before the work begins. These terms cover your use of this website only. Where a
+            signed agreement and these terms conflict, the signed agreement controls.
+          </p>
         </Section>
 
         <Section title="No Warranty">
@@ -56,10 +68,17 @@ export default function TermsPage() {
         </Section>
 
         <Section title="Governing Law">
-          <PlaceholderNote>
-            [Placeholder — Rickie to specify the governing jurisdiction, if these terms need
-            one.]
-          </PlaceholderNote>
+          <p>
+            These terms are governed by the laws of the State of {GOVERNING_STATE}, United
+            States, without regard to its conflict-of-laws rules, and any dispute arising from
+            your use of this site will be brought in the state or federal courts located there.
+            If any provision of these terms is found unenforceable, the remaining provisions
+            stay in effect.
+          </p>
+          <p>
+            This applies to the website. A signed consulting agreement carries its own
+            governing-law and dispute-resolution terms, and those control for that work.
+          </p>
         </Section>
 
         <Section title="Contact">
