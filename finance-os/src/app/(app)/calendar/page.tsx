@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { Stat } from "@/components/ui/stat";
 import { formatCurrency } from "@/lib/format";
 import { monthName } from "@/lib/transactions/periods";
-import { parseCalendarMonthParams } from "@/lib/calendar/params";
+import { parseMonthParams } from "@/lib/calendar/params";
 import {
   buildMonthEvents,
   buildMonthGrid,
@@ -20,7 +20,7 @@ import { AgendaList } from "./agenda-list";
 
 export default async function CalendarPage({ searchParams }: PageProps<"/calendar">) {
   const today = new Date();
-  const params = parseCalendarMonthParams(await searchParams, today);
+  const params = parseMonthParams(await searchParams, today);
   const window = monthWindow(params.year, params.month);
 
   const supabase = await createClient();

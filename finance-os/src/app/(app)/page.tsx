@@ -3,15 +3,20 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
-import { formatCurrency, formatMonths, formatShortDate } from "@/lib/format";
+import { formatCurrency, formatMonthYear, formatMonths, formatShortDate } from "@/lib/format";
+import { currentMonth, monthDate, monthRange } from "@/lib/month-params";
 import {
+  buildBudgetSummary,
   calculateCashRunway,
   calculateNetWorth,
   findPendingStatements,
   type CalcAccount,
+  type CalcBudget,
   type CalcTransaction,
+  type CategorySpend,
   type StatementAccount,
 } from "@/lib/calculations";
+import { BudgetMeter } from "./budgets/budget-meter";
 
 // calculateCashRunway only looks back 3 months by default — fetch a wider
 // window so that default has full data to work with regardless of when in
@@ -34,8 +39,18 @@ export default async function DashboardPage() {
   cutoff.setDate(cutoff.getDate() - TRANSACTION_LOOKBACK_DAYS);
   const cutoffDate = cutoff.toISOString().slice(0, 10);
 
-  const [{ data: accountRows }, { data: transactionRows }, { data: statementRows }] =
-    await Promise.all([
+  // This calendar month, for the budget widget — the 120-day window above is
+  // for burn averaging and would overstate a month's spend several times over.
+  const thisMonth = monthRange(currentMonth(asOfDate));
+
+  const [
+    { data: accountRows },
+    { data: transactionRows },
+    { data: statementRows },
+    { data: categoryRows },
+    { data: budgetRows },
+    { data: spendRows },
+  ] = await Promise.all([
     supabase
       .from("accounts")
       .select("id, name, type, balance, active, statement_day, due_day"),
@@ -45,6 +60,12 @@ export default async function DashboardPage() {
       .eq("type", "expense")
       .gte("date", cutoffDate),
     supabase.from("statements").select("account_id, closing_date"),
+    supabase.from("categories").select("id, name").eq("type", "expense").order("position"),
+    supabase.from("budgets").select("category_id, amount, categories(name)"),
+    supabase.rpc("budget_spend_by_category", {
+      p_start: thisMonth.start,
+      p_end: thisMonth.end,
+    }),
   ]);
 
   const accounts: CalcAccount[] = accountRows ?? [];
@@ -62,6 +83,22 @@ export default async function DashboardPage() {
   const pendingStatements = findPendingStatements({
     accounts: (accountRows ?? []) as StatementAccount[],
     recorded: statementRows ?? [],
+    asOfDate,
+  });
+
+  // Same RPC + summary builder the /budgets page uses, so there is one
+  // definition of "spend against a budget" rather than a dashboard variant.
+  const budgets = buildBudgetSummary({
+    budgets: (budgetRows ?? []).map((row): CalcBudget => ({
+      categoryId: row.category_id,
+      categoryName: (row.categories as unknown as { name: string } | null)?.name ?? null,
+      amount: row.amount,
+    })),
+    categories: categoryRows ?? [],
+    spendByCategory: (
+      (spendRows ?? []) as { category_id: string | null; spent: number | string }[]
+    ).map((row): CategorySpend => ({ categoryId: row.category_id, spent: Number(row.spent) })),
+    month: monthDate(currentMonth(asOfDate)),
     asOfDate,
   });
 
@@ -197,6 +234,46 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Full width below the 2-col grid rather than a third card that would
+          orphan in it — the same reasoning as the statements slot above.
+          Rendered only when there are budgets: a card announcing that a
+          feature is unused carries no information (docs/UX_PATTERNS.md rule 5),
+          and the header still has no stats. */}
+      {budgets.budgetedCount > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Budgets · {formatMonthYear(asOfDate)}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <p className="text-body text-muted">Spent of budgeted</p>
+              <p className="text-body font-medium text-foreground">
+                {formatCurrency(budgets.totalSpent)} of {formatCurrency(budgets.totalBudgeted)}
+              </p>
+            </div>
+
+            {/* Only what needs attention — the full list is a click away. */}
+            {budgets.attention.slice(0, 3).map((line) => (
+              <div key={line.categoryId} className="flex flex-col gap-1">
+                <p className="text-small font-medium text-foreground">{line.categoryName}</p>
+                <BudgetMeter line={line} />
+              </div>
+            ))}
+
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-border pt-3">
+              <p className="text-small text-muted">
+                {budgets.overCount > 0
+                  ? `${budgets.overCount} of ${budgets.budgetedCount} categories over budget`
+                  : `All ${budgets.budgetedCount} budgeted categories on track`}
+              </p>
+              <Link href="/budgets" className="text-body font-medium text-purple underline">
+                View budgets
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </main>
   );
 }

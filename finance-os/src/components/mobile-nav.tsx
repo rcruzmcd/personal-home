@@ -9,8 +9,8 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { NAV_LINKS } from "@/lib/nav";
 
 /**
- * The primary navigation below `lg`, where nine links plus the sign-out button
- * overflow the header bar. Mirrors personal-home's MobileNav (a Sheet behind a
+ * The primary navigation below `xl`, where the ten links plus the sign-out
+ * button overflow the header bar. Mirrors personal-home's MobileNav (a Sheet behind a
  * hamburger) so both apps behave the same way on a phone.
  *
  * The only client state is whether the drawer is open — the links themselves
@@ -23,7 +23,7 @@ export function MobileNav() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button type="button" variant="secondary" className="px-3 py-3 lg:hidden" aria-label="Open menu">
+        <Button type="button" variant="secondary" className="px-3 py-3 xl:hidden" aria-label="Open menu">
           <Menu className="size-5" aria-hidden="true" />
         </Button>
       </SheetTrigger>

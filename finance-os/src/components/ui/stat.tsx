@@ -4,6 +4,10 @@ const TONE_CLASSES = {
   neutral: "text-foreground",
   positive: "text-green",
   accent: "text-purple",
+  // Only for a figure that is genuinely wrong to leave as it is — an exceeded
+  // budget, not merely a negative number. The label beside it always says so
+  // in words too, so the color is never the only signal.
+  danger: "text-red",
 } as const;
 
 export type StatTone = keyof typeof TONE_CLASSES;

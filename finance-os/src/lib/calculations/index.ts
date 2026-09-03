@@ -2,6 +2,7 @@ export * from "./types";
 export * from "./cadence";
 export * from "./net-worth";
 export * from "./burn";
+export * from "./budgets";
 export * from "./cash-runway";
 export * from "./categories";
 export * from "./income";

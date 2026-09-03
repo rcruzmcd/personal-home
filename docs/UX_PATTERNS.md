@@ -19,9 +19,10 @@ layout by using them rather than by re-deriving it:
 | Component | File (`finance-os`) | File (`personal-home`) | Use for |
 |---|---|---|---|
 | `PageHeader` | `src/components/page-header.tsx` | `src/components/content/page-header.tsx` | Every screen's top: breadcrumb → title → description, with `stats` and `actions` slots on the opposite end of the title row. `compact` drops the title to h2. The `personal-home` version also renders the brand accent bar above the title and takes an `eyebrow` slot (status/tech badges). |
-| `Stat` | `src/components/ui/stat.tsx` | `src/components/ui/stat.tsx` | A labelled headline number (label above value). `tone`: `neutral` / `positive` / `accent`; `personal-home` adds `size: sm` for in-body grids. |
+| `Stat` | `src/components/ui/stat.tsx` | `src/components/ui/stat.tsx` | A labelled headline number (label above value). `tone`: `neutral` / `positive` / `accent` / `danger` (finance-os only, for an exceeded limit); `personal-home` adds `size: sm` for in-body grids. |
 | `Breadcrumb` | `src/components/ui/breadcrumb.tsx` | `src/components/ui/breadcrumb.tsx` | The trail itself; reached through `PageHeader`'s `breadcrumb` prop. `personal-home`'s is the shadcn/ui breadcrumb restyled onto the brand tokens. |
 | `FormPage` | `src/components/form-page.tsx` | — | The single-form add/edit screens — compact header + breadcrumb above a `max-w-lg` card. |
+| `MonthNav` | `src/components/month-nav.tsx` | — | Prev / month / next / Today for any month-scoped screen (`/calendar`, `/budgets`). Takes an `href` builder so only the URL is route-specific, and a `trailing` slot for anything that describes rather than filters (the calendar's legend). Month state lives in the URL via `src/lib/month-params.ts`, so a month is bookmarkable. |
 
 ---
 

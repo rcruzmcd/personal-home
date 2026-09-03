@@ -9,9 +9,10 @@ export default function AppLayout({ children, modal }: LayoutProps<"/">) {
     <div className="flex-1 flex flex-col">
       <header className="border-b border-border bg-surface">
         <div className="flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">
-          {/* Nine links plus the sign-out button need ~960px, so the row only
-              appears at lg — below that they live in the drawer. */}
-          <nav aria-label="Primary" className="hidden lg:flex items-center gap-6">
+          {/* Ten links plus the sign-out button need ~1000px, which no longer
+              clears lg (1024px) with the horizontal padding — so the row moves
+              to xl. Below that they live in the drawer. */}
+          <nav aria-label="Primary" className="hidden xl:flex items-center gap-6">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}

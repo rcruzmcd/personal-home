@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PageHeader } from "@/components/page-header";
 import { formatCurrency, formatMonthYear } from "@/lib/format";
 import {
+  budgetLimitsByCategoryName,
   calculateForecast,
   type CalcAccount,
   type CalcIncomeSource,
@@ -51,8 +52,12 @@ export default async function ForecastPage() {
   cutoff.setDate(cutoff.getDate() - TRANSACTION_LOOKBACK_DAYS);
   const cutoffDate = cutoff.toISOString().slice(0, 10);
 
-  const [{ data: accountRows }, { data: incomeRows }, { data: transactionRows }] =
-    await Promise.all([
+  const [
+    { data: accountRows },
+    { data: incomeRows },
+    { data: transactionRows },
+    { data: budgetRows },
+  ] = await Promise.all([
       supabase.from("accounts").select("type, balance, active, interest_rate, minimum_payment"),
       supabase
         .from("income_sources")
@@ -62,6 +67,7 @@ export default async function ForecastPage() {
         .select("date, amount, type, categories(name)")
         .eq("type", "expense")
         .gte("date", cutoffDate),
+      supabase.from("budgets").select("amount, categories(name)"),
     ]);
 
   const accounts: CalcAccount[] = accountRows ?? [];
@@ -93,7 +99,25 @@ export default async function ForecastPage() {
     );
   }
 
-  const forecast = calculateForecast({ accounts, incomeSources, transactions, asOfDate });
+  // A budgeted category is projected at its limit instead of at its recent
+  // average; everything else keeps averaging. This REPLACES the average for
+  // those categories rather than adding to it — see burn.ts — so a category
+  // can never be counted twice.
+  const budgetLimits = budgetLimitsByCategoryName(
+    (budgetRows ?? []).map((row) => ({
+      categoryName: (row.categories as unknown as { name: string } | null)?.name ?? null,
+      amount: row.amount,
+    })),
+  );
+  const budgetedCount = Object.keys(budgetLimits).length;
+
+  const forecast = calculateForecast({
+    accounts,
+    incomeSources,
+    transactions,
+    asOfDate,
+    budgetLimits,
+  });
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
@@ -138,11 +162,21 @@ export default async function ForecastPage() {
               {formatCurrency(forecast.assumptions.totalExpenses)}/mo
             </p>
           </div>
+          {/* Which basis produced that number has to be stated, or the
+              projection silently changes meaning the day a budget is set. */}
+          {budgetedCount > 0 && (
+            <p className="text-small text-muted">
+              {budgetedCount} categor{budgetedCount === 1 ? "y is" : "ies are"} projected at their
+              budget limit rather than their recent average. A limit is a cap, so this runs high
+              for categories you routinely underspend.
+            </p>
+          )}
         </CardContent>
       </Card>
 
       <p className="text-small text-muted">
-        Projection based on income sources, historical spending, and debt minimum payments as of{" "}
+        Projection based on income sources, {budgetedCount > 0 ? "budget limits where set and " : ""}
+        historical spending{budgetedCount > 0 ? " elsewhere" : ""}, and debt minimum payments as of{" "}
         {formatMonthYear(asOfDate)}.
       </p>
     </main>

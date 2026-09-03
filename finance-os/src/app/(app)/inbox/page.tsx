@@ -3,9 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { formatCurrency, formatShortDate } from "@/lib/format";
+import { currentMonth, monthDate, monthRange } from "@/lib/month-params";
 import {
+  buildBudgetSummary,
   calculateCashRunway,
   calculateForecast,
+  detectBudgetAlerts,
   detectFinancialAlerts,
   findPossibleDuplicates,
   findPossibleRecurringExpenses,
@@ -13,8 +16,10 @@ import {
   findPendingStatements,
   findUncategorizedTransactions,
   type CalcAccount,
+  type CalcBudget,
   type CalcIncomeSource,
   type CalcTransaction,
+  type CategorySpend,
   type FinancialAlert,
   type ReviewTransaction,
   type StatementAccount,
@@ -31,6 +36,7 @@ export default async function InboxPage() {
   const cutoff = new Date(asOfDate);
   cutoff.setDate(cutoff.getDate() - TRANSACTION_LOOKBACK_DAYS);
   const cutoffDate = cutoff.toISOString().slice(0, 10);
+  const thisMonth = monthRange(currentMonth(asOfDate));
 
   const [
     { data: accountRows },
@@ -38,6 +44,9 @@ export default async function InboxPage() {
     { data: transactionRows },
     { data: recurringExpenseRows },
     { data: statementRows },
+    { data: categoryRows },
+    { data: budgetRows },
+    { data: spendRows },
   ] = await Promise.all([
       supabase
         .from("accounts")
@@ -55,6 +64,14 @@ export default async function InboxPage() {
         .gte("date", cutoffDate),
       supabase.from("recurring_expenses").select("id, name, amount, active").eq("active", true),
       supabase.from("statements").select("account_id, closing_date"),
+      supabase.from("categories").select("id, name").eq("type", "expense").order("position"),
+      supabase.from("budgets").select("category_id, amount, categories(name)"),
+      // This calendar month, not the 120-day review window above — a budget is
+      // a monthly limit, so anything wider would report a false overrun.
+      supabase.rpc("budget_spend_by_category", {
+        p_start: thisMonth.start,
+        p_end: thisMonth.end,
+      }),
     ]);
 
   const accounts: CalcAccount[] = accountRows ?? [];
@@ -103,6 +120,22 @@ export default async function InboxPage() {
     recorded: statementRows ?? [],
     asOfDate,
   });
+  // Same RPC + summary builder as /budgets and the dashboard, so all three
+  // agree on what "over budget" means.
+  const budgets = buildBudgetSummary({
+    budgets: (budgetRows ?? []).map((row): CalcBudget => ({
+      categoryId: row.category_id,
+      categoryName: (row.categories as unknown as { name: string } | null)?.name ?? null,
+      amount: row.amount,
+    })),
+    categories: categoryRows ?? [],
+    spendByCategory: (
+      (spendRows ?? []) as { category_id: string | null; spent: number | string }[]
+    ).map((row): CategorySpend => ({ categoryId: row.category_id, spent: Number(row.spent) })),
+    month: monthDate(currentMonth(asOfDate)),
+    asOfDate,
+  });
+
   const allAlerts: FinancialAlert[] = [
     ...pendingStatements.map((statement) => ({
       message: `${statement.accountName} statement closed ${formatShortDate(statement.closingDate)}${
@@ -112,6 +145,19 @@ export default async function InboxPage() {
       actionLabel: "Record statement",
     })),
     ...alerts,
+    // Between the financial warnings and the price drifts: an exceeded budget
+    // is more actionable than a subscription creeping up, but less urgent than
+    // a projected cash shortfall. detectBudgetAlerts returns the raw lines and
+    // the wording happens here, the same split priceChanges uses — money
+    // formatting stays out of src/lib/calculations.
+    ...detectBudgetAlerts(budgets).map(({ line, kind }) => ({
+      message:
+        kind === "over"
+          ? `${line.categoryName} is ${formatCurrency(-(line.remaining ?? 0))} over its ${formatCurrency(line.limit ?? 0)} budget this month.`
+          : `${line.categoryName} is at ${Math.round((line.ratio ?? 0) * 100)}% of its ${formatCurrency(line.limit ?? 0)} budget this month.`,
+      href: "/budgets",
+      actionLabel: "Review budgets",
+    })),
     ...priceChanges.map((change) => ({
       message: `${change.name} increased from ${formatCurrency(change.previousAmount)} to ${formatCurrency(change.newAmount)}.`,
     })),

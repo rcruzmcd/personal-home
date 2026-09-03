@@ -92,6 +92,28 @@ Not pure black (#000000) — slightly softer, more sophisticated.
 
 All body copy, case study text, important information uses this color.
 
+#### Alert Red
+
+**Limit exceeded / destructive**
+```
+#B3261E   (light)
+#F2857C   (dark mode)
+```
+Added during the budgets build (`finance-os`), which needed a way to say "you
+are over this limit" that purple and green could not carry. It is a *semantic*
+color, not a brand accent: use it only for an exceeded limit or a destructive
+action, never decoratively, and never as the only signal — anything shown in
+red also states the fact in words (WCAG 1.4.1 Use of Color).
+
+Both values are contrast-checked the same way Secondary Text was: `#B3261E`
+clears WCAG AA on Background (6.0:1) and Surface (6.5:1); the dark-mode
+`#F2857C` clears it on both dark surfaces (7.6:1 and 6.6:1). `#B3261E` doubles
+as the solid fill behind white text (6.5:1).
+
+Because red is semantic, it does not count against the "max 5 colors per page"
+rule the way an accent would — but if red appears on a screen with nothing
+wrong on it, that is a bug in the screen, not a license to keep it.
+
 ### Color Combinations (Tested for Contrast)
 
 **✅ Accessible combinations:**
@@ -101,6 +123,8 @@ All body copy, case study text, important information uses this color.
 - Strong Text on White or Silver background (12:1 ratio)
 - White text on Deep Purple background (11:1 ratio)
 - White text on Rich Green background (7:1 ratio)
+- Alert Red text on White background (6.5:1 ratio)
+- Alert Red text on Cool Silver background (6.0:1 ratio)
 
 **❌ Don't use:**
 - Rich Green on Cool Silver (insufficient contrast)
@@ -639,6 +663,7 @@ If implementing dark mode, invert intelligently:
 ```
 Primary Purple:    #5D3A7A
 Secondary Green:   #2D7A4A
+Alert Red:         #B3261E   (semantic only — over-limit / destructive)
 Background:        #F4F6F9
 Surface White:     #FFFFFF
 Divider Gray:      #E0E3E8
