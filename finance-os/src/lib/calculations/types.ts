@@ -70,6 +70,21 @@ export type CalcTransaction = {
   categoryName: string | null;
 };
 
+export type CalcBudget = {
+  /** budgets.category_id. */
+  categoryId: string;
+  /**
+   * The category's name (categories.name). Carried alongside the id because
+   * burn.ts matches spend to limits by name — CalcTransaction has no id.
+   */
+  categoryName: string | null;
+  /** Positive magnitude per month (budgets.amount). */
+  amount: number;
+};
+
+/** One row of the budget_spend_by_category RPC. null = uncategorized spend. */
+export type CategorySpend = { categoryId: string | null; spent: number };
+
 export type RecurringFrequency = "daily" | "weekly" | "monthly" | "annually";
 
 export type CalcRecurringExpense = {

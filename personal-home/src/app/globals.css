@@ -32,6 +32,14 @@
   --purple: #5d3a7a;
   --green: #2d7a4a;
 
+  /* Semantic red, used only to mark a limit exceeded or a destructive action
+     — never decoratively (docs/STYLE_SYSTEM.md caps a page at 5 visible
+     colors). Meaning is never carried by the color alone: anything painted
+     red also states the fact in words, per WCAG 1.4.1 Use of Color.
+     Contrast-checked like --muted was: #b3261e clears 4.5:1 on both
+     --background (6.0:1) and --surface (6.5:1). */
+  --red: #b3261e;
+
   /* Fixed (theme-independent) fills for solid purple/green surfaces that
      carry white text — e.g. primary buttons, featured/active badges.
      --purple/--green above get lightened in dark mode so they stay legible
@@ -41,6 +49,7 @@
      theme. */
   --purple-solid: #5d3a7a;
   --green-solid: #2d7a4a;
+  --red-solid: #b3261e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,6 +64,9 @@
     --foreground: #e0e3e8;
     --purple: #9b7ac9;
     --green: #5fb876;
+    /* Lightened for legibility as text on a dark page: 6.6:1 on --surface,
+       7.6:1 on --background. */
+    --red: #f2857c;
   }
 }
 
@@ -66,6 +78,7 @@
   --foreground: #e0e3e8;
   --purple: #9b7ac9;
   --green: #5fb876;
+  --red: #f2857c;
 }
 
 @theme inline {
@@ -78,6 +91,8 @@
   --color-green: var(--green);
   --color-purple-solid: var(--purple-solid);
   --color-green-solid: var(--green-solid);
+  --color-red: var(--red);
+  --color-red-solid: var(--red-solid);
 
   --font-sans: var(--font-inter);
   --font-serif: var(--font-merriweather);
@@ -137,8 +152,10 @@ body {
     --foreground: #000000;
     --purple: #000000;
     --green: #000000;
+    --red: #000000;
     --purple-solid: #ffffff;
     --green-solid: #ffffff;
+    --red-solid: #ffffff;
   }
 
   @page {

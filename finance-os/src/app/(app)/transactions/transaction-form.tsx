@@ -11,6 +11,7 @@ import { UnsavedChangesDialog } from "@/components/unsaved-changes-dialog";
 import { useDirtyFormTracking, useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import { TRANSACTION_TYPES } from "@/lib/validations/transaction";
 import { formatCurrency } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import {
   findUncategorizedByMerchant,
   learnCategorizationRule,
@@ -18,7 +19,12 @@ import {
 } from "./actions";
 
 type AccountOption = { id: string; name: string };
-type CategoryOption = { id: string; name: string };
+type CategoryOption = {
+  id: string;
+  name: string;
+  /** Present only for categories with a budget — drives the remaining-budget hint. */
+  budget?: { limit: number; spent: number; remaining: number };
+};
 
 type Transaction = {
   type: (typeof TRANSACTION_TYPES)[number];
@@ -61,6 +67,11 @@ export function TransactionForm({
   const [type, setType] = useState<(typeof TRANSACTION_TYPES)[number]>(
     defaultValues?.type ?? "expense",
   );
+  // Controlled so the remaining-budget hint can follow the selection. The
+  // submitted value is unchanged — the action still reads category_id off the
+  // FormData.
+  const [selectedCategoryId, setSelectedCategoryId] = useState(defaultValues?.category_id ?? "");
+  const selectedBudget = categories.find((c) => c.id === selectedCategoryId)?.budget;
   const [isCheckingRule, setIsCheckingRule] = useState(false);
   const [rulePreview, setRulePreview] = useState<RulePreview | null>(null);
   const [isApplying, setIsApplying] = useState(false);
@@ -296,7 +307,8 @@ export function TransactionForm({
             <select
               id="category_id"
               name="category_id"
-              defaultValue={defaultValues?.category_id ?? ""}
+              value={selectedCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
               className={inputClasses}
             >
               <option value="">Auto-detect (rule-based)</option>
@@ -306,6 +318,20 @@ export function TransactionForm({
                 </option>
               ))}
             </select>
+            {/* Only for an expense: a refund or income row doesn't consume a
+                budget, so the figure would be misleading beside one. */}
+            {type === "expense" && selectedBudget && (
+              <p
+                className={cn(
+                  "mt-1 text-small",
+                  selectedBudget.remaining < 0 ? "font-medium text-red" : "text-muted",
+                )}
+              >
+                {selectedBudget.remaining < 0
+                  ? `${formatCurrency(-selectedBudget.remaining)} over this month's budget`
+                  : `${formatCurrency(selectedBudget.remaining)} left this month`}
+              </p>
+            )}
           </div>
           <div>
             <Label htmlFor="subcategory">Subcategory</Label>

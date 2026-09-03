@@ -26,9 +26,26 @@ modifiers, e.g. `bg-purple/10`).
 | `--color-foreground` | `text-foreground` | `#2C3E50` | `#E0E3E8` | Strong Text |
 | `--color-purple` | `bg-purple` / `text-purple` | `#5D3A7A` | `#9B7AC9` | Deep Purple (primary) |
 | `--color-green` | `bg-green` / `text-green` | `#2D7A4A` | `#5FB876` | Rich Green (secondary) |
+| `--color-red` | `bg-red` / `text-red` | `#B3261E` | `#F2857C` | Alert Red (semantic — over-limit / destructive only) |
+| `--color-purple-solid` | `bg-purple-solid` | `#5D3A7A` | `#5D3A7A` | Fixed fill for white-on-purple |
+| `--color-green-solid` | `bg-green-solid` | `#2D7A4A` | `#2D7A4A` | Fixed fill for white-on-green |
+| `--color-red-solid` | `bg-red-solid` | `#B3261E` | `#B3261E` | Fixed fill for white-on-red |
 
 **Never** use raw `white`/`black`/arbitrary hex in components — always the
 token names above, so dark mode "just works" once the toggle exists.
+
+`--color-red` is the one *semantic* color in the set: it means "this limit is
+exceeded" or "this action destroys something", never "this is an accent".
+Introduced for the budgets module in `finance-os`, where purple and green had
+no way to say "over". Two rules come with it:
+
+- **Never the only signal.** Anything rendered red also states the fact in
+  words ("$60 over"), per WCAG 1.4.1. That is why `BudgetMeter` pairs the bar
+  with a sentence rather than relying on the fill color.
+- **The `-solid` variants exist because `--color-red` lightens in dark mode**
+  to stay legible as *text*, which makes it too light to sit behind white text.
+  Use `bg-red-solid` for a filled control, `text-red` for a figure — the same
+  split `--purple`/`--purple-solid` already uses.
 
 ### Dark mode
 
@@ -162,4 +179,10 @@ focus:border-purple focus:border-2 focus:ring-4 focus:ring-purple/10 focus:outli
 - Accent bars: 40–60px wide only, never full-width.
 - Shadows only on cards and their hover states, not on every element.
 - Focus states always visible, always green.
-- Max 5 colors visible in a single page view, max 2 fonts per page.
+- Max 5 colors visible in a single page view, max 2 fonts per page. `text-red`
+  is exempt because it is semantic rather than decorative — but red on a screen
+  where nothing is wrong is a bug in the screen.
+- Never let color alone carry meaning: an over-limit row is red *and* says
+  "over" (WCAG 1.4.1).
+- `rounded-full` only on genuinely pill-shaped things — the `pill` chips and
+  the 8px `Progress` bar qualify; a card does not.

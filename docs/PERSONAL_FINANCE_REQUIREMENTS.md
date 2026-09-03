@@ -17,7 +17,7 @@
 
 **Deployment:** Ships as two separate instances of the same app (see `docs/TECH_STACK_AND_DOMAIN.md` → "Personal Finance: Two Instances") — a private instance holding your real financial data, and a public showcase instance seeded with fake data for the portfolio case study. Everything in this spec (data model, calculations, UI) applies to both; only the underlying data and access controls differ.
 
-> **Status:** Built in `finance-os/` — Supabase auth/schema/RLS, dashboard, accounts (incl. reconciliation), transactions (manual entry + CSV/XLSX import + dedup + rule-based categorization), income sources, cash flow/forecast engine, and all three MVP nice-to-haves (recurring expenses, alerts/inbox, reconciliation). Not yet built: debt payoff calculator (avalanche/snowball), a dedicated debt dashboard, transaction search/filter, and deployment. See §15 for the itemized checklist.
+> **Status:** Built in `finance-os/` — Supabase auth/schema/RLS, dashboard, accounts (incl. reconciliation), transactions (manual entry + CSV/XLSX import + dedup + rule-based categorization), income sources, cash flow/forecast engine, and all three MVP nice-to-haves (recurring expenses, alerts/inbox, reconciliation). Since extended with the budgets module (§18). Not yet built: debt payoff calculator (avalanche/snowball), a dedicated debt dashboard, transaction search/filter, and deployment. See §15 for the itemized checklist.
 
 ---
 
@@ -41,7 +41,7 @@
 
 - Bank sync / Plaid integration
 - Advanced reports
-- Budgeting module (will add once employed)
+- ~~Budgeting module (will add once employed)~~ — since built, see §18
 - Net worth tracking over time
 - Scenarios/"What if" analysis
 - Goals tracking
@@ -820,6 +820,11 @@ categories
 ├── color (optional)
 └── position
 
+budgets  (see §18 — added after the MVP)
+├── id
+├── category_id  (unique per user; expense categories only)
+└── amount       (monthly limit, positive; no period column, no rollover)
+
 categorization_rules
 ├── id
 ├── match_condition (merchant contains X, equals Y)
@@ -909,7 +914,7 @@ income_sources
 - [ ] Bank sync (Plaid integration)
 - [ ] Scenarios/"What if" engine
 - [ ] Advanced reporting (PDF export)
-- [ ] Budgeting module
+- [x] Budgeting module (§18) — per-category standing monthly limits
 - [ ] Net worth tracking over time (with visualization)
 - [ ] Investment tracking
 - [ ] Tax planning
@@ -919,6 +924,65 @@ income_sources
 - [ ] Notifications/alerts (SMS/email)
 - [ ] API for external integrations
 - [ ] Data export (CSV, JSON, etc.)
+
+---
+
+## 18. Budgets (built after the MVP)
+
+Deferred out of the MVP on purpose (see the "Skip for MVP" list above and
+`docs/CASE_STUDIES.md` → "Decision: No traditional budgeting module in MVP",
+whose stated cost was *"Can't set spending limits"*). Built once the rest of
+the app was in production. This section documents the decisions the code
+encodes, since they were made after this document was first written.
+
+**Model — per-category monthly spending limits.** Not zero-based/envelope
+budgeting, and not 50/30/20 group targets. A budget is one row per expense
+category holding a monthly limit.
+
+**One standing limit per category, applying to every month.** There is no
+per-month budget row. The limit does not vary by month, so a month is only ever
+a *query* parameter — viewing August and September uses the same limit. This
+avoids the "copy last month's budget" chore a per-month table forces on the
+user every 1st.
+
+**No rollover.** Each month starts fresh at the limit. Carrying a leftover
+forward would make "what is my Food limit" depend on an unbounded chain of
+prior months, and a monthly spending limit is not what most people mean by an
+envelope.
+
+**Spend counts `type = 'expense'` only.** Transfers between the user's own
+accounts are never spending (§3), and refunds/adjustments are not burn — the
+same filter §8's burn calculation applies. Magnitudes are `abs(amount)`,
+because a limit is a positive number.
+
+**Only expense categories are budgetable.** A transfer category ("Savings
+Transfer", "Investment") is money moving between the user's own accounts, so a
+limit on one would contradict §3. Subcategories are free text with no table, so
+there is no subcategory-level budgeting.
+
+**Uncategorized spend is reported, never hidden.** `transactions.category_id`
+is nullable, so the budgets page reports spend that no limit covers as its own
+figure rather than folding it into the budgeted totals or dropping it.
+
+### Display
+
+- **`/budgets`** — every expense category as one editable grid, saved in a
+  single action. Header carries Budgeted / Spent / Remaining; each row shows
+  spend against its limit with a meter and an explicit "$X left" / "$X over".
+  Categories with no limit still appear, so setting one is in reach. Past
+  months are read-only, since limits are standing rather than per-month.
+- **Dashboard** — a card with spent-of-budgeted and the categories needing
+  attention.
+- **Inbox** — an alert per over-budget and per near-limit (80%) category,
+  ordered after the financial warnings and before the price drifts.
+- **Transaction form** — "$240 left in Food this month" beside the category
+  select, with the transaction being edited netted out of the figure.
+- **Forecast** — budgeted categories project at their limit instead of their
+  recent average; everything else keeps averaging. A limit is a cap rather than
+  an expectation, so this runs high for categories the user underspends, and
+  the assumptions block says which basis was used. Cash runway deliberately
+  does **not** use limits: runway answers "how long does my current behaviour
+  last", which must stay descriptive (§1).
 
 ---
 

@@ -67,6 +67,12 @@ export type CalculateForecastInput = {
   lookbackMonths?: number;
   essentialCategories?: readonly string[];
   horizons?: readonly ForecastHorizon[];
+  /**
+   * Per-category monthly limits (see MonthlyBurnInput.budgetLimits). Budgeted
+   * categories project at their limit rather than at their recent average;
+   * everything else keeps averaging. Omit to forecast purely from history.
+   */
+  budgetLimits?: Readonly<Record<string, number>>;
 };
 
 const monthYearFormatter = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" });
@@ -75,7 +81,9 @@ const monthYearFormatter = new Intl.DateTimeFormat("en-US", { month: "long", yea
  * Projects financial position forward by rolling the cash flow formula
  * (cash-flow.ts) one calendar month at a time (docs/PERSONAL_FINANCE_REQUIREMENTS.md
  * §9). Expected expenses are held at the historical monthly average for
- * every period (§8 doesn't model expenses changing over time); debt is
+ * every period (§8 doesn't model expenses changing over time) — or, for
+ * categories the user has budgeted, at the budget limit instead, when
+ * budgetLimits is supplied; debt is
  * amortized using each liability account's interest_rate/minimum_payment,
  * capped so a nearly-paid-off account is never overpaid; non-liquid assets
  * (investments, etc.) are held constant since nothing in the schema
@@ -92,6 +100,7 @@ export function calculateForecast(input: CalculateForecastInput): ForecastResult
     lookbackMonths = 3,
     essentialCategories = DEFAULT_ESSENTIAL_CATEGORIES,
     horizons = DEFAULT_FORECAST_HORIZONS,
+    budgetLimits,
   } = input;
 
   const { essentialBurn, totalBurn } = calculateMonthlyBurn({
@@ -99,6 +108,7 @@ export function calculateForecast(input: CalculateForecastInput): ForecastResult
     asOfDate,
     lookbackMonths,
     essentialCategories,
+    budgetLimits,
   });
 
   const currentNetWorth = calculateNetWorth(accounts);
