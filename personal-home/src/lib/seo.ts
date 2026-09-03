@@ -1,4 +1,5 @@
 import type { Project } from "@/lib/content/types"
+import { SOCIAL_LINKS } from "@/lib/nav"
 import { lastModified } from "@/lib/date"
 
 export const SITE_URL = "https://rickiecruz.com"
@@ -18,6 +19,9 @@ export function buildPersonJsonLd() {
     url: SITE_URL,
     jobTitle: "Software Engineer",
     description: SITE_DESCRIPTION,
+    // sameAs is how search engines tie this Person to the same individual on
+    // other platforms; it stays in sync with the footer's profile links.
+    sameAs: SOCIAL_LINKS.map((link) => link.href),
   }
 }
 

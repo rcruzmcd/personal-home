@@ -1,12 +1,13 @@
 import Link from "next/link"
 
 import { FOOTER_LINKS } from "@/lib/nav"
+import { SocialLinks } from "@/components/site/social-links"
 
 export function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="bg-background border-t border-border">
+    <footer className="bg-background border-t border-border print:hidden">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 text-small text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
         <p>
           &copy; {year} Rickie Cruz. All rights reserved.
@@ -25,6 +26,10 @@ export function Footer() {
           <Link href="/contact" className="text-purple hover:underline">
             Contact
           </Link>
+        </nav>
+
+        <nav aria-label="Profiles">
+          <SocialLinks />
         </nav>
       </div>
     </footer>
