@@ -405,7 +405,7 @@ Why Vercel:
 |---|---|---|
 | **Purpose** | Your actual financial tracking | Public portfolio/case-study demo |
 | **Data** | Real Supabase project, real accounts/transactions | Separate Supabase project, seeded with fake/sample data |
-| **Domain** | Not on a discoverable `*.rickiecruz.com` subdomain — default `*.vercel.app` URL or an unadvertised subdomain, never linked from site nav | `finance.rickiecruz.com` (or `demo.rickiecruz.com`), linked from the Personal Finance OS case study |
+| **Domain** | Not on a discoverable `*.rickiecruz.com` subdomain — default `*.vercel.app` URL or an unadvertised subdomain, never linked from site nav | `finance.rickiecruz.com` — decided; linked from the Personal Finance OS case study |
 | **Access** | Gated behind Supabase Auth (and/or Vercel Deployment Protection until auth is built) | Public, read-only or reset-on-schedule |
 | **Env vars** | Points at the production Supabase project | Points at the demo Supabase project |
 
