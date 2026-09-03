@@ -13,3 +13,11 @@ export function addMonths(date: Date, months: number): Date {
   result.setMonth(result.getMonth() + months);
   return result;
 }
+
+/**
+ * Half-open date range: [start, end). Lives here rather than in income.ts so
+ * every module that windows over dates (income projection, recurring/income
+ * occurrence expansion, the calendar) shares one definition without importing
+ * each other.
+ */
+export type Period = { start: Date; end: Date };

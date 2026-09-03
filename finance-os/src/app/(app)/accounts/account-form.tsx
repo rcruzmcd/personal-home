@@ -19,8 +19,8 @@ type Account = {
   credit_limit: number | null;
   interest_rate: number | null;
   minimum_payment: number | null;
-  due_date: string | null;
-  statement_date: string | null;
+  due_day: number | null;
+  statement_day: number | null;
   opening_date: string | null;
   notes: string | null;
 };
@@ -141,25 +141,42 @@ export function AccountForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="statement_date">Statement date</Label>
-          <Input
-            id="statement_date"
-            name="statement_date"
-            type="date"
-            defaultValue={defaultValues?.statement_date ?? ""}
-          />
+      {/* Days of the month, not dates: a card closes and falls due on the same
+          day every cycle, so a stored date would go stale after one month. */}
+      <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="statement_day">Statement day</Label>
+            <Input
+              id="statement_day"
+              name="statement_day"
+              type="number"
+              min={1}
+              max={31}
+              step={1}
+              inputMode="numeric"
+              placeholder="17"
+              defaultValue={defaultValues?.statement_day ?? ""}
+            />
+          </div>
+          <div>
+            <Label htmlFor="due_day">Due day</Label>
+            <Input
+              id="due_day"
+              name="due_day"
+              type="number"
+              min={1}
+              max={31}
+              step={1}
+              inputMode="numeric"
+              placeholder="14"
+              defaultValue={defaultValues?.due_day ?? ""}
+            />
+          </div>
         </div>
-        <div>
-          <Label htmlFor="due_date">Due date</Label>
-          <Input
-            id="due_date"
-            name="due_date"
-            type="date"
-            defaultValue={defaultValues?.due_date ?? ""}
-          />
-        </div>
+        <p className="text-small text-muted">
+          Day of the month, 1–31. A day past the 28th falls on the last day of shorter months.
+        </p>
       </div>
 
       <div>

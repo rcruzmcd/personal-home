@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { Stat } from "@/components/ui/stat";
-import { formatCurrency, formatShortDate } from "@/lib/format";
+import { formatCurrency, formatDayOfMonth, formatShortDate } from "@/lib/format";
 import { parseDateOnly } from "@/lib/date";
 import { isEntryUpToDate } from "@/lib/calculations/statement-entry";
+import { nextOccurrence } from "@/lib/calculations/day-of-month";
+import { findPendingStatements, type StatementAccount } from "@/lib/calculations";
 import { reconcileAccount, markTransactionsEntered } from "../actions";
 import { ReconcileForm } from "./reconcile-form";
 import { EntryStatusForm } from "./entry-status-form";
@@ -16,12 +18,12 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: account }, { data: transactions }, { data: reconciliations }] =
+  const [{ data: account }, { data: transactions }, { data: reconciliations }, { data: statements }] =
     await Promise.all([
       supabase
         .from("accounts")
         .select(
-          "id, name, institution, type, balance, active, opening_date, last_updated, notes, due_date, statement_date, transactions_entered_through",
+          "id, name, institution, type, balance, active, opening_date, last_updated, notes, due_day, statement_day, transactions_entered_through",
         )
         .eq("id", id)
         .single(),
@@ -37,16 +39,23 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
         .eq("account_id", id)
         .order("created_at", { ascending: false })
         .limit(5),
+      supabase.from("statements").select("account_id, closing_date").eq("account_id", id),
     ]);
 
   if (!account) notFound();
 
   const lastReconciliation = reconciliations?.[0] ?? null;
+  const today = new Date();
   const upToDate = isEntryUpToDate(
     account.transactions_entered_through,
-    account.statement_date,
-    new Date(),
+    account.statement_day,
+    today,
   );
+  const [pendingStatement] = findPendingStatements({
+    accounts: [account as StatementAccount],
+    recorded: statements ?? [],
+    asOfDate: today,
+  });
 
   return (
     <main className="flex-1 flex flex-col gap-6 px-10 py-16">
@@ -96,19 +105,30 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
                 {formatShortDate(new Date(account.last_updated))}
               </p>
             </div>
-            {account.statement_date && (
+            {/* A day of the month recurs, so it reads as the rule plus the
+                date it next resolves to — which is where the short-month
+                clamp becomes visible (the 31st lands on Feb 28). */}
+            {account.statement_day && (
               <div className="flex items-center justify-between">
-                <p className="text-body text-muted">Statement date</p>
+                <p className="text-body text-muted">Statement day</p>
                 <p className="text-body text-foreground">
-                  {formatShortDate(parseDateOnly(account.statement_date))}
+                  {formatDayOfMonth(account.statement_day)}
+                  <span className="text-muted">
+                    {" · next "}
+                    {formatShortDate(nextOccurrence(account.statement_day, today))}
+                  </span>
                 </p>
               </div>
             )}
-            {account.due_date && (
+            {account.due_day && (
               <div className="flex items-center justify-between">
-                <p className="text-body text-muted">Due date</p>
+                <p className="text-body text-muted">Due day</p>
                 <p className="text-body text-foreground">
-                  {formatShortDate(parseDateOnly(account.due_date))}
+                  {formatDayOfMonth(account.due_day)}
+                  <span className="text-muted">
+                    {" · next "}
+                    {formatShortDate(nextOccurrence(account.due_day, today))}
+                  </span>
                 </p>
               </div>
             )}
@@ -158,6 +178,34 @@ export default async function AccountDetailPage({ params }: PageProps<"/accounts
           </CardContent>
         </Card>
       </div>
+
+      {pendingStatement && (
+        <Card variant="featured">
+          <CardHeader>
+            <CardTitle>Statement needs recording</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-4">
+            <p className="text-body text-muted">
+              This account&apos;s statement closed{" "}
+              <span className="text-foreground">
+                {formatShortDate(pendingStatement.closingDate)}
+              </span>
+              {pendingStatement.dueDate && (
+                <>
+                  {" · payment due "}
+                  <span className="text-foreground">
+                    {formatShortDate(pendingStatement.dueDate)}
+                  </span>
+                </>
+              )}
+              .
+            </p>
+            <Link href={`/accounts/${account.id}/statement`}>
+              <Button>Record statement</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

@@ -34,7 +34,7 @@ export async function createRecurringExpense(_prevState: string | null, formData
   }
 
   revalidatePath("/recurring");
-  redirect("/recurring");
+  redirect("/recurring", "replace");
 }
 
 export async function updateRecurringExpense(
@@ -50,7 +50,7 @@ export async function updateRecurringExpense(
   if (error) return error.message;
 
   revalidatePath("/recurring");
-  redirect("/recurring");
+  redirect("/recurring", "replace");
 }
 
 export async function deleteRecurringExpense(id: string) {

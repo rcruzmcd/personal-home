@@ -14,7 +14,7 @@ export async function createIncomeSource(_prevState: string | null, formData: Fo
   if (error) return error.message;
 
   revalidatePath("/income");
-  redirect("/income");
+  redirect("/income", "replace");
 }
 
 export async function updateIncomeSource(
@@ -30,7 +30,7 @@ export async function updateIncomeSource(
   if (error) return error.message;
 
   revalidatePath("/income");
-  redirect("/income");
+  redirect("/income", "replace");
 }
 
 export async function deleteIncomeSource(id: string) {

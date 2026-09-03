@@ -217,3 +217,25 @@ export function TransactionListSkeleton({ count }: { count: number }) {
     </div>
   );
 }
+
+/** The /calendar month grid: a week header over six weeks of empty cells. */
+export function CalendarGridSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-border bg-surface">
+      <div className="grid grid-cols-7 border-b border-border">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div key={i} className="flex justify-center px-2 py-2">
+            <Skeleton className="h-4 w-8" />
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 [&>*:nth-child(7n+1)]:border-l-0">
+        {Array.from({ length: 42 }).map((_, i) => (
+          <div key={i} className="min-h-28 border-t border-l border-border p-2">
+            <Skeleton className="h-4 w-5" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

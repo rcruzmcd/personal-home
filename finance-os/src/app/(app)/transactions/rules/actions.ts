@@ -14,7 +14,7 @@ export async function createRule(_prevState: string | null, formData: FormData) 
   if (error) return error.message;
 
   revalidatePath("/transactions/rules");
-  redirect("/transactions/rules");
+  redirect("/transactions/rules", "replace");
 }
 
 export async function updateRule(id: string, _prevState: string | null, formData: FormData) {
@@ -29,7 +29,7 @@ export async function updateRule(id: string, _prevState: string | null, formData
   if (error) return error.message;
 
   revalidatePath("/transactions/rules");
-  redirect("/transactions/rules");
+  redirect("/transactions/rules", "replace");
 }
 
 export async function deleteRule(id: string) {

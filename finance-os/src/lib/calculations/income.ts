@@ -1,8 +1,9 @@
 import type { CalcIncomeSource } from "./types";
-import { MS_PER_DAY } from "./date-math";
+import { MS_PER_DAY, type Period } from "./date-math";
 
-/** Half-open date range: [start, end). */
-export type Period = { start: Date; end: Date };
+// Re-exported so existing callers (and the @/lib/calculations barrel, which
+// does not export date-math) keep reaching Period through this module.
+export type { Period };
 
 /**
  * Expected income for one future period — docs/PERSONAL_FINANCE_REQUIREMENTS.md

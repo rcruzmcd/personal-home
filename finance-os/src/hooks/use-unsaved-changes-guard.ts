@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useReportDirty } from "./use-form-dismiss-guard";
 
 /**
  * Tracks whether a form has been changed by the user. Attach the returned
@@ -35,15 +36,22 @@ export function useDirtyFormTracking() {
  * close/refresh. Does not intercept the browser back/forward buttons —
  * Next.js App Router client-side routing doesn't expose a cancelable
  * navigation event for that case.
+ *
+ * When the form is hosted in a sheet, it also publishes its dirty state to that
+ * host (see use-form-dismiss-guard): a sheet is dismissed by Escape, the
+ * overlay, or its close button, and none of those are anchor clicks, so the
+ * interception below would never see them.
  */
 export function useUnsavedChangesGuard(isDirty: boolean) {
   const router = useRouter();
   const isDirtyRef = useRef(isDirty);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
+  const reportDirty = useReportDirty();
 
   useEffect(() => {
     isDirtyRef.current = isDirty;
-  }, [isDirty]);
+    reportDirty?.(isDirty);
+  }, [isDirty, reportDirty]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {

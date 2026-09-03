@@ -19,3 +19,15 @@ export function parseDateOnly(value: string): Date {
   const [, year, month, day] = match;
   return new Date(Number(year), Number(month) - 1, Number(day));
 }
+
+/**
+ * Local midnight of the day `date` falls on.
+ *
+ * Date-only comparisons in this app all happen at local-midnight granularity
+ * (see parseDateOnly). Callers that pass "now" hand in a Date carrying a
+ * time-of-day, which would otherwise compare as *later* than the same
+ * calendar day parsed from a date column.
+ */
+export function startOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
