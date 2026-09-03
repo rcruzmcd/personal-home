@@ -8,8 +8,8 @@ export function trackProjectView(props: { slug: string; category: "work" | "proj
   track("project_view", props)
 }
 
-export function trackResumeDownload() {
-  track("resume_download")
+export function trackResumeDownload(props: { method: "pdf" | "print" }) {
+  track("resume_download", props)
 }
 
 export function trackContactStarted() {
