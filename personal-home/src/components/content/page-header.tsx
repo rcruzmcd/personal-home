@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react"
-import Link from "next/link"
+import { LocaleLink } from "@/components/i18n/locale-link"
 
 import { AccentBar } from "@/components/ui/accent-bar"
 import {
@@ -56,7 +56,7 @@ export function PageHeader({
               <Fragment key={item.href}>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href={item.href}>{item.label}</Link>
+                    <LocaleLink href={item.href}>{item.label}</LocaleLink>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />

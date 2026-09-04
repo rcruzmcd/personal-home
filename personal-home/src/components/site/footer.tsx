@@ -1,34 +1,33 @@
-import Link from "next/link"
+import { locale as rootLocale } from "next/root-params"
 
-import { FOOTER_LINKS } from "@/lib/nav"
+import { LocaleLink } from "@/components/i18n/locale-link"
 import { SocialLinks } from "@/components/site/social-links"
+import { getDictionary } from "@/lib/i18n/dictionaries"
+import { assertLocale } from "@/lib/i18n/locales"
+import { FOOTER_LINKS } from "@/lib/nav"
 
-export function Footer() {
+export async function Footer() {
+  const t = await getDictionary(assertLocale(await rootLocale()))
   const year = new Date().getFullYear()
 
   return (
     <footer className="bg-background border-t border-border print:hidden">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 text-small text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
-        <p>
-          &copy; {year} Rickie Cruz. All rights reserved.
-        </p>
+        <p>{t.footer.copyright(year)}</p>
 
-        <nav aria-label="Footer" className="flex flex-wrap items-center gap-6">
+        <nav aria-label={t.footer.navAriaLabel} className="flex flex-wrap items-center gap-6">
           {FOOTER_LINKS.map((link) => (
-            <Link
+            <LocaleLink
               key={link.href}
               href={link.href}
               className="text-purple hover:underline"
             >
-              {link.label}
-            </Link>
+              {t.footer[link.key]}
+            </LocaleLink>
           ))}
-          <Link href="/contact" className="text-purple hover:underline">
-            Contact
-          </Link>
         </nav>
 
-        <nav aria-label="Profiles">
+        <nav aria-label={t.footer.profilesAriaLabel}>
           <SocialLinks />
         </nav>
       </div>

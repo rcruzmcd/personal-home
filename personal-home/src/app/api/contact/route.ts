@@ -3,7 +3,14 @@ import type { NextRequest } from "next/server"
 
 import { sendContactEmail } from "@/lib/email/resend"
 import { isRateLimited } from "@/lib/rate-limit"
-import { ContactSubmissionSchema } from "@/lib/validation/contact"
+import { buildContactSubmissionSchema } from "@/lib/validation/contact"
+import { en } from "@/lib/i18n/dictionaries/en"
+
+// Server-side validation is a backstop against a hand-crafted request, not the
+// visitor's first line of feedback — the form already showed them a localized
+// message before this ran. English messages are fine here, and using the static
+// catalog avoids an async dictionary load on every POST.
+const SubmissionSchema = buildContactSubmissionSchema(en.client.contactForm.errors)
 
 // Bots that fill and submit a form in under this many ms are almost
 // certainly not human.
@@ -35,7 +42,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Invalid request body." }, { status: 400 })
   }
 
-  const parsed = ContactSubmissionSchema.safeParse(body)
+  const parsed = SubmissionSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, error: "Please check the form and try again." },

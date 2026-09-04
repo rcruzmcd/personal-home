@@ -1,24 +1,31 @@
+import type { Locale } from "@/lib/i18n/locales"
 import { listSlugs, readFrontmatterOnly, readFullSource } from "./mdx"
 import type { Project, ProjectCategory } from "./types"
 
-function getProjectsForCategory(category: ProjectCategory): Project[] {
-  return listSlugs(category).map((slug) => readFrontmatterOnly(category, slug))
+// Every read is locale-scoped. The parameter is required rather than defaulted
+// to English so a new call site can't quietly serve English copy on a Spanish
+// page — the compiler asks the question instead.
+function getProjectsForCategory(category: ProjectCategory, locale: Locale): Project[] {
+  return listSlugs(category).map((slug) => readFrontmatterOnly(category, slug, locale))
 }
 
-export function getAllProjects(): Project[] {
-  return [...getProjectsForCategory("work"), ...getProjectsForCategory("project")]
+export function getAllProjects(locale: Locale): Project[] {
+  return [
+    ...getProjectsForCategory("work", locale),
+    ...getProjectsForCategory("project", locale),
+  ]
 }
 
-export function getWorkProjects(): Project[] {
-  return getProjectsForCategory("work")
+export function getWorkProjects(locale: Locale): Project[] {
+  return getProjectsForCategory("work", locale)
 }
 
-export function getPersonalProjects(): Project[] {
-  return getProjectsForCategory("project")
+export function getPersonalProjects(locale: Locale): Project[] {
+  return getProjectsForCategory("project", locale)
 }
 
-export function getFeaturedProjects(limit = 3): Project[] {
-  return getAllProjects()
+export function getFeaturedProjects(locale: Locale, limit = 3): Project[] {
+  return getAllProjects(locale)
     .filter((project) => project.featured)
     .sort(
       (a, b) => new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime()
@@ -26,24 +33,29 @@ export function getFeaturedProjects(limit = 3): Project[] {
     .slice(0, limit)
 }
 
-export function getProjectsByTechnology(tech: string): Project[] {
-  return getAllProjects().filter((project) => project.technologies.includes(tech))
+export function getProjectsByTechnology(tech: string, locale: Locale): Project[] {
+  return getAllProjects(locale).filter((project) => project.technologies.includes(tech))
 }
 
-export function getActiveProjects(): Project[] {
-  return getAllProjects().filter((project) => project.status === "active")
+export function getActiveProjects(locale: Locale): Project[] {
+  return getAllProjects(locale).filter((project) => project.status === "active")
 }
 
-export function getProject(category: ProjectCategory, slug: string): Project | undefined {
+export function getProject(
+  category: ProjectCategory,
+  slug: string,
+  locale: Locale
+): Project | undefined {
   if (!listSlugs(category).includes(slug)) return undefined
-  return readFrontmatterOnly(category, slug)
+  return readFrontmatterOnly(category, slug, locale)
 }
 
 export function getProjectWithContent(
   category: ProjectCategory,
-  slug: string
-): { project: Project; content: string } | undefined {
+  slug: string,
+  locale: Locale
+): { project: Project; content: string; isFallback: boolean } | undefined {
   if (!listSlugs(category).includes(slug)) return undefined
-  const { data, content } = readFullSource(category, slug)
-  return { project: data, content }
+  const { data, content, isFallback } = readFullSource(category, slug, locale)
+  return { project: data, content, isFallback }
 }

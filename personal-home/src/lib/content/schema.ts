@@ -89,3 +89,33 @@ export const ProjectFrontmatterSchema = z.object({
   seoDescription: z.string().optional(),
   tags: z.array(z.string()).optional(),
 })
+
+// A Spanish entry is an *overlay* on the English one, not a second copy of it:
+// `content/work/<slug>/index.es.mdx` carries only the fields whose value is
+// language-dependent. Everything else — id, slug, dates, technologies, status,
+// images, link URLs — stays in `index.mdx` alone, so those facts have exactly
+// one home and cannot drift between locales.
+//
+// `.strict()` is the point of having a separate schema: a mistyped or
+// no-longer-existent key in a translation file fails the build instead of being
+// silently dropped, which is otherwise a very quiet way to lose a paragraph.
+export const ProjectTranslationSchema = z
+  .object({
+    title: z.string().min(1).optional(),
+    description: z.string().min(1).optional(),
+    subcategory: z.string().optional(),
+    role: z.string().optional(),
+    organization: z.string().optional(),
+    relationship: z.string().optional(),
+    // Only the human-readable label is translatable; url and type are
+    // locale-invariant and are merged in from the English entry.
+    links: z.array(z.object({ title: z.string().min(1) })).optional(),
+    casestudy: CaseStudySchema.partial().optional(),
+    personalProject: PersonalProjectSchema.partial().optional(),
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+  })
+  .strict()
+
+export type ProjectTranslation = z.infer<typeof ProjectTranslationSchema>

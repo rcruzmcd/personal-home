@@ -15,6 +15,9 @@ const VALID_BODY = {
   organization: "",
   reason: "consulting",
   message: "This is a real message that is long enough to pass validation.",
+  // The form reports which language it was filled in so the notification can
+  // say which language to reply in.
+  locale: "en",
 }
 
 function makeRequest(
@@ -57,6 +60,25 @@ describe("POST /api/contact", () => {
     expect(response.status).toBe(200)
     expect(json).toEqual({ ok: true })
     expect(sendContactEmail).not.toHaveBeenCalled()
+  })
+
+  test("a submission missing its locale is rejected", async () => {
+    const withoutLocale: Record<string, unknown> = { ...VALID_BODY }
+    delete withoutLocale.locale
+    const response = await POST(makeRequest(withoutLocale, { ip: "203.0.113.20" }))
+
+    expect(response.status).toBe(400)
+    expect(sendContactEmail).not.toHaveBeenCalled()
+  })
+
+  test("passes the locale through to the notification", async () => {
+    await POST(
+      makeRequest({ ...VALID_BODY, locale: "es" }, { ip: "203.0.113.21" })
+    )
+
+    expect(sendContactEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ locale: "es" })
+    )
   })
 
   test("malformed email returns 400", async () => {

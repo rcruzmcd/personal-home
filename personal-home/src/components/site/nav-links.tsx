@@ -1,13 +1,18 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import { LocaleLink } from "@/components/i18n/locale-link"
+import { useMessages } from "@/components/i18n/i18n-provider"
 import { cn } from "@/lib/utils"
+import { splitLocale } from "@/lib/i18n/routing"
 import { NAV_LINKS } from "@/lib/nav"
 
+// Compared against the locale-independent path, so "/es/work" highlights the
+// Work link exactly as "/work" does.
 function isLinkActive(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`)
+  const { path } = splitLocale(pathname)
+  return path === href || path.startsWith(`${href}/`)
 }
 
 export function NavLinks({
@@ -20,13 +25,14 @@ export function NavLinks({
   onNavigate?: () => void
 }) {
   const pathname = usePathname()
+  const messages = useMessages()
 
   return (
     <div className={className}>
       {NAV_LINKS.map((link) => {
         const active = isLinkActive(pathname, link.href)
         return (
-          <Link
+          <LocaleLink
             key={link.href}
             href={link.href}
             onClick={onNavigate}
@@ -37,8 +43,8 @@ export function NavLinks({
               linkClassName
             )}
           >
-            {link.label}
-          </Link>
+            {messages.nav[link.key]}
+          </LocaleLink>
         )
       })}
     </div>
