@@ -1,0 +1,143 @@
+---
+# Superposición de traducción; ver content/work/chatter-snow/index.es.mdx.
+title: "Personal Finance OS"
+description: "Un sistema de gestión financiera para dar seguimiento al efectivo, la deuda y los gastos, y proyectar la autonomía financiera; construido para resolver un problema real después de un despido."
+subcategory: tablero
+
+role: "Desarrollador único"
+
+links:
+  - title: "Demostración en vivo"
+
+casestudy:
+  problem: >
+    Después del despido, el problema central era simple: ver todo el dinero repartido en varias
+    cuentas, entender la tasa de gasto mensual, calcular cuánto duraría la liquidación y tomar
+    decisiones informadas sobre el gasto y la búsqueda de trabajo. Las hojas de cálculo
+    tradicionales son tediosas de mantener y no facilitan ver el panorama completo. Herramientas
+    existentes como Mint o Personal Capital eran excesivas y no respondían directamente a la
+    pregunta central; ninguna se sentía como si de verdad contestara "¿cuánto tiempo puedo
+    sostener esto?".
+  context: >
+    Un proyecto personal que resuelve un problema personal, sin fecha límite externa y construido
+    de forma sostenible. Además sirve para mostrar juntas las habilidades de interfaz,
+    visualización de datos y backend, y como usa datos reales se convierte en un estudio de caso
+    real. Los datos de finanzas personales también exigen verdadera seriedad en cuanto a
+    seguridad y privacidad.
+  goals:
+    - Crear una única fuente de verdad sobre la posición financiera
+    - "Responder cinco preguntas centrales: ¿Dónde está mi dinero? ¿A dónde se va mi dinero? ¿Cuánto debo? ¿Cuánto tiempo puedo sostener esto? ¿Qué debería hacer ahora?"
+    - 'Permitir modelar escenarios (por ejemplo, "¿y si consigo trabajo en octubre?")'
+    - Demostrar la capacidad de construir UX, visualización de datos y backend en conjunto
+  constraints:
+    - "Proyecto personal: menor prioridad que los prospectos de consultoría"
+    - El MVP debía ser alcanzable en 2 o 3 semanas
+    - Tenía que usarse de verdad, así que tenía que ser genuinamente bueno
+    - La seguridad y la privacidad importan dada la sensibilidad de los datos financieros
+    - Lo bastante simple para mantenerse a largo plazo
+  research: >
+    Años manejando mis propias finanzas significaban saber ya qué importa, qué hacen bien o mal
+    las herramientas existentes y dónde están los huecos del mercado, lo que permitió construir
+    algo hecho a la medida de esta situación específica en vez de otra aplicación genérica de
+    presupuestos.
+  architecture: >
+    Filosofía central: primero un libro contable y un motor de cálculo, no un diseño que empieza
+    por la interfaz. Las cuentas, transacciones, categorías y reglas alimentan un modelo
+    financiero (el motor del libro contable) que impulsa los cálculos de flujo de efectivo,
+    deuda, autonomía financiera y patrimonio neto, que a su vez alimentan el tablero, las
+    proyecciones, los escenarios y las alertas. Stack técnico: Next.js y TypeScript para el
+    frontend y las rutas de API, Supabase y PostgreSQL para la base de datos relacional, Recharts
+    para la visualización de datos y Vercel para el hosting. Elegí Supabase sobre Firebase porque
+    los datos financieros son inherentemente relacionales (cuentas, transacciones y deuda están
+    todas interconectadas) y la aplicación necesita consultas complejas —como el gasto por
+    categoría a lo largo del tiempo— que PostgreSQL maneja mejor.
+  design: >
+    Claridad por encima de decoración: esto es una herramienta, no una obra de arte. Pantallas
+    clave: un tablero con la posición financiera de un vistazo, una vista de cuentas para el
+    dinero que entra y sale, una vista de transacciones para saber a dónde se fue realmente el
+    dinero, una vista de deuda que muestra lo que se debe y los escenarios de pago, y una vista
+    de proyección que estima la autonomía financiera. Decisiones de diseño: modo oscuro por
+    omisión (se pasa mucho tiempo en esta herramienta y el oscuro cansa menos la vista),
+    manejable con teclado para ganar velocidad, adaptable a móvil pero optimizado para
+    escritorio, y categorías con código de color para escanear rápido.
+  implementation: >
+    El alcance del MVP apuntaba a 2 o 3 semanas. Primera semana: configuración del repositorio y
+    de Supabase, el modelo de datos de cuentas, transacciones, categorías y reglas, un tablero
+    que muestra patrimonio neto, efectivo, deuda y autonomía financiera, alta y edición de
+    cuentas, y captura de transacciones o importación desde CSV. Segunda semana: categorización
+    manual y basada en reglas, una calculadora de pago de deuda por avalancha y bola de nieve,
+    una proyección a 30/60/90 días y a 6/12 meses, y pulido y pruebas. Explícitamente fuera del
+    MVP: sincronización bancaria (Plaid), un motor de escenarios "¿y si?", reportes avanzados, un
+    módulo de presupuestos e historial y tendencias de patrimonio neto.
+  challenges:
+    - "Calidad de los datos: meter con exactitud el historial financiero al sistema"
+    - "Seguridad: los datos financieros exigen verdadera seriedad en cifrado y control de acceso"
+    - "Exactitud: es dinero real, así que los cálculos tienen que estar correctos"
+    - "Crecimiento del alcance: las funciones financieras son prácticamente infinitas, así que la disciplina del MVP importa"
+    - "Utilidad: la herramienta tiene que guiar decisiones de verdad, no sólo mostrar datos"
+  decisions:
+    - title: "El MVP es acotado, lanzar rápido"
+      description: "Definí un alcance estrecho para la primera versión en lugar de intentar cubrir todos los escenarios financieros."
+      tradeoffs: >
+        Conseguí en unas dos semanas una herramienta funcional que de verdad se puede usar, a
+        cambio de algunas funciones faltantes que pueden agregarse después.
+    - title: "Importación de CSV, no sincronización bancaria"
+      description: "Elegí la captura manual o por CSV en lugar de una integración de sincronización bancaria con Plaid."
+      tradeoffs: >
+        Más simple de construir y más rápido de lanzar, y mantiene el control total sobre datos
+        financieros sensibles, a cambio de exigir importación manual; una integración con Plaid
+        puede agregarse después si demuestra ser valiosa.
+    - title: "Categorización por reglas, no aprendizaje automático"
+      description: "Usé reglas explícitas de coincidencia de comercios en lugar de un categorizador basado en aprendizaje automático."
+      tradeoffs: >
+        Predecible y transparente —siempre queda claro por qué una transacción se categorizó de
+        cierta forma— y simple de mantener, a cambio de no aprender automáticamente del
+        comportamiento con el tiempo. Aceptable para una herramienta de finanzas personales.
+    - title: "La autonomía financiera como métrica central"
+      description: "Hice de la autonomía financiera la cifra principal del tablero, en vez de una vista general de patrimonio neto o de presupuesto."
+      tradeoffs: >
+        Es la métrica más relevante estando desempleado ("¿cuánto tiempo puedo sostener esto?"),
+        aunque pierde relevancia una vez con empleo, cuando el foco debería pasar al presupuesto
+        y el ahorro. Fue intencional: construir primero para la situación actual.
+    - title: "Sin módulo de presupuestos tradicional en el MVP"
+      description: "Dejé fuera de la primera versión el presupuesto por límites de gasto."
+      tradeoffs: >
+        Más simple y rápido de lanzar, con mejor foco en el panorama más urgente del flujo de
+        efectivo, a cambio de no poder fijar límites de gasto todavía; está planeado para una
+        versión posterior.
+  result: >
+    La herramienta busca dar visibilidad clara sobre la autonomía financiera, comprensión de los
+    patrones de gasto, escenarios de pago de deuda y decisiones basadas en datos sobre la
+    búsqueda de trabajo y el gasto. (Las métricas de resultado reales —exactitud de las
+    proyecciones de autonomía frente a la realidad, tiempo ahorrado frente a las hojas de
+    cálculo, decisiones tomadas a partir de los hallazgos— están pendientes hasta que la
+    herramienta lleve un tiempo en uso.)
+  lessonLearned:
+    - >-
+      (Las lecciones aprendidas están pendientes, por completarse una vez que la herramienta
+      lleve un tiempo en uso real: qué enseñó construir software financiero, qué sorpresas
+      apareció en el panorama financiero de fondo, qué decisiones de diseño funcionaron y cuáles
+      no, y qué se haría distinto.)
+
+seoTitle: "Personal Finance OS — Tablero financiero | Rickie Cruz"
+seoDescription: "Un sistema de gestión financiera construido para dar seguimiento al efectivo, la deuda y los gastos y proyectar la autonomía financiera: un proyecto real, con datos reales, hecho para resolver un problema real."
+tags:
+  - finanzas
+  - full-stack
+  - visualizacion-de-datos
+---
+
+## Míralo funcionando
+
+- **[finance.rickiecruz.com](https://finance.rickiecruz.com)** — la instancia de muestra. Pulsa
+  **Try Demo** en la pantalla de inicio de sesión para entrar a una cuenta sembrada con datos
+  representativos; sin registro y sin exponer registros financieros reales. Corre contra su
+  propio proyecto de Supabase, totalmente separado de la instancia privada que guarda los datos
+  reales.
+
+## Mejoras futuras
+
+La sincronización bancaria (Plaid), un motor de escenarios "¿y si?", reportes avanzados, un
+módulo de presupuestos, seguimiento del patrimonio neto a lo largo del tiempo, seguimiento de
+inversiones, planeación fiscal y seguimiento de metas están todos en consideración para
+versiones futuras; ninguno está en el MVP.

@@ -59,44 +59,44 @@ describe("ProjectFrontmatterSchema", () => {
 
 describe("content pipeline (reads content/ from the repo)", () => {
   test("getWorkProjects returns the Chatter Snow case study", () => {
-    const work = getWorkProjects()
+    const work = getWorkProjects("en")
     expect(work.map((p) => p.slug)).toContain("chatter-snow")
   })
 
   test("getPersonalProjects returns Personal Finance OS", () => {
-    const projects = getPersonalProjects()
+    const projects = getPersonalProjects("en")
     expect(projects.map((p) => p.slug)).toContain("personal-finance-os")
   })
 
   test("getProject resolves a single work project by category and slug", () => {
-    const project = getProject("work", "chatter-snow")
+    const project = getProject("work", "chatter-snow", "en")
     expect(project?.title).toBe("Chatter Snow")
     expect(project?.casestudy?.decisions.length).toBeGreaterThan(0)
   })
 
   test("getProject returns undefined for an unknown slug", () => {
-    expect(getProject("work", "does-not-exist")).toBeUndefined()
+    expect(getProject("work", "does-not-exist", "en")).toBeUndefined()
   })
 
   test("getProjectWithContent returns the parsed MDX body alongside the project", () => {
-    const result = getProjectWithContent("project", "personal-finance-os")
+    const result = getProjectWithContent("project", "personal-finance-os", "en")
     expect(result?.project.title).toBe("Personal Finance OS")
     expect(result?.content).toContain("Future enhancements")
   })
 
   test("getFeaturedProjects returns only featured projects", () => {
-    const featured = getFeaturedProjects()
+    const featured = getFeaturedProjects("en")
     expect(featured.length).toBeGreaterThan(0)
     expect(featured.every((p) => p.featured)).toBe(true)
   })
 
   test("getActiveProjects returns only active-status projects", () => {
-    const active = getActiveProjects()
+    const active = getActiveProjects("en")
     expect(active.every((p) => p.status === "active")).toBe(true)
   })
 
   test("getProjectsByTechnology filters by an exact technology tag", () => {
-    const nextProjects = getProjectsByTechnology("Next.js")
+    const nextProjects = getProjectsByTechnology("Next.js", "en")
     expect(nextProjects.length).toBeGreaterThanOrEqual(2)
   })
 })

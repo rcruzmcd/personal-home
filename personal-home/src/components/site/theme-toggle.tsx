@@ -4,6 +4,7 @@ import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { useMessages } from "@/components/i18n/i18n-provider"
 import {
   getThemeServerSnapshot,
   getThemeSnapshot,
@@ -13,6 +14,7 @@ import {
 } from "@/lib/theme-store"
 
 export function ThemeToggle() {
+  const messages = useMessages()
   const theme = React.useSyncExternalStore(
     subscribeTheme,
     getThemeSnapshot,
@@ -31,7 +33,7 @@ export function ThemeToggle() {
       type="button"
       variant="secondary"
       onClick={toggle}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? messages.themeToggle.toLight : messages.themeToggle.toDark}
       className="px-3 py-3"
     >
       {isDark ? (

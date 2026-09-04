@@ -8,11 +8,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
-  CONTACT_REASON_LABELS,
   CONTACT_REASON_VALUES,
-  ContactFormSchema,
+  buildContactFormSchema,
   type ContactFormData,
 } from "@/lib/validation/contact"
+import { useLocale, useMessages } from "@/components/i18n/i18n-provider"
 import { trackContactStarted, trackContactSubmitted } from "@/lib/analytics"
 
 type FormState = {
@@ -34,6 +34,8 @@ const INITIAL_STATE: FormState = {
 type Status = "idle" | "submitting" | "success" | "error"
 
 export function ContactForm() {
+  const locale = useLocale()
+  const messages = useMessages().contactForm
   const [values, setValues] = React.useState<FormState>(INITIAL_STATE)
   const [errors, setErrors] = React.useState<Partial<Record<keyof FormState, string>>>({})
   const [status, setStatus] = React.useState<Status>("idle")
@@ -54,7 +56,7 @@ export function ContactForm() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const result = ContactFormSchema.safeParse(values)
+    const result = buildContactFormSchema(messages.errors).safeParse(values)
     if (!result.success) {
       const fieldErrors: Partial<Record<keyof FormState, string>> = {}
       for (const issue of result.error.issues) {
@@ -77,13 +79,14 @@ export function ContactForm() {
           ...result.data,
           website: "",
           renderedAt,
+          locale,
         }),
       })
 
       if (!response.ok) {
         const body = await response.json().catch(() => null)
         throw new Error(
-          typeof body?.error === "string" ? body.error : "Something went wrong. Please try again."
+          typeof body?.error === "string" ? body.error : messages.errors.generic
         )
       }
 
@@ -92,15 +95,15 @@ export function ContactForm() {
       trackContactSubmitted({ reason: result.data.reason })
     } catch (error) {
       setStatus("error")
-      setSubmitError(error instanceof Error ? error.message : "Something went wrong.")
+      setSubmitError(error instanceof Error ? error.message : messages.errors.generic)
     }
   }
 
   if (status === "success") {
     return (
       <div className="rounded-xl border border-border bg-surface p-6 text-body text-foreground">
-        <p className="font-semibold text-purple">Thanks — your message is on its way.</p>
-        <p className="mt-2 text-small text-muted">I&apos;ll get back to you soon.</p>
+        <p className="font-semibold text-purple">{messages.successTitle}</p>
+        <p className="mt-2 text-small text-muted">{messages.successBody}</p>
       </div>
     )
   }
@@ -113,13 +116,13 @@ export function ContactForm() {
           — aria-hidden on this wrapper takes precedence and hides it from
           the accessibility tree entirely. */}
       <div className="sr-only" aria-hidden="true">
-        <label htmlFor="website">Leave this field blank</label>
+        <label htmlFor="website">{messages.honeypotLabel}</label>
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       <div>
         <Label htmlFor="name" required>
-          Name
+          {messages.name}
         </Label>
         <Input
           id="name"
@@ -139,7 +142,7 @@ export function ContactForm() {
 
       <div>
         <Label htmlFor="email" required>
-          Email
+          {messages.email}
         </Label>
         <Input
           id="email"
@@ -159,7 +162,7 @@ export function ContactForm() {
       </div>
 
       <div>
-        <Label htmlFor="organization">Organization</Label>
+        <Label htmlFor="organization">{messages.organization}</Label>
         <Input
           id="organization"
           name="organization"
@@ -170,7 +173,7 @@ export function ContactForm() {
       </div>
 
       <div>
-        <Label required>What can I help with?</Label>
+        <Label required>{messages.reasonLegend}</Label>
         <RadioGroup
           value={values.reason}
           onValueChange={(value) =>
@@ -181,7 +184,7 @@ export function ContactForm() {
         >
           {CONTACT_REASON_VALUES.map((value) => (
             <RadioGroupItem key={value} value={value} id={`reason-${value}`}>
-              {CONTACT_REASON_LABELS[value]}
+              {messages.reasons[value]}
             </RadioGroupItem>
           ))}
         </RadioGroup>
@@ -194,7 +197,7 @@ export function ContactForm() {
 
       <div>
         <Label htmlFor="message" required>
-          Message
+          {messages.message}
         </Label>
         <Textarea
           id="message"
@@ -218,7 +221,7 @@ export function ContactForm() {
       ) : null}
 
       <Button type="submit" variant="primary" disabled={status === "submitting"}>
-        {status === "submitting" ? "Sending…" : "Start a conversation"}
+        {status === "submitting" ? messages.submitting : messages.submit}
       </Button>
     </form>
   )

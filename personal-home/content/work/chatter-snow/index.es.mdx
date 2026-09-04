@@ -1,0 +1,186 @@
+---
+# Superposición de traducción. Sólo campos dependientes del idioma: el id, el
+# slug, las fechas, las tecnologías, las imágenes y las URL de los enlaces viven
+# únicamente en index.mdx para que no puedan desincronizarse entre idiomas.
+title: "Chatter Snow"
+description: "Construí la infraestructura digital de una comunidad LGBTQ+ de esquí y snowboard en crecimiento que se organiza para obtener el estatus de organización sin fines de lucro, partiendo de una cuenta de Gmail compartida y un perfil de Instagram."
+subcategory: plataforma
+
+role: "Miembro de la junta y director de operaciones digitales"
+organization: "Chatter Snow"
+relationship: "Miembro de la junta y director de operaciones digitales"
+
+links:
+  - title: "Sitio en vivo"
+  - title: "Portal de operaciones (requiere inicio de sesión)"
+  - title: "GitHub"
+
+casestudy:
+  problem: >
+    No había infraestructura. Una cuenta de Gmail compartida y un perfil de Instagram eran todo
+    el stack operativo: sin dominio, sin identidad organizacional, sin registros, sin un sistema
+    para rastrear el equipo donado, coordinar voluntarios, gestionar eventos, manejar finanzas u
+    organizar donaciones. Todo vivía en mensajes directos, hilos y la memoria de cada persona,
+    sin visibilidad para los miembros de la comunidad. El problema de fondo: Chatter no podía
+    decirle a la gente "esto es lo que tenemos disponible" y, más importante aún para un grupo
+    que se organiza hacia el estatus sin fines de lucro, no podía decirle a nadie —ni a sí
+    mismo— qué impacto estaba teniendo realmente.
+  context: >
+    Chatter Snow todavía no es una organización sin fines de lucro; el grupo está activamente
+    organizándose para serlo. Ese encuadre definió todo el proyecto: la infraestructura existe
+    para que la organización pueda medir y evidenciar su impacto —equipo distribuido, miembros
+    atendidos, eventos realizados, dinero que entra y sale—, que es exactamente lo que pedirán
+    una solicitud de estatus sin fines de lucro y los futuros financiadores. Súmale un equipo de
+    voluntarios, prácticamente ningún presupuesto, un inventario creciente de equipo donado de
+    esquí y snowboard, y una comunidad activa que quería saber qué había disponible. Ser a la
+    vez miembro de la junta y líder técnico significó ver de primera mano tanto la necesidad
+    operativa como las restricciones técnicas.
+  goals:
+    - Levantar infraestructura real —dominio, correo, identidad, cuentas— donde no existía ninguna
+    - Crear un sistema de inventario centralizado
+    - Permitir que la comunidad vea el equipo disponible sin un mensaje directo ni un correo
+    - Capturar los datos operativos necesarios para evidenciar el impacto ante la formación sin fines de lucro
+    - Reducir el trabajo administrativo manual
+    - Construir una base para el crecimiento futuro (voluntarios, eventos, donaciones, etc.)
+    - Mantenerlo administrable por voluntarios, sin sobreingeniería
+  constraints:
+    - "Prácticamente sin presupuesto: un grupo pre-organización sin fines de lucro y sin flujo de financiamiento"
+    - Partir de cero infraestructura, no migrar un sistema existente
+    - "Impulsado por voluntarios: el sistema no podía ser complejo"
+    - Necesitaba lanzarse rápido; la comunidad estaba esperando
+    - Sin equipo dedicado de devops o infraestructura
+    - Una organización en crecimiento que necesitaba que el sistema escalara
+  research: >
+    Como miembro de la junta y director, ya conocía bien los flujos operativos, las expectativas
+    de la comunidad, la realidad presupuestaria y las capacidades de los voluntarios. La idea
+    clave: sin nada que migrar, el riesgo no era el legado, era construir de más. Comprar las
+    piezas commodity (dominio, correo, hosting), construir sólo lo específico de Chatter,
+    empezar acotado con el inventario y diseñar para la expansión.
+  architecture: >
+    Filosofía central: mínimo, mantenible y comprado donde se pueda. Dos superficies salen de un
+    mismo código: el sitio público en chattersnow.org y el portal de operaciones en
+    portal.chattersnow.org. Next.js y TypeScript impulsan ambos, hablando con funciones Edge de
+    Vercel que manejan las mutaciones, la autenticación y la lógica, respaldadas por
+    Supabase/PostgreSQL para inventario, eventos, voluntarios y finanzas, con Zoho para el correo
+    organizacional y Cloudflare para CDN y DNS. Next.js y TypeScript permitieron iterar rápido
+    con capacidad full-stack y herramientas conocidas; Supabase y PostgreSQL encajaban con datos
+    relacionales simples a bajo costo; Zoho le dio al grupo un buzón organizacional real para
+    reemplazar la cuenta de Gmail compartida; Vercel mantuvo simples el despliegue y el escalado;
+    Cloudflare aportó CDN, DNS y protección contra DDoS. Deliberadamente no se construyó: un CMS
+    a la medida (la interfaz de administración de Supabase bastaba), reportes extensos (mantuve
+    el foco en las operaciones centrales), una aplicación móvil (la web adaptable era suficiente)
+    ni autenticación compleja (bastaba con control de acceso simple basado en roles).
+  design: >
+    Funcional y claro, con foco en la usabilidad más que en el pulido visual: los voluntarios
+    necesitaban entender el sistema rápido. El sitio público le cuenta a la comunidad quién es
+    Chatter y qué equipo está disponible. El portal de operaciones es donde la organización
+    realmente funciona: gestión de inventario, coordinación de voluntarios y registro a turnos,
+    creación de eventos y seguimiento financiero de donaciones y gastos. El acceso al portal es
+    sólo por invitación y basado en roles: contiene datos reales de miembros y finanzas, así que
+    no hay una puerta de entrada pública.
+  implementation: >
+    La fase cero fue la infraestructura que no existía: registrar chattersnow.org, migrar de la
+    cuenta de Gmail compartida a correo organizacional y configurar DNS, hosting y cuentas. La
+    construcción inicial cubrió la gestión de inventario (el problema central), la vista de
+    equipo para la comunidad y la coordinación básica de voluntarios. Después la plataforma
+    evolucionó hacia el portal de operaciones: gestión de eventos, seguimiento de donaciones y
+    finanzas, y comunicación con los miembros. Cronología aproximada: unas dos semanas de
+    descubrimiento y planeación, de tres a cuatro semanas para construir el MVP, dos semanas de
+    pruebas e iteración y una semana para lanzar, todo con tiempo voluntario en paralelo al rol
+    de líder técnico.
+  challenges:
+    - "Empezar desde cero: sin dominio, sin correo organizacional, sin registros que migrar o de los cuales aprender"
+    - "Crecimiento de requisitos: en cuanto la gente vio el sistema funcionando, todos querían nuevas funciones"
+    - "Diseñar para voluntarios: las funciones complejas tenían que seguir siendo simples de usar"
+    - "Exactitud de los datos: reconstruir un historial de inventario que sólo existía en mensajes directos y en la memoria"
+    - "Escalado: el serverless de Vercel aguanta el crecimiento, pero la optimización de la base de datos importa conforme crecen los datos"
+    - "Prioridad de funciones: decidir qué era MVP y qué podía esperar"
+  decisions:
+    - title: "Usar Supabase, no Firebase"
+      description: "Elegí Supabase en lugar de Firebase para la capa de base de datos."
+      tradeoffs: >
+        Se ajusta mejor a datos relacionales complejos (equipo, voluntarios, eventos y finanzas
+        están todos interconectados), a cambio de algo más de infraestructura que administrar
+        que con Firebase.
+    - title: "Comprar lo commodity, construir la diferencia"
+      description: "Introduje Zoho como correo de la organización en lugar de construir o autoadministrar algo, para que el trabajo a la medida se quedara en lo específico de Chatter."
+      tradeoffs: >
+        Reemplazar la cuenta de Gmail compartida por un buzón organizacional real tomó un día en
+        vez de un proyecto, a cambio de un pequeño cargo recurrente sobre un presupuesto casi
+        inexistente.
+    - title: "El sitio público y el portal de operaciones son superficies separadas"
+      description: "Separé el sitio de cara a la comunidad (chattersnow.org) del portal de operaciones (portal.chattersnow.org)."
+      tradeoffs: >
+        Una experiencia simple y enfocada para los miembros y un límite más fácil de asegurar y
+        escalar, a cambio de algo de duplicación de código.
+    - title: "Mantener el portal sólo por invitación, por ahora"
+      description: "Dejé el portal de operaciones completamente cerrado en lugar de lanzar junto a él un acceso público de demostración."
+      tradeoffs: >
+        Ningún riesgo de exponer datos reales de miembros o finanzas, a cambio de no poder
+        mostrarle el sistema a un posible voluntario, candidato a la junta o financiador sin
+        crearle una cuenta. Una demostración pública necesita un conjunto de datos sembrado
+        aparte, que es trabajo pendiente y no trabajo resuelto.
+    - title: "Empezar con el inventario, diseñar para la expansión"
+      description: "Acoté la construcción inicial únicamente a la gestión de inventario, pero la diseñé para soportar más."
+      tradeoffs: >
+        Permitió un lanzamiento rápido y enfocado, y la arquitectura ahora soporta agregar
+        voluntarios, eventos y finanzas sin rediseñarla, a cambio de más trabajo previo de
+        diseño y arquitectura.
+    - title: "Funciones serverless de Vercel, no un backend tradicional"
+      description: "Usé funciones Edge/serverless de Vercel para toda la lógica de la API en lugar de un servicio backend independiente."
+      tradeoffs: >
+        Escalado simple, bajo costo y devops mínimo, a cambio de latencia por arranque en frío,
+        aceptable para los patrones de uso de una organización sin fines de lucro.
+  result: >
+    Un grupo que funcionaba con una cuenta de Gmail compartida y un perfil de Instagram ahora
+    tiene un dominio, correo organizacional, un sitio público y un portal de operaciones en
+    portal.chattersnow.org que cubre inventario, voluntarios, eventos, donaciones y finanzas. La
+    comunidad puede ver el equipo disponible sin enviar un mensaje directo y, por primera vez, la
+    organización está generando el registro operativo que necesita para demostrar su impacto
+    mientras se organiza hacia el estatus sin fines de lucro. Las cifras específicas siguen
+    pendientes, a la espera de más datos de uso.
+  lessonLearned:
+    - "La infraestructura es la medición: Chatter no puede evidenciar su impacto para la formación sin fines de lucro sin un sistema que registre lo que hace"
+    - "Empieza acotado, diseña amplio: enfocarme primero en el inventario hizo posible el lanzamiento, pero la arquitectura permitió la expansión"
+    - "Compra lo commodity: un buzón de pago y hosting administrado cuestan menos que las horas de voluntariado que habría tomado autoadministrarlos"
+    - "Diseña para tus usuarios reales: los voluntarios tienen paciencia limitada para la complejidad, así que cada función necesita justificarse"
+    - "Los límites de acceso son una decisión de producto: un sistema con datos reales de miembros y finanzas no se puede abrir a la ligera, y mostrárselo a alguien de fuera es su propio trabajo"
+    - "Métete de lleno: estar en la junta significó entender los problemas reales de primera mano, una ventaja que un consultor externo no tendría"
+
+seoTitle: "Chatter Snow — Plataforma de operaciones digitales | Rickie Cruz"
+seoDescription: "Estudio de caso: construí la infraestructura técnica de Chatter Snow, una comunidad LGBTQ+ de esquí y snowboard, desde una cuenta de Gmail compartida hasta un portal de operaciones completo."
+tags:
+  - sin-fines-de-lucro
+  - full-stack
+  - plataforma
+---
+
+## Míralo funcionando
+
+- **[chattersnow.org](https://chattersnow.org)** — el sitio público: quién es Chatter y qué
+  equipo está disponible para la comunidad.
+- **[portal.chattersnow.org](https://portal.chattersnow.org)** — el portal de operaciones, donde
+  realmente se gestionan el inventario, los voluntarios, los eventos y las finanzas. Contiene
+  datos reales de miembros y finanzas, así que el acceso es sólo por invitación y basado en
+  roles; no hay inicio de sesión público. Hay una instancia de demostración con datos sembrados
+  planeada, pero todavía no está en línea. Para un sistema que puedas recorrer de principio a
+  fin, mira el estudio de caso de [Personal Finance OS](/projects/personal-finance-os), que
+  tiene una cuenta de demostración pública.
+
+## Métricas
+
+Las métricas técnicas (tiempo de despliegue, disponibilidad, tiempo de carga, costo de hosting)
+y las métricas de impacto organizacional (tiempo ahorrado, participación de los miembros,
+mejoras en la eficiencia administrativa) siguen pendientes: se agregarán aquí cuando haya más
+datos de uso. Producir esas cifras de impacto es buena parte de la razón por la que existe la
+plataforma: Chatter se está organizando hacia el estatus sin fines de lucro, y el registro
+operativo que genera el portal es la base sobre la que se construirá ese caso.
+
+## Qué sigue
+
+A corto plazo: optimizar con base en la retroalimentación del uso real y levantar una instancia
+de demostración con datos sembrados del portal, para poder mostrarle el sistema a posibles
+voluntarios, candidatos a la junta y financiadores sin crear cuentas reales. A mediano plazo:
+reportes y analítica apuntados directamente a la solicitud de estatus sin fines de lucro —equipo
+distribuido, miembros atendidos, eventos realizados, dinero que entra y sale—. A largo plazo:
+posiblemente una aplicación móvil e integraciones de recaudación de fondos.

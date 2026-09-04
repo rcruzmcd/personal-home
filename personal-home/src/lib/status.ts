@@ -11,17 +11,7 @@ const STATUS_BADGE_VARIANT: Record<ProjectStatus, BadgeVariant> = {
   archived: "archived",
 }
 
-const STATUS_LABEL: Record<ProjectStatus, string> = {
-  active: "Active",
-  experiment: "Experiment",
-  completed: "Completed",
-  archived: "Archived",
-}
 
 export function statusBadgeVariant(status: ProjectStatus): BadgeVariant {
   return STATUS_BADGE_VARIANT[status]
-}
-
-export function statusLabel(status: ProjectStatus): string {
-  return STATUS_LABEL[status]
 }

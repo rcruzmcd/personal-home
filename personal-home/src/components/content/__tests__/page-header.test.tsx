@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { expect, test } from "vitest";
 
+import { renderWithI18n as render } from "@/test/i18n"
 import { PageHeader } from "@/components/content/page-header";
 
 test("renders the title as the page h1", () => {

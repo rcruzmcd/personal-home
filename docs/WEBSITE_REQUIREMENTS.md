@@ -247,17 +247,27 @@ If you don't need one, don't build one. Contact form submissions can be handled 
 Site content must be structured for translation, not hard-coded to English only.
 
 ### Scope
-- Locale-based routing (e.g. `/en`, `/es`) via Next.js i18n routing
+- Locale-based routing with **English unprefixed** and every other locale prefixed:
+  `/about` is English, `/es/about` is Spanish. (This doc originally proposed `/en`
+  and `/es`; English was left unprefixed so the existing English URLs keep working
+  untouched, with no redirects and no reset of their search ranking. `/en/*`
+  permanently redirects to the unprefixed path so each page has one public URL.)
+- Route slugs stay English in both locales (`/es/work`, not `/es/trabajo`)
 - All UI strings and page copy sourced from translation files, not inline in components
 - MVP launch language: English. Spanish is the first additional locale to support (Rickie's bio/network skews bilingual)
-- Locale switcher in site header/footer
+- Locale switcher in the site header (and inside the mobile menu)
 - `hreflang` tags and locale-specific `sitemap.xml` entries for SEO
 - Locale-aware date/number formatting
 - MDX case studies/projects: translate frontmatter (title, description) at minimum; full-body translation is optional per entry
 
 ### Out of Scope (MVP)
-- Auto-detecting locale from browser/geo and redirecting (respect explicit user choice only)
+- Auto-detecting locale from browser/geo and redirecting (respect explicit user choice only).
+  A cookie records an explicit switcher click and is consulted **only** at `/`, so shared
+  deep links and crawlers always get the language the URL names.
 - Machine-translated fallback content
+
+### Status
+Implemented. See "Internationalization" in the root `CLAUDE.md` for where the pieces live.
 
 ## Accessibility (Portfolio Requirement)
 

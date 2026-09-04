@@ -48,9 +48,13 @@ function SheetContent({
   className,
   side,
   children,
+  closeLabel = "Close",
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> &
-  VariantProps<typeof sheetContentVariants>) {
+  VariantProps<typeof sheetContentVariants> & {
+    /** Screen-reader label for the close button; pass a translated string. */
+    closeLabel?: string
+  }) {
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -62,7 +66,7 @@ function SheetContent({
         {children}
         <SheetPrimitive.Close className="absolute top-4 right-4 rounded-md p-1 text-muted hover:text-purple focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green">
           <X className="size-5" aria-hidden="true" />
-          <span className="sr-only">Close</span>
+          <span className="sr-only">{closeLabel}</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPortal>

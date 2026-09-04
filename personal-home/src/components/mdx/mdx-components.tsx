@@ -1,6 +1,8 @@
 import type { MDXRemoteProps } from "next-mdx-remote/rsc"
 import Image from "next/image"
 
+import { LocaleLink } from "@/components/i18n/locale-link"
+
 import { AccentBar } from "@/components/ui/accent-bar"
 
 export const mdxComponents: NonNullable<MDXRemoteProps["components"]> = {
@@ -34,12 +36,24 @@ export const mdxComponents: NonNullable<MDXRemoteProps["components"]> = {
       </span>
     )
   },
-  a: ({ href, children }) => (
-    <a
-      href={href}
-      className="font-medium text-purple underline transition-colors duration-200 hover:text-[#4A2A5F] hover:italic"
-    >
-      {children}
-    </a>
-  ),
+  // Internal links in MDX are written as locale-independent paths ("/work/x"),
+  // so they need the active locale's prefix; external ones are left alone.
+  a: ({ href, children }) => {
+    const className =
+      "font-medium text-purple underline transition-colors duration-200 hover:text-[#4A2A5F] hover:italic"
+
+    if (href?.startsWith("/")) {
+      return (
+        <LocaleLink href={href} className={className}>
+          {children}
+        </LocaleLink>
+      )
+    }
+
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    )
+  },
 }

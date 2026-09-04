@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { locale as rootLocale } from "next/root-params"
 
 import { AccentBar } from "@/components/ui/accent-bar"
 import { Badge } from "@/components/ui/badge"
@@ -12,14 +12,13 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import type { Project } from "@/lib/content/types"
-import { statusBadgeVariant, statusLabel } from "@/lib/status"
+import { statusBadgeVariant } from "@/lib/status"
+import { projectPath } from "@/lib/seo"
+import { getDictionary } from "@/lib/i18n/dictionaries"
+import { assertLocale } from "@/lib/i18n/locales"
+import { LocaleLink } from "@/components/i18n/locale-link"
 
-const CATEGORY_PATH: Record<Project["category"], string> = {
-  work: "/work",
-  project: "/projects",
-}
-
-export function ProjectCard({
+export async function ProjectCard({
   project,
   featured = false,
   titleAs: TitleTag = "h3",
@@ -31,7 +30,7 @@ export function ProjectCard({
   // their h1 and the card grid should pass "h2" to avoid skipping a level.
   titleAs?: "h2" | "h3"
 }) {
-  const href = `${CATEGORY_PATH[project.category]}/${project.slug}`
+  const t = await getDictionary(assertLocale(await rootLocale()))
   const subheading = project.category === "work" ? project.role : undefined
 
   return (
@@ -40,7 +39,7 @@ export function ProjectCard({
         <AccentBar width={featured ? "md" : "sm"} className="mb-4" />
         <CardAction>
           <Badge variant={statusBadgeVariant(project.status)}>
-            {statusLabel(project.status)}
+            {t.status[project.status]}
           </Badge>
         </CardAction>
         <CardTitle asChild>
@@ -62,12 +61,12 @@ export function ProjectCard({
       </div>
 
       <CardFooter>
-        <Link
-          href={href}
+        <LocaleLink
+          href={projectPath(project)}
           className="text-body font-medium text-purple underline transition-colors duration-200 hover:italic hover:text-[#4A2A5F]"
         >
-          Read case study &rarr;
-        </Link>
+          {t.common.readCaseStudy} &rarr;
+        </LocaleLink>
       </CardFooter>
     </Card>
   )

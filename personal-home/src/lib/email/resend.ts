@@ -1,7 +1,16 @@
 import { Resend } from "resend"
 
-import { CONTACT_REASON_LABELS } from "@/lib/validation/contact"
+import { en } from "@/lib/i18n/dictionaries/en"
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales"
 import type { ContactFormData } from "@/lib/validation/contact"
+
+// The notification is addressed to Rickie, not to the visitor, so it stays in
+// English regardless of which language the form was filled in. The visitor's
+// language is reported as a line in the body instead, so he knows to reply in
+// Spanish.
+const REASON_LABELS = en.client.contactForm.reasons
+
+type ContactNotification = ContactFormData & { locale: Locale }
 
 // Resend's shared sandbox sender, which only delivers to the Resend account
 // owner's own verified address — hence the personal inbox below.
@@ -22,12 +31,13 @@ import type { ContactFormData } from "@/lib/validation/contact"
 const FROM_ADDRESS = "onboarding@resend.dev"
 const TO_ADDRESS = "ricardo.cruzmcdougal@gmail.com"
 
-function formatSubmissionText(data: ContactFormData): string {
+function formatSubmissionText(data: ContactNotification): string {
   const lines = [
     `Name: ${data.name}`,
     `Email: ${data.email}`,
     data.organization ? `Organization: ${data.organization}` : null,
-    `Reason: ${CONTACT_REASON_LABELS[data.reason]}`,
+    `Reason: ${REASON_LABELS[data.reason]}`,
+    data.locale === DEFAULT_LOCALE ? null : `Language: ${data.locale} — reply in Spanish`,
     "",
     data.message,
   ]
@@ -40,7 +50,7 @@ function formatSubmissionText(data: ContactFormData): string {
 // should treat { delivered: false } as "logged, not emailed" — not an
 // error — and still tell the visitor their message was received.
 export async function sendContactEmail(
-  data: ContactFormData
+  data: ContactNotification
 ): Promise<{ delivered: boolean }> {
   const apiKey = process.env.RESEND_API_KEY
 
@@ -58,7 +68,7 @@ export async function sendContactEmail(
       from: FROM_ADDRESS,
       to: TO_ADDRESS,
       replyTo: data.email,
-      subject: `[${CONTACT_REASON_LABELS[data.reason]}] New message from ${data.name}`,
+      subject: `[${REASON_LABELS[data.reason]}] New message from ${data.name}`,
       text: formatSubmissionText(data),
     })
     return { delivered: true }
