@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { LocaleLink } from "@/components/i18n/locale-link"
 import { PageHeader } from "@/components/content/page-header"
 import { ProjectCard } from "@/components/project/project-card"
+import { PageShell } from "@/components/site/page-shell"
 import { getWorkProjects } from "@/lib/content/projects"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { assertLocale } from "@/lib/i18n/locales"
@@ -27,7 +28,7 @@ export default async function WorkPage() {
   const projects = getWorkProjects(locale)
 
   return (
-    <main id="main-content" className="mx-auto max-w-5xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
+    <PageShell id="main-content">
       <PageHeader title={t.work.title} description={t.work.description} />
 
       {projects.length > 0 ? (
@@ -51,6 +52,6 @@ export default async function WorkPage() {
           </div>
         </div>
       )}
-    </main>
+    </PageShell>
   )
 }

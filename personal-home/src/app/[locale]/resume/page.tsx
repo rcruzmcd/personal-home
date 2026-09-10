@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
 import { DownloadResumeButton } from "@/components/content/download-resume-button"
 import { PrintResumeButton } from "@/components/content/print-resume-button"
+import { PageShell, Prose } from "@/components/site/page-shell"
 import { getAllProjects } from "@/lib/content/projects"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { assertLocale } from "@/lib/i18n/locales"
@@ -45,7 +46,7 @@ export default async function ResumePage() {
   const projects = getAllProjects(locale)
 
   return (
-    <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
+    <PageShell id="main-content">
       {/* The site header is hidden when printing, so the printed page would
           otherwise carry no name. This block only exists on paper. */}
       <div className="hidden print:block">
@@ -67,7 +68,7 @@ export default async function ResumePage() {
         />
       </div>
 
-      <div className="mt-4 divide-y divide-border">
+      <Prose className="mt-4 divide-y divide-border">
         <Section title={r.summaryHeading}>
           <p>{r.summary}</p>
         </Section>
@@ -171,7 +172,7 @@ export default async function ResumePage() {
             </LocaleLink>
           </p>
         </Section>
-      </div>
-    </main>
+      </Prose>
+    </PageShell>
   )
 }

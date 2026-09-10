@@ -4,6 +4,7 @@ import { locale as rootLocale } from "next/root-params"
 import { LocaleLink } from "@/components/i18n/locale-link"
 import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
+import { PageShell, Prose } from "@/components/site/page-shell"
 import { formatDate } from "@/lib/date"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { assertLocale } from "@/lib/i18n/locales"
@@ -30,7 +31,7 @@ export default async function PrivacyPage() {
   const p = t.privacy
 
   return (
-    <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
+    <PageShell id="main-content">
       <PageHeader
         title={p.title}
         description={
@@ -40,7 +41,7 @@ export default async function PrivacyPage() {
         }
       />
 
-      <div className="mt-4 divide-y divide-border">
+      <Prose className="mt-4 divide-y divide-border">
         <Section title={p.collects.heading}>
           <p>{p.collects.body}</p>
         </Section>
@@ -82,7 +83,7 @@ export default async function PrivacyPage() {
             {p.contact.suffix}
           </p>
         </Section>
-      </div>
-    </main>
+      </Prose>
+    </PageShell>
   )
 }

@@ -3,6 +3,7 @@ import { locale as rootLocale } from "next/root-params"
 
 import { PageHeader } from "@/components/content/page-header"
 import { ContactForm } from "@/components/contact/contact-form"
+import { PageShell } from "@/components/site/page-shell"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { assertLocale } from "@/lib/i18n/locales"
 import { buildAlternates } from "@/lib/seo"
@@ -22,12 +23,14 @@ export default async function ContactPage() {
   const t = await getDictionary(assertLocale(await rootLocale()))
 
   return (
-    <main id="main-content" className="mx-auto max-w-2xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
+    <PageShell id="main-content">
       <PageHeader title={t.contact.title} description={t.contact.description} />
 
-      <div className="mt-8">
+      {/* The form keeps its own column: full-width text inputs at the shell
+          width are hard to scan (docs/UX_PATTERNS.md). */}
+      <div className="mt-8 max-w-2xl">
         <ContactForm />
       </div>
-    </main>
+    </PageShell>
   )
 }

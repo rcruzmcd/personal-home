@@ -4,6 +4,7 @@ import { locale as rootLocale } from "next/root-params"
 import { Button } from "@/components/ui/button"
 import { LocaleLink } from "@/components/i18n/locale-link"
 import { PageHeader } from "@/components/content/page-header"
+import { PageShell } from "@/components/site/page-shell"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { assertLocale } from "@/lib/i18n/locales"
 
@@ -20,7 +21,7 @@ export default async function NotFound() {
   const t = await getDictionary(assertLocale(await rootLocale()))
 
   return (
-    <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
+    <PageShell id="main-content">
       <PageHeader
         eyebrow={t.notFound.eyebrow}
         title={t.notFound.title}
@@ -35,6 +36,6 @@ export default async function NotFound() {
           <LocaleLink href="/work">{t.notFound.viewWork}</LocaleLink>
         </Button>
       </div>
-    </main>
+    </PageShell>
   )
 }

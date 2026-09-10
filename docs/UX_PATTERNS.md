@@ -145,6 +145,15 @@ the general rules produced:
   how the Resume page ended up with its own bespoke title/button row. The
   header now owns that markup, so the accent bar, title scale and description
   width can't drift page to page.
+- **Every page goes through `PageShell`** (`src/components/site/page-shell.tsx`),
+  whose max-width and gutters are the header's and the footer's (`max-w-5xl`).
+  Pages used to set their own — 5xl on Home/Work/Projects/Consulting, 3xl on
+  About/Resume/the legal pages/the case studies, 2xl on Contact — so the narrow
+  ones sat visibly inset from the nav above them. A wider shell is not wider
+  text: long-form copy sets its own reading measure with `Prose` (the 3xl it
+  already had), and the Contact form keeps its own column, so body copy never
+  runs the full 1024px. Card grids, stat rows and button rows use the shell's
+  full width.
 - **Case study and project pages carry a breadcrumb** (`Work › Chatter Snow`,
   `Projects › Personal Finance OS`) where they previously offered no way back
   to the listing at all. The node label is the destination's own page title

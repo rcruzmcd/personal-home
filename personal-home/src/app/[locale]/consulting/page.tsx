@@ -13,6 +13,7 @@ import { LocaleLink } from "@/components/i18n/locale-link"
 import { PageHeader } from "@/components/content/page-header"
 import { Section } from "@/components/content/section"
 import { TrackConsultingView } from "@/components/analytics/track-consulting-view"
+import { PageShell } from "@/components/site/page-shell"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { assertLocale } from "@/lib/i18n/locales"
 import { buildAlternates } from "@/lib/seo"
@@ -37,7 +38,7 @@ export default async function ConsultingPage() {
   const c = t.consulting
 
   return (
-    <main id="main-content" className="mx-auto max-w-5xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
+    <PageShell id="main-content">
       <TrackConsultingView />
       {/* No header action here: the page's one primary action is "Start a
           conversation" at the foot of the body (docs/UX_PATTERNS.md §2a). */}
@@ -106,6 +107,6 @@ export default async function ConsultingPage() {
           <LocaleLink href="/contact">{c.startConversation}</LocaleLink>
         </Button>
       </div>
-    </main>
+    </PageShell>
   )
 }

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/content/page-header"
 import { LocaleLink } from "@/components/i18n/locale-link"
 import { useMessages } from "@/components/i18n/i18n-provider"
+import { PageShell } from "@/components/site/page-shell"
 
 // Route-level error boundary. Next.js strips the message from production
 // errors and replaces it with a digest, so the visitor gets a stable apology
@@ -24,7 +25,7 @@ export default function Error({
   }, [error])
 
   return (
-    <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-10">
+    <PageShell id="main-content">
       <PageHeader
         title={messages.error.title}
         description={messages.error.description}
@@ -45,6 +46,6 @@ export default function Error({
       {error.digest ? (
         <p className="mt-8 text-small text-muted">{messages.error.reference} {error.digest}</p>
       ) : null}
-    </main>
+    </PageShell>
   )
 }
