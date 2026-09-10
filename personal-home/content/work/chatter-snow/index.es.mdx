@@ -3,7 +3,7 @@
 # slug, las fechas, las tecnologías, las imágenes y las URL de los enlaces viven
 # únicamente en index.mdx para que no puedan desincronizarse entre idiomas.
 title: "Chatter Snow"
-description: "Construí la infraestructura digital de una comunidad LGBTQ+ de esquí y snowboard en crecimiento que se organiza para obtener el estatus de organización sin fines de lucro, partiendo de una cuenta de Gmail compartida y un perfil de Instagram."
+description: "Construí la infraestructura digital de una comunidad LGBTQ+ de esquí y snowboard que se organiza para obtener el estatus de organización sin fines de lucro, y después la generalicé en una plataforma multiinquilino de operaciones para organizaciones sin fines de lucro, con Chatter Snow como su primer inquilino."
 subcategory: plataforma
 
 role: "Miembro de la junta y director de operaciones digitales"
@@ -12,7 +12,9 @@ relationship: "Miembro de la junta y director de operaciones digitales"
 
 links:
   - title: "Sitio en vivo"
-  - title: "Portal de operaciones (requiere inicio de sesión)"
+  - title: "Demo del sitio público"
+  - title: "Demo del portal de operaciones"
+  - title: "Portal de operaciones de Chatter Snow (requiere inicio de sesión)"
   - title: "GitHub"
 
 casestudy:
@@ -24,7 +26,13 @@ casestudy:
     sin visibilidad para los miembros de la comunidad. El problema de fondo: Chatter no podía
     decirle a la gente "esto es lo que tenemos disponible" y, más importante aún para un grupo
     que se organiza hacia el estatus sin fines de lucro, no podía decirle a nadie —ni a sí
-    mismo— qué impacto estaba teniendo realmente.
+    mismo— qué impacto estaba teniendo realmente. Un segundo problema apareció cuando el sistema
+    ya funcionaba. Nada de lo que hay en una biblioteca de equipo, los turnos de voluntariado,
+    las actas de la junta o los registros de donaciones es específico de los deportes de nieve,
+    y otras organizaciones pequeñas resolvían los mismos problemas con las mismas hojas de
+    cálculo. Pero el código asumía exactamente una organización: el dominio de un solo inquilino
+    estaba escrito a mano como la tabla de ruteo de la plataforma, y cada tabla guardaba las
+    filas de una sola organización sin nada que las separara.
   context: >
     Chatter Snow todavía no es una organización sin fines de lucro; el grupo está activamente
     organizándose para serlo. Ese encuadre definió todo el proyecto: la infraestructura existe
@@ -34,74 +42,141 @@ casestudy:
     voluntarios, prácticamente ningún presupuesto, un inventario creciente de equipo donado de
     esquí y snowboard, y una comunidad activa que quería saber qué había disponible. Ser a la
     vez miembro de la junta y líder técnico significó ver de primera mano tanto la necesidad
-    operativa como las restricciones técnicas.
+    operativa como las restricciones técnicas. Lo que empezó como la herramienta de una sola
+    organización hoy es una plataforma multiinquilino, y Chatter Snow es su primer inquilino, lo
+    que además obligó a trazar una línea de propiedad dentro del repositorio entre la plataforma
+    genérica y la marca, el contenido y los datos propios de Chatter Snow, antes de que
+    cualquiera de los dos tuviera valor comercial.
   goals:
     - Levantar infraestructura real —dominio, correo, identidad, cuentas— donde no existía ninguna
     - Crear un sistema de inventario centralizado
     - Permitir que la comunidad vea el equipo disponible sin un mensaje directo ni un correo
     - Capturar los datos operativos necesarios para evidenciar el impacto ante la formación sin fines de lucro
-    - Reducir el trabajo administrativo manual
-    - Construir una base para el crecimiento futuro (voluntarios, eventos, donaciones, etc.)
+    - Servir a más de una organización desde un mismo código, con los datos de cada inquilino aislados en la base de datos y no por el cuidado de quien escribe la consulta
+    - Darle a cada inquilino su propio dominio, marca y contenido público sin un fork ni una reconstrucción
+    - Hacer el sistema mostrable, con una demostración pública que cualquiera pueda recorrer y sin datos reales de miembros dentro
     - Mantenerlo administrable por voluntarios, sin sobreingeniería
   constraints:
     - "Prácticamente sin presupuesto: un grupo pre-organización sin fines de lucro y sin flujo de financiamiento"
     - Partir de cero infraestructura, no migrar un sistema existente
     - "Impulsado por voluntarios: el sistema no podía ser complejo"
-    - Necesitaba lanzarse rápido; la comunidad estaba esperando
+    - "Datos reales de miembros, donantes y finanzas en producción: nada de ahí podía copiarse a fixtures, pruebas, demostraciones ni capturas de pantalla"
+    - "Sin superadministrador: el personal de la plataforma no puede tener un atajo permanente hacia los datos de una organización cliente"
+    - La multiinquilinidad tenía que adaptarse a un sistema vivo de un solo inquilino sin una caída ni una migración de datos que la gente notara
     - Sin equipo dedicado de devops o infraestructura
-    - Una organización en crecimiento que necesitaba que el sistema escalara
   research: >
     Como miembro de la junta y director, ya conocía bien los flujos operativos, las expectativas
     de la comunidad, la realidad presupuestaria y las capacidades de los voluntarios. La idea
-    clave: sin nada que migrar, el riesgo no era el legado, era construir de más. Comprar las
-    piezas commodity (dominio, correo, hosting), construir sólo lo específico de Chatter,
-    empezar acotado con el inventario y diseñar para la expansión.
+    clave al principio: sin nada que migrar, el riesgo no era el legado, era construir de más.
+    Comprar las piezas commodity (dominio, correo, hosting), construir sólo lo específico de
+    Chatter, empezar acotado con el inventario y diseñar para la expansión. El trabajo
+    multiinquilino partió de otra pregunta: ¿por dónde se filtrarían los datos de una segunda
+    organización? La respuesta era "por donde a alguien se le olvide", y por eso el aislamiento
+    bajó hasta el esquema: una política por cada tabla, una clave foránea compuesta por cada
+    relación y una consulta que reporta cualquier tabla a la que le falte alguna de las dos.
   architecture: >
-    Filosofía central: mínimo, mantenible y comprado donde se pueda. Dos superficies salen de un
-    mismo código: el sitio público en chattersnow.org y el portal de operaciones en
-    portal.chattersnow.org. Next.js y TypeScript impulsan ambos, hablando con funciones Edge de
-    Vercel que manejan las mutaciones, la autenticación y la lógica, respaldadas por
-    Supabase/PostgreSQL para inventario, eventos, voluntarios y finanzas, con Zoho para el correo
-    organizacional y Cloudflare para CDN y DNS. Next.js y TypeScript permitieron iterar rápido
-    con capacidad full-stack y herramientas conocidas; Supabase y PostgreSQL encajaban con datos
-    relacionales simples a bajo costo; Zoho le dio al grupo un buzón organizacional real para
-    reemplazar la cuenta de Gmail compartida; Vercel mantuvo simples el despliegue y el escalado;
-    Cloudflare aportó CDN, DNS y protección contra DDoS. Deliberadamente no se construyó: un CMS
-    a la medida (la interfaz de administración de Supabase bastaba), reportes extensos (mantuve
-    el foco en las operaciones centrales), una aplicación móvil (la web adaptable era suficiente)
-    ni autenticación compleja (bastaba con control de acceso simple basado en roles).
+    Filosofía central: mínimo, mantenible, comprado donde se pueda y genérico por defecto. Dos
+    superficies salen de un mismo código —un sitio público y un portal de operaciones— y hoy
+    ambas se resuelven por inquilino. Next.js y TypeScript impulsan las dos, respaldadas por
+    Supabase/PostgreSQL para inventario, eventos, voluntarios, gobernanza y finanzas, con Zoho
+    para el correo organizacional, Resend para el envío transaccional, Vercel para el hosting y
+    Cloudflare para CDN y DNS. La multiinquilinidad es una propiedad del esquema, no una
+    convención de la aplicación: cada tabla de inquilino lleva un `tenant_id` cuyo valor por
+    defecto se resuelve desde la sesión y, si no, desde el host de la petición; cada política de
+    seguridad a nivel de fila está acotada al inquilino actual; y cada clave foránea entre dos
+    tablas de inquilino es compuesta, así que la propia base de datos rechaza una referencia
+    entre inquilinos incluso desde una conexión con rol de servicio. El `Host` de la petición es
+    lo que decide de qué inquilino es una página pública (comparado contra el dominio propio de
+    cada inquilino, gana la coincidencia más larga), mientras que el portal resuelve el
+    inquilino desde la membresía y nunca consulta el host. Los tokens de marca y el contenido
+    del sitio público son filas por inquilino sobre los valores por defecto de la plataforma,
+    así que una organización nueva obtiene sus colores, su logo y su contenido sin un fork.
+    Deliberadamente no se construyó: un CMS a la medida, una aplicación móvil ni ningún rol de
+    superadministrador.
   design: >
     Funcional y claro, con foco en la usabilidad más que en el pulido visual: los voluntarios
-    necesitaban entender el sistema rápido. El sitio público le cuenta a la comunidad quién es
-    Chatter y qué equipo está disponible. El portal de operaciones es donde la organización
-    realmente funciona: gestión de inventario, coordinación de voluntarios y registro a turnos,
-    creación de eventos y seguimiento financiero de donaciones y gastos. El acceso al portal es
-    sólo por invitación y basado en roles: contiene datos reales de miembros y finanzas, así que
-    no hay una puerta de entrada pública.
+    necesitaban entender el sistema rápido. El sitio público de un inquilino le cuenta a su
+    comunidad quién es y qué equipo está disponible; el portal de operaciones es donde la
+    organización realmente funciona: inventario, coordinación de voluntarios y registro a
+    turnos, eventos e inscripciones, gobernanza (reuniones de la junta, actas, decisiones,
+    declaraciones de conflicto de interés), donaciones, gastos y reembolsos. Cada organización
+    edita su propio contenido, sus fotos y sus tokens de marca desde Administración, sin abrir
+    un ticket. El acceso es basado en roles, y la propia matriz de permisos es editable por
+    inquilino, así que cada organización decide qué pueden hacer sus roles.
   implementation: >
     La fase cero fue la infraestructura que no existía: registrar chattersnow.org, migrar de la
     cuenta de Gmail compartida a correo organizacional y configurar DNS, hosting y cuentas. La
-    construcción inicial cubrió la gestión de inventario (el problema central), la vista de
-    equipo para la comunidad y la coordinación básica de voluntarios. Después la plataforma
-    evolucionó hacia el portal de operaciones: gestión de eventos, seguimiento de donaciones y
-    finanzas, y comunicación con los miembros. Cronología aproximada: unas dos semanas de
-    descubrimiento y planeación, de tres a cuatro semanas para construir el MVP, dos semanas de
-    pruebas e iteración y una semana para lanzar, todo con tiempo voluntario en paralelo al rol
-    de líder técnico.
+    construcción inicial cubrió la gestión de inventario, la vista de equipo para la comunidad y
+    la coordinación básica de voluntarios, y después creció hasta el portal de operaciones
+    completo: eventos, gobernanza, donaciones y seguimiento financiero, horas de voluntariado y
+    reportes. La conversión a multiinquilino corrió por fases sobre el sistema vivo: primero las
+    tablas de inquilinos y la membresía, luego una columna `tenant_id` y una política acotada en
+    las 73 tablas de inquilino más 110 claves foráneas compuestas, después la resolución del
+    inquilino por host, y en seguida el aprovisionamiento, la marca y el contenido del sitio por
+    inquilino, las reglas de retención de datos por inquilino, la exportación y la eliminación,
+    y por último una página de administración de la plataforma para que aprovisionar un
+    inquilino ya no requiera una terminal. El orden importaba: el dominio propio del primer
+    inquilino tenía que estar configurado y verificado antes de que un segundo inquilino se
+    activara, porque hasta entonces un respaldo de "el único inquilino activo" era lo que
+    sostenía en silencio el sitio público.
   challenges:
     - "Empezar desde cero: sin dominio, sin correo organizacional, sin registros que migrar o de los cuales aprender"
     - "Crecimiento de requisitos: en cuanto la gente vio el sistema funcionando, todos querían nuevas funciones"
     - "Diseñar para voluntarios: las funciones complejas tenían que seguir siendo simples de usar"
-    - "Exactitud de los datos: reconstruir un historial de inventario que sólo existía en mensajes directos y en la memoria"
-    - "Escalado: el serverless de Vercel aguanta el crecimiento, pero la optimización de la base de datos importa conforme crecen los datos"
-    - "Prioridad de funciones: decidir qué era MVP y qué podía esperar"
+    - "Adaptar la multiinquilinidad a una base de datos viva: una sola política olvidada o una clave foránea de una sola columna es una fuga silenciosa entre inquilinos, así que el esquema tuvo que vigilarse a sí mismo"
+    - "Controles entre inquilinos que eran inofensivos con uno solo: las purgas de retención de datos y la administración de roles eran de toda la plataforma, o sea que el administrador de cualquier organización podía actuar sobre los datos de todas"
+    - "Mostrar el sistema sin exponer a nadie: una demostración necesita una cuenta de administrador en manos de un desconocido anónimo, lo que convierte en público cualquier control que todavía cruce inquilinos"
+    - Mantener la plataforma genérica mientras también es el sistema de producción de una organización concreta
   decisions:
+    - title: "El aislamiento vive en la base de datos, no en la aplicación"
+      description: "Acoté al inquilino actual cada política de seguridad a nivel de fila e hice compuesta cada clave foránea entre tablas de inquilino, en lugar de filtrar por inquilino en las consultas."
+      tradeoffs: >
+        Postgres rechaza una lectura o una referencia entre inquilinos sin importar quién la
+        escriba —incluido un script con rol de servicio o un error futuro—, y una consulta de
+        diagnóstico rompe la construcción si a alguna tabla le falta cualquiera de las dos
+        protecciones. El costo es un esquema más pesado: las claves compuestas cambian cómo hay
+        que escribir las consultas con relaciones embebidas, y cada migración tiene que sembrar
+        por inquilino.
+    - title: "Sin superadministrador: el acceso de soporte lo concede el inquilino"
+      description: "El personal de la plataforma tiene una membresía de soporte con fecha de caducidad que la organización cliente emite y revoca, en lugar de un rol que evada el acotamiento por inquilino."
+      tradeoffs: >
+        Todas las políticas conservan exactamente la misma forma, así que la suite de pruebas de
+        aislamiento cubre también el acceso de la plataforma y no existe ninguna ruta
+        privilegiada fuera de ella. El costo es que soporte no puede entrar por su cuenta a
+        depurar: alguien de la organización tiene que abrir la puerta, con un motivo y una fecha
+        de vencimiento.
+    - title: "El host decide el inquilino en las páginas públicas; la membresía lo decide en el portal"
+      description: "Las peticiones públicas resuelven el inquilino desde el Host comparado contra los dominios propios; las del portal lo resuelven desde la membresía de quien inició sesión."
+      tradeoffs: >
+        Una sola columna de dominio sirve al sitio y a los subdominios del portal de un
+        inquilino, y un encabezado de host falsificado sólo puede alcanzar la superficie pública
+        que cualquier visitante ya podía alcanzar. El costo es un paso operativo por inquilino
+        —registrar los dominios con el proveedor de hosting y en la lista de redirecciones
+        permitidas de autenticación— que no se puede automatizar del todo.
+    - title: "Lanzar la demostración como un inquilino real, no como un modo de demostración"
+      description: "La demostración pública en demo.rickiecruz.com es un inquilino común en un plan de demostración con datos ficticios sembrados, reconstruido desde cero cada noche, y no una ruta de código especial."
+      tradeoffs: >
+        Cualquiera puede recorrer todo el portal de operaciones con un clic y sin cuenta, y la
+        demostración ejercita las mismas políticas que un inquilino de pago en vez de una ruta
+        paralela que podría desviarse. El costo es que el administrador de la demostración es en
+        la práctica un desconocido anónimo, así que hubo que cerrar todo control que aún saliera
+        de su inquilino antes de poder publicarla, que es justo el trabajo que volvió
+        genuinamente multiinquilino a la plataforma.
+    - title: "Separar la plataforma genérica del material propio de la organización"
+      description: "Tracé una línea de propiedad dentro del repositorio: de un lado la plataforma genérica de operaciones sin fines de lucro, del otro la marca, el contenido y los datos de Chatter Snow, con los datos de producción sin cruzar nunca hacia fixtures o demostraciones."
+      tradeoffs: >
+        Chatter Snow conserva su identidad y sus registros por completo y la plataforma sigue
+        siendo reutilizable, que es lo que hace posible servir a una segunda organización. El
+        costo es disciplina en cada commit: ningún nombre de organización escrito a mano en el
+        código de la plataforma, ninguna suposición sobre deportes de nieve incrustada en el
+        esquema.
     - title: "Usar Supabase, no Firebase"
       description: "Elegí Supabase en lugar de Firebase para la capa de base de datos."
       tradeoffs: >
-        Se ajusta mejor a datos relacionales complejos (equipo, voluntarios, eventos y finanzas
-        están todos interconectados), a cambio de algo más de infraestructura que administrar
-        que con Firebase.
+        Se ajusta mejor a datos relacionales complejos (equipo, voluntarios, eventos, gobernanza
+        y finanzas están todos interconectados), y la seguridad a nivel de fila de Postgres fue
+        después lo que permitió hacer exigible el aislamiento entre inquilinos desde la base de
+        datos, a cambio de algo más de infraestructura que administrar que con Firebase.
     - title: "Comprar lo commodity, construir la diferencia"
       description: "Introduje Zoho como correo de la organización en lugar de construir o autoadministrar algo, para que el trabajo a la medida se quedara en lo específico de Chatter."
       tradeoffs: >
@@ -109,63 +184,59 @@ casestudy:
         vez de un proyecto, a cambio de un pequeño cargo recurrente sobre un presupuesto casi
         inexistente.
     - title: "El sitio público y el portal de operaciones son superficies separadas"
-      description: "Separé el sitio de cara a la comunidad (chattersnow.org) del portal de operaciones (portal.chattersnow.org)."
+      description: "Separé el sitio de cara a la comunidad del portal de operaciones, en hosts distintos."
       tradeoffs: >
         Una experiencia simple y enfocada para los miembros y un límite más fácil de asegurar y
         escalar, a cambio de algo de duplicación de código.
-    - title: "Mantener el portal sólo por invitación, por ahora"
-      description: "Dejé el portal de operaciones completamente cerrado en lugar de lanzar junto a él un acceso público de demostración."
-      tradeoffs: >
-        Ningún riesgo de exponer datos reales de miembros o finanzas, a cambio de no poder
-        mostrarle el sistema a un posible voluntario, candidato a la junta o financiador sin
-        crearle una cuenta. Una demostración pública necesita un conjunto de datos sembrado
-        aparte, que es trabajo pendiente y no trabajo resuelto.
-    - title: "Empezar con el inventario, diseñar para la expansión"
-      description: "Acoté la construcción inicial únicamente a la gestión de inventario, pero la diseñé para soportar más."
-      tradeoffs: >
-        Permitió un lanzamiento rápido y enfocado, y la arquitectura ahora soporta agregar
-        voluntarios, eventos y finanzas sin rediseñarla, a cambio de más trabajo previo de
-        diseño y arquitectura.
     - title: "Funciones serverless de Vercel, no un backend tradicional"
-      description: "Usé funciones Edge/serverless de Vercel para toda la lógica de la API en lugar de un servicio backend independiente."
+      description: "Usé funciones serverless de Vercel para toda la lógica de la API en lugar de un servicio backend independiente."
       tradeoffs: >
         Escalado simple, bajo costo y devops mínimo, a cambio de latencia por arranque en frío,
         aceptable para los patrones de uso de una organización sin fines de lucro.
   result: >
     Un grupo que funcionaba con una cuenta de Gmail compartida y un perfil de Instagram ahora
-    tiene un dominio, correo organizacional, un sitio público y un portal de operaciones en
-    portal.chattersnow.org que cubre inventario, voluntarios, eventos, donaciones y finanzas. La
-    comunidad puede ver el equipo disponible sin enviar un mensaje directo y, por primera vez, la
+    tiene un dominio, correo organizacional, un sitio público y un portal de operaciones que
+    cubre inventario, voluntarios, eventos, gobernanza, donaciones y finanzas. La comunidad
+    puede ver el equipo disponible sin enviar un mensaje directo y, por primera vez, la
     organización está generando el registro operativo que necesita para demostrar su impacto
-    mientras se organiza hacia el estatus sin fines de lucro. Las cifras específicas siguen
-    pendientes, a la espera de más datos de uso.
+    mientras se organiza hacia el estatus sin fines de lucro. Lo que era la herramienta de una
+    sola organización hoy es una plataforma multiinquilino: una organización nueva se puede
+    aprovisionar con su propio dominio, marca, contenido, roles y reglas de retención, con sus
+    datos aislados a nivel de base de datos, y puede exportar o eliminar todo lo que le
+    pertenece. Chatter Snow es el primer inquilino, y hay una demostración completa de ambas
+    superficies, con datos sembrados, en demo.rickiecruz.com. Las cifras específicas de impacto
+    siguen pendientes, a la espera de más datos de uso.
   lessonLearned:
     - "La infraestructura es la medición: Chatter no puede evidenciar su impacto para la formación sin fines de lucro sin un sistema que registre lo que hace"
-    - "Empieza acotado, diseña amplio: enfocarme primero en el inventario hizo posible el lanzamiento, pero la arquitectura permitió la expansión"
-    - "Compra lo commodity: un buzón de pago y hosting administrado cuestan menos que las horas de voluntariado que habría tomado autoadministrarlos"
-    - "Diseña para tus usuarios reales: los voluntarios tienen paciencia limitada para la complejidad, así que cada función necesita justificarse"
-    - "Los límites de acceso son una decisión de producto: un sistema con datos reales de miembros y finanzas no se puede abrir a la ligera, y mostrárselo a alguien de fuera es su propio trabajo"
+    - "Empieza acotado, diseña amplio: enfocarme primero en el inventario hizo posible el lanzamiento, pero la arquitectura permitió la expansión hasta la multiinquilinidad"
+    - "Baja el aislamiento tan abajo como se pueda: una regla que exige la base de datos se sostiene aunque una persona, un script o una refactorización futura la olviden, y una regla sostenida por convención no"
+    - "Todo atajo que estaba bien con un inquilino se vuelve una vulnerabilidad con dos: un trabajo de purga de toda la plataforma o un control global de administración es invisible hasta el día que deja de serlo"
+    - "Construir una demostración es un ejercicio de seguridad, no de mercadotecnia: darle una cuenta de administrador a un visitante anónimo es la auditoría más honesta que existe del aislamiento entre inquilinos"
+    - "Traza la línea de propiedad antes de que el trabajo tenga valor: separar la plataforma genérica del material propio de la organización es barato al principio y caro de desenredar después"
     - "Métete de lleno: estar en la junta significó entender los problemas reales de primera mano, una ventaja que un consultor externo no tendría"
 
-seoTitle: "Chatter Snow — Plataforma de operaciones digitales | Rickie Cruz"
-seoDescription: "Estudio de caso: construí la infraestructura técnica de Chatter Snow, una comunidad LGBTQ+ de esquí y snowboard, desde una cuenta de Gmail compartida hasta un portal de operaciones completo."
+seoTitle: "Chatter Snow — Plataforma multiinquilino de operaciones sin fines de lucro | Rickie Cruz"
+seoDescription: "Estudio de caso: construí la infraestructura técnica de Chatter Snow, desde una cuenta de Gmail compartida hasta un portal de operaciones completo, y después la generalicé en una plataforma multiinquilino con aislamiento de datos a nivel de base de datos. Con demostración pública."
 tags:
   - sin-fines-de-lucro
   - full-stack
   - plataforma
+  - multiinquilino
 ---
 
 ## Míralo funcionando
 
-- **[chattersnow.org](https://chattersnow.org)** — el sitio público: quién es Chatter y qué
-  equipo está disponible para la comunidad.
-- **[portal.chattersnow.org](https://portal.chattersnow.org)** — el portal de operaciones, donde
-  realmente se gestionan el inventario, los voluntarios, los eventos y las finanzas. Contiene
-  datos reales de miembros y finanzas, así que el acceso es sólo por invitación y basado en
-  roles; no hay inicio de sesión público. Hay una instancia de demostración con datos sembrados
-  planeada, pero todavía no está en línea. Para un sistema que puedas recorrer de principio a
-  fin, mira el estudio de caso de [Personal Finance OS](/projects/personal-finance-os), que
-  tiene una cuenta de demostración pública.
+- **[demo.rickiecruz.com](https://demo.rickiecruz.com)** — el sitio público de un inquilino de
+  demostración. Todo ahí es ficticio: ninguna persona, donación ni registro describe a nadie.
+- **[demo.rickiecruz.com/portal](https://demo.rickiecruz.com/portal)** — la demostración del
+  portal de operaciones. Un clic te firma como administrador de esa organización de
+  demostración, sin necesidad de cuenta. Cambia lo que quieras: el inquilino completo se
+  destruye y se reconstruye desde cero cada noche.
+- **[chattersnow.org](https://chattersnow.org)** — el primer inquilino en producción: quién es
+  Chatter y qué equipo está disponible para la comunidad. Su portal de operaciones en
+  **portal.chattersnow.org** contiene datos reales de miembros y finanzas, así que ahí el acceso
+  es sólo por invitación y basado en roles. La demostración de arriba es la manera de conocer el
+  sistema.
 
 ## Métricas
 
@@ -178,9 +249,10 @@ operativo que genera el portal es la base sobre la que se construirá ese caso.
 
 ## Qué sigue
 
-A corto plazo: optimizar con base en la retroalimentación del uso real y levantar una instancia
-de demostración con datos sembrados del portal, para poder mostrarle el sistema a posibles
-voluntarios, candidatos a la junta y financiadores sin crear cuentas reales. A mediano plazo:
-reportes y analítica apuntados directamente a la solicitud de estatus sin fines de lucro —equipo
-distribuido, miembros atendidos, eventos realizados, dinero que entra y sale—. A largo plazo:
-posiblemente una aplicación móvil e integraciones de recaudación de fondos.
+A corto plazo: incorporar a una segunda organización real y dejar que el camino de
+aprovisionamiento se pruebe con un cliente y no con un fixture. A mediano plazo: reportes y
+analítica apuntados directamente a la solicitud de estatus sin fines de lucro —equipo
+distribuido, miembros atendidos, eventos realizados, dinero que entra y sale— y autoservicio por
+inquilino para los pasos operativos que todavía requieren a un operador, como los dominios y las
+direcciones de envío verificadas. A largo plazo: posiblemente una aplicación móvil e
+integraciones de recaudación de fondos.
