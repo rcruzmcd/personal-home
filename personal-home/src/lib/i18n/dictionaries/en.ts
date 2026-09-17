@@ -177,7 +177,7 @@ export const en = {
 
     whoIAm: {
       heading: "Who I am",
-      body: "I'm Rickie — a software engineer with 10+ years of experience across consulting, financial services, HR technology, and engineering leadership. I got my start building data integrations at Accenture, grew from developer into a team lead and manager at Fiserv, and most recently led application development at ADP.",
+      body: "I'm Rickie — a software engineer with 12+ years of experience across consulting, financial services, HR technology, and engineering leadership. I got my start building data integrations at Accenture, grew from developer into a team lead and manager at First Data and Fiserv, and most recently led application development at ADP.",
     },
 
     whatIDo: {
@@ -190,14 +190,14 @@ export const en = {
       systems:
         "I like to understand the whole system before I touch a single line of code — whether that's a data pipeline, a team's workflow, or a codebase I've inherited. I'd rather spend time understanding how the pieces fit together than guess my way through a fix.",
       ownership:
-        "I got comfortable with ownership early. As a UI team lead at Fiserv, I led distributed engineering teams across onshore and offshore resources, delivering products to roughly 100 enterprise customers. Coordinating across time zones and teams taught me to communicate clearly, flag problems before they become fires, and make decisions without waiting for permission.",
+        "I got comfortable with ownership early. As a UI team lead at First Data and Fiserv, I led distributed engineering teams across onshore and offshore resources, delivering products to roughly 100 enterprise customers. Coordinating across time zones and teams taught me to communicate clearly, flag problems before they become fires, and make decisions without waiting for permission.",
       durability:
         "I care about building things that outlast the person who built them — writing code with the next person in mind, being upfront about tradeoffs instead of overselling a quick fix, and treating maintainability as part of the job, not an afterthought.",
     },
 
     experience: {
       heading: "Experience",
-      body: "I started at Accenture building Informatica/ETL data integrations, then freelanced as a full-stack web developer before joining Fiserv as an AngularJS developer. I grew into a UI team lead role leading distributed onshore/offshore teams, then into a team lead/manager role running a cross-functional engineering team on Fiserv's fraud alert platform. From there I moved to ADP as a lead application developer, focused on hands-on development, from 2020 until July 2026.",
+      body: "I started at Accenture building Informatica/ETL data integrations, then freelanced as a full-stack web developer before joining First Data as an AngularJS developer. I grew into a UI team lead role leading distributed onshore/offshore teams, then into a team lead/manager role running a cross-functional engineering team on Fiserv's fraud alert platform. From there I moved to ADP as a lead application developer, focused on hands-on development, from 2022 until July 2026.",
       // Split around the inline link so the sentence can be reordered per
       // language rather than concatenated from fixed fragments.
       resumeLinkPrefix: "For the full breakdown, see my ",
@@ -907,13 +907,13 @@ export const en = {
 
     summaryHeading: "Professional Summary",
     summary:
-      "Senior full-stack software engineer and technical lead with 10+ years of experience delivering enterprise platforms across financial services and HR technology. Built and operated customer-facing applications, improved API performance for high-traffic services, modernized legacy platforms, and designed cloud-native microservices that support business-critical workflows. Brings strong frontend, backend, AWS, API, and cross-functional leadership experience across Agile delivery teams. Currently open to new opportunities.",
+      "Senior full-stack software engineer and technical lead with 12+ years of experience delivering enterprise platforms across financial services and HR technology. Built and operated customer-facing applications, improved API performance for high-traffic services, modernized legacy platforms, and designed cloud-native microservices that support business-critical workflows. Brings strong frontend, backend, AWS, API, and cross-functional leadership experience across Agile delivery teams. Currently open to new opportunities.",
 
     experienceHeading: "Experience",
     roles: {
       adp: {
         title: "Lead Application Developer, ADP",
-        period: "Feb 2020 – Jul 2026",
+        period: "Feb 2022 – Jul 2026",
         bullets: [
           "Built and maintained the customer-facing ADP community platform supporting collaboration features across chat, feed, surveys, broadcasts, analytics, and administrative experiences.",
           "Designed, developed, and launched a new NestJS microservice for customer-facing capabilities from architecture through production deployment, making technical decisions around package selection, service structure, and implementation strategy.",
@@ -930,7 +930,7 @@ export const en = {
       },
       fiservManager: {
         title: "Team Lead / Manager, Fiserv",
-        period: "Jan 2019 – Feb 2020",
+        period: "Jun 2020 – Feb 2022",
         bullets: [
           "Led a cross-functional engineering team supporting enterprise fraud alert platforms for financial institutions.",
           "Managed delivery risks, production support, and cross-team coordination to keep roadmap commitments on track.",
@@ -939,19 +939,20 @@ export const en = {
         ],
       },
       fiservUiLead: {
-        title: "UI Team Lead, Fiserv",
-        period: "Jan 2018 – Dec 2018",
+        title: "UI Team Lead, First Data → Fiserv",
+        period: "Mar 2019 – Jun 2020",
         bullets: [
           "Led distributed engineering teams across onshore and offshore resources delivering AngularJS and Angular applications across 4–5 product lines for approximately 100 enterprise customers.",
           "Delivered Angular-based UI products and customer-facing experiences across clients ranging from smaller agencies to enterprise accounts with millions of accounts.",
           "Demonstrated new UI capabilities through webinars and customer-facing sessions to support adoption and usage.",
           "Partnered with Product and Business Analysts to translate customer feedback into product enhancements and release priorities.",
           "Mentored developers and established delivery standards for a distributed engineering organization.",
+          "Carried the role through Fiserv's 2019 acquisition of First Data, continuing delivery across the combined organization's product lines.",
         ],
       },
       fiservAngular: {
-        title: "AngularJS Developer, Fiserv",
-        period: "Jun 2017 – Dec 2018",
+        title: "AngularJS Developer, First Data",
+        period: "Jan 2017 – Mar 2019",
         bullets: [
           "Developed a reusable AngularJS application framework enabling rapid delivery of configurable enterprise web applications.",
           "Built and maintained Jenkins CI/CD pipelines supporting application deployments.",
@@ -960,7 +961,7 @@ export const en = {
       },
       freelance: {
         title: "Freelance Full-Stack Web Developer",
-        period: "2016 – 2017",
+        period: "Jan 2016 – Dec 2018",
         bullets: [
           "Designed and developed custom websites and web applications for multiple clients.",
           "Built responsive frontend applications and supporting backend services using HTML5, CSS3, JavaScript, PHP, and MySQL.",
@@ -971,7 +972,7 @@ export const en = {
       },
       accenture: {
         title: "Informatica Developer, Accenture",
-        period: "2014 – 2016",
+        period: "Aug 2014 – Feb 2016",
         bullets: [
           "Developed internal web applications simplifying enterprise data access for engineering teams.",
           "Created complex Informatica mappings implementing business logic for enterprise data integration.",

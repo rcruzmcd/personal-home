@@ -175,7 +175,7 @@ export const es: Dictionary = {
 
     whoIAm: {
       heading: "Quién soy",
-      body: "Soy Rickie, ingeniero de software con más de 10 años de experiencia en consultoría, servicios financieros, tecnología de recursos humanos y liderazgo de ingeniería. Empecé construyendo integraciones de datos en Accenture, pasé de desarrollador a líder de equipo y gerente en Fiserv, y más recientemente dirigí el desarrollo de aplicaciones en ADP.",
+      body: "Soy Rickie, ingeniero de software con más de 12 años de experiencia en consultoría, servicios financieros, tecnología de recursos humanos y liderazgo de ingeniería. Empecé construyendo integraciones de datos en Accenture, pasé de desarrollador a líder de equipo y gerente en First Data y Fiserv, y más recientemente dirigí el desarrollo de aplicaciones en ADP.",
     },
 
     whatIDo: {
@@ -188,14 +188,14 @@ export const es: Dictionary = {
       systems:
         "Me gusta entender el sistema completo antes de tocar una sola línea de código, ya sea una canalización de datos, el flujo de trabajo de un equipo o una base de código que heredé. Prefiero dedicar tiempo a entender cómo encajan las piezas que adivinar el camino hacia una solución.",
       ownership:
-        "Me acostumbré temprano a asumir responsabilidad. Como líder del equipo de UI en Fiserv, dirigí equipos de ingeniería distribuidos entre recursos locales y remotos, entregando productos a cerca de 100 clientes empresariales. Coordinar entre zonas horarias y equipos me enseñó a comunicarme con claridad, señalar los problemas antes de que se conviertan en incendios y tomar decisiones sin esperar permiso.",
+        "Me acostumbré temprano a asumir responsabilidad. Como líder del equipo de UI en First Data y Fiserv, dirigí equipos de ingeniería distribuidos entre recursos locales y remotos, entregando productos a cerca de 100 clientes empresariales. Coordinar entre zonas horarias y equipos me enseñó a comunicarme con claridad, señalar los problemas antes de que se conviertan en incendios y tomar decisiones sin esperar permiso.",
       durability:
         "Me importa construir cosas que sobrevivan a quien las construyó: escribir código pensando en la siguiente persona, ser franco sobre las compensaciones en lugar de sobrevender una solución rápida, y tratar la mantenibilidad como parte del trabajo y no como algo secundario.",
     },
 
     experience: {
       heading: "Experiencia",
-      body: "Empecé en Accenture construyendo integraciones de datos con Informatica/ETL, luego trabajé de forma independiente en desarrollo full-stack antes de entrar a Fiserv como desarrollador de AngularJS. Crecí hasta liderar el equipo de UI, dirigiendo equipos distribuidos locales y remotos, y después asumí un rol de líder y gerente a cargo de un equipo de ingeniería multifuncional en la plataforma de alertas de fraude de Fiserv. De ahí pasé a ADP como desarrollador líder de aplicaciones, enfocado en el desarrollo práctico, desde 2020 hasta julio de 2026.",
+      body: "Empecé en Accenture construyendo integraciones de datos con Informatica/ETL, luego trabajé de forma independiente en desarrollo full-stack antes de entrar a First Data como desarrollador de AngularJS. Crecí hasta liderar el equipo de UI, dirigiendo equipos distribuidos locales y remotos, y después asumí un rol de líder y gerente a cargo de un equipo de ingeniería multifuncional en la plataforma de alertas de fraude de Fiserv. De ahí pasé a ADP como desarrollador líder de aplicaciones, enfocado en el desarrollo práctico, desde 2022 hasta julio de 2026.",
       resumeLinkPrefix: "Para el desglose completo, consulta mi ",
       resumeLinkLabel: "currículum",
       resumeLinkSuffix: ".",
@@ -909,13 +909,13 @@ export const es: Dictionary = {
 
     summaryHeading: "Resumen profesional",
     summary:
-      "Ingeniero de software full-stack sénior y líder técnico con más de 10 años de experiencia entregando plataformas empresariales en servicios financieros y tecnología de recursos humanos. He construido y operado aplicaciones de cara al cliente, mejorado el rendimiento de APIs en servicios de alto tráfico, modernizado plataformas heredadas y diseñado microservicios nativos de la nube que sostienen flujos de trabajo críticos para el negocio. Aporto sólida experiencia en frontend, backend, AWS, APIs y liderazgo multifuncional en equipos de entrega ágil. Actualmente abierto a nuevas oportunidades.",
+      "Ingeniero de software full-stack sénior y líder técnico con más de 12 años de experiencia entregando plataformas empresariales en servicios financieros y tecnología de recursos humanos. He construido y operado aplicaciones de cara al cliente, mejorado el rendimiento de APIs en servicios de alto tráfico, modernizado plataformas heredadas y diseñado microservicios nativos de la nube que sostienen flujos de trabajo críticos para el negocio. Aporto sólida experiencia en frontend, backend, AWS, APIs y liderazgo multifuncional en equipos de entrega ágil. Actualmente abierto a nuevas oportunidades.",
 
     experienceHeading: "Experiencia",
     roles: {
       adp: {
         title: "Desarrollador líder de aplicaciones, ADP",
-        period: "Feb 2020 – Jul 2026",
+        period: "Feb 2022 – Jul 2026",
         bullets: [
           "Construí y mantuve la plataforma comunitaria de ADP de cara al cliente, con funciones de colaboración en chat, feed, encuestas, comunicados, analítica y experiencias administrativas.",
           "Diseñé, desarrollé y lancé un nuevo microservicio en NestJS para funciones de cara al cliente, desde la arquitectura hasta el despliegue en producción, tomando decisiones técnicas sobre selección de paquetes, estructura del servicio y estrategia de implementación.",
@@ -932,7 +932,7 @@ export const es: Dictionary = {
       },
       fiservManager: {
         title: "Líder de equipo / Gerente, Fiserv",
-        period: "Ene 2019 – Feb 2020",
+        period: "Jun 2020 – Feb 2022",
         bullets: [
           "Dirigí un equipo de ingeniería multifuncional que daba soporte a plataformas empresariales de alertas de fraude para instituciones financieras.",
           "Gestioné riesgos de entrega, soporte en producción y coordinación entre equipos para mantener los compromisos de la hoja de ruta.",
@@ -941,19 +941,20 @@ export const es: Dictionary = {
         ],
       },
       fiservUiLead: {
-        title: "Líder del equipo de UI, Fiserv",
-        period: "Ene 2018 – Dic 2018",
+        title: "Líder del equipo de UI, First Data → Fiserv",
+        period: "Mar 2019 – Jun 2020",
         bullets: [
           "Dirigí equipos de ingeniería distribuidos entre recursos locales y remotos, entregando aplicaciones en AngularJS y Angular para 4 o 5 líneas de producto y cerca de 100 clientes empresariales.",
           "Entregué productos de UI basados en Angular y experiencias de cara al cliente, desde agencias pequeñas hasta cuentas empresariales con millones de usuarios.",
           "Presenté nuevas funciones de UI mediante seminarios web y sesiones con clientes para impulsar su adopción y uso.",
           "Colaboré con Producto y analistas de negocio para traducir la retroalimentación de clientes en mejoras de producto y prioridades de entrega.",
           "Fui mentor de desarrolladores y establecí estándares de entrega para una organización de ingeniería distribuida.",
+          "Mantuve el rol durante la adquisición de First Data por Fiserv en 2019, sosteniendo la entrega en las líneas de producto de la organización combinada.",
         ],
       },
       fiservAngular: {
-        title: "Desarrollador AngularJS, Fiserv",
-        period: "Jun 2017 – Dic 2018",
+        title: "Desarrollador AngularJS, First Data",
+        period: "Ene 2017 – Mar 2019",
         bullets: [
           "Desarrollé un framework reutilizable de aplicaciones en AngularJS que permitió entregar rápidamente aplicaciones web empresariales configurables.",
           "Construí y mantuve pipelines de CI/CD en Jenkins para el despliegue de aplicaciones.",
@@ -962,7 +963,7 @@ export const es: Dictionary = {
       },
       freelance: {
         title: "Desarrollador web full-stack independiente",
-        period: "2016 – 2017",
+        period: "Ene 2016 – Dic 2018",
         bullets: [
           "Diseñé y desarrollé sitios web y aplicaciones web a la medida para varios clientes.",
           "Construí aplicaciones frontend adaptables y los servicios backend que las respaldan con HTML5, CSS3, JavaScript, PHP y MySQL.",
@@ -973,7 +974,7 @@ export const es: Dictionary = {
       },
       accenture: {
         title: "Desarrollador Informatica, Accenture",
-        period: "2014 – 2016",
+        period: "Ago 2014 – Feb 2016",
         bullets: [
           "Desarrollé aplicaciones web internas que simplificaron el acceso a datos empresariales para equipos de ingeniería.",
           "Creé mapeos complejos en Informatica que implementaban lógica de negocio para la integración de datos empresariales.",
