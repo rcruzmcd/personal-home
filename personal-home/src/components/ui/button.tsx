@@ -14,7 +14,7 @@ const buttonVariants = cva(
         secondary:
           "bg-background text-purple border border-border px-6 py-3 rounded-lg hover:bg-border transition-colors duration-200",
         tertiary:
-          "text-purple underline hover:italic hover:text-[#4A2A5F] transition-colors duration-200",
+          "text-purple underline hover:italic hover:text-purple-hover transition-colors duration-200",
       },
     },
     defaultVariants: {

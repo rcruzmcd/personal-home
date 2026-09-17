@@ -336,6 +336,6 @@ Not because of:
 ### On Chatter Snow
 Present as: "Chatter Snow — Board Technology Project"
 
-Clearly identify your relationship (Board Member + Director of Digital Operations)
+Clearly identify your relationship (Board Member + Director of Technology and Media)
 
 Don't represent as a client you consulted for.

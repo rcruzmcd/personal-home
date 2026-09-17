@@ -50,6 +50,24 @@
   --purple-solid: #5d3a7a;
   --green-solid: #2d7a4a;
   --red-solid: #b3261e;
+
+  /* The link/tertiary-button hover shade, derived rather than written down.
+     It was the literal #4a2a5f everywhere it appeared, which is the site's
+     purple darkened — correct in light mode only, and wrong for any other
+     accent. Mixing the active accent toward the page's own text color moves
+     it *away* from the page background in either theme, and re-resolves for
+     a scoped brand, so one formula covers every case. It has to be repeated
+     inside each brand scope below: a custom property is substituted where it
+     is declared, so the inherited value would still hold this site's purple.
+     */
+  --purple-hover: color-mix(in oklab, var(--purple) 78%, var(--foreground));
+
+  /* An alias for the accent slot as *this site* defines it, in whichever
+     theme is active. A scoped brand override (below) needs a name for the
+     value it is replacing so it can fall back to it; it cannot say
+     `var(--purple)` inside its own `--purple` declaration without forming a
+     cycle. Declared once here, so it tracks the theme automatically. */
+  --accent-default: var(--purple);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -81,6 +99,72 @@
   --red: #f2857c;
 }
 
+/*
+ * Sibling brands — docs/BRAND_GUIDE.md sections 14 and 15.
+ *
+ * Both work the same way: a subtree rebinds the two accent slots rather than
+ * growing a parallel set of components, so the accent bar, buttons, badges,
+ * stats and links all follow without knowing another brand exists. Site
+ * chrome (header, footer, nav) sits outside these scopes and stays on the
+ * personal brand, which is the point — the site is hosting the other brand,
+ * not becoming it.
+ */
+
+/* Coven, the product brand: Indigo + Amber, deliberately distinct from the
+   personal site's Purple + Green so the two don't blur together on the same
+   page. Applied by <PageShell brand="coven">. */
+[data-brand="coven"] {
+  --purple: #382c5c;
+  --purple-solid: #241b3d;
+  /* Brand Amber is #c98a2b, which reaches only 2.9:1 on white — fine as a
+     large decorative fill, not as text. #9a6410 is the nearest AA-safe
+     member of the same family (5.0:1 on --surface, 4.8:1 on --background)
+     and is what the token carries. Same compromise --muted already makes:
+     the brand guide records both values and the reason. */
+  --green: #9a6410;
+  --green-solid: #9a6410;
+  --purple-hover: color-mix(in oklab, var(--purple) 78%, var(--foreground));
+}
+
+/* A project card wearing its own organization's brand, from the entry's
+   `accentColor` / `cardBackground` frontmatter. Those arrive as inline
+   custom properties on the card; this rule is what consumes them, which is
+   what lets dark mode below opt back out — a stylesheet cannot override an
+   inline declaration, but it can decline to read it. */
+[data-brand="project"] {
+  --purple: var(--brand-accent, var(--accent-default));
+  --purple-hover: color-mix(in oklab, var(--purple) 78%, var(--foreground));
+  background-color: var(--brand-surface, var(--surface));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [data-brand="coven"] {
+    --purple: #a99bd6;
+    --green: #e0a64b;
+  }
+
+  /* Tenant palettes are authored against a light page: a pale brand tint
+     under dark-mode text is unreadable, and a mid-tone brand accent on a
+     dark surface fails AA. Dark mode therefore drops the borrowed brand and
+     uses the site's own tokens. The collision this solves is a light-mode
+     one anyway — in dark mode the site's own purple is already lightened
+     well clear of any tenant's. */
+  :root:not([data-theme="light"]) [data-brand="project"] {
+    --purple: var(--accent-default);
+    background-color: var(--surface);
+  }
+}
+
+:root[data-theme="dark"] [data-brand="coven"] {
+  --purple: #a99bd6;
+  --green: #e0a64b;
+}
+
+:root[data-theme="dark"] [data-brand="project"] {
+  --purple: var(--accent-default);
+  background-color: var(--surface);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
@@ -88,6 +172,7 @@
   --color-muted: var(--muted);
   --color-foreground: var(--foreground);
   --color-purple: var(--purple);
+  --color-purple-hover: var(--purple-hover);
   --color-green: var(--green);
   --color-purple-solid: var(--purple-solid);
   --color-green-solid: var(--green-solid);
@@ -151,11 +236,23 @@ body {
     --muted: #444444;
     --foreground: #000000;
     --purple: #000000;
+    --purple-hover: #000000;
     --green: #000000;
     --red: #000000;
     --purple-solid: #ffffff;
     --green-solid: #ffffff;
     --red-solid: #ffffff;
+  }
+
+  /* A scoped brand declares its own accents on a descendant of :root, so the
+     reset above never reaches it. Collapse those to the same print palette. */
+  [data-brand] {
+    --purple: #000000;
+    --purple-hover: #000000;
+    --green: #000000;
+    --purple-solid: #ffffff;
+    --green-solid: #ffffff;
+    background-color: #ffffff !important;
   }
 
   @page {

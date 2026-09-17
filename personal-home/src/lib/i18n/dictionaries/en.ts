@@ -15,6 +15,7 @@ export const en = {
       ariaLabel: "Primary",
       work: "Work",
       projects: "Projects",
+      coven: "Coven",
       about: "About",
       consulting: "Consulting",
       contact: "Contact",
@@ -122,7 +123,7 @@ export const en = {
     intro:
       "Software engineer and technology strategist. I design and build web applications, operations platforms, and tools that solve real problems. I help small organizations and nonprofits navigate technology without the corporate overhead or unnecessary complexity.",
     currently:
-      "Currently: rebuilding after a layoff, solving my own financial challenges with code, and helping Chatter Snow scale their operations as Board Member + Director of Digital Ops.",
+      "Currently: rebuilding after a layoff, solving my own financial challenges with code, and helping Chatter Snow scale their operations as Board Member + Director of Technology and Media.",
     viewWork: "View my work",
     letsTalk: "Let's talk",
     featuredWork: "Featured Work",
@@ -206,7 +207,7 @@ export const en = {
 
     currently: {
       heading: "Currently",
-      body: "I'm looking for what's next, whether that's a full-time role or consulting work with a team that needs it. In the meantime, I'm building out this site and doing early work on a personal finance app I've wanted to build for years. I'm also a Board Member and Director of Digital Operations at Chatter, an LGBTQ+ ski and snowboard community organizing toward nonprofit status, where I lead the technical side of things.",
+      body: "I'm looking for what's next, whether that's a full-time role or consulting work with a team that needs it. In the meantime, I'm building out this site and doing early work on a personal finance app I've wanted to build for years. I'm also a Board Member and Director of Technology and Media at Chatter, an LGBTQ+ ski and snowboard community organizing toward nonprofit status, where I lead the technical side of things.",
     },
 
     outsideOfWork: {
@@ -228,7 +229,7 @@ export const en = {
       "Technology assessments, websites and web applications, technical strategy, and internal tools for small organizations.",
     title: "Consulting",
     intro:
-      "Technology shouldn't be a source of confusion. I help small organizations and nonprofits figure out what you actually need—without unnecessary complexity or corporate overhead. I've done this work (Board Member + Director of Digital Ops at Chatter Snow), and I understand your constraints.",
+      "Technology shouldn't be a source of confusion. I help small organizations and nonprofits figure out what you actually need—without unnecessary complexity or corporate overhead. I've done this work (Board Member + Director of Technology and Media at Chatter Snow), and I understand your constraints.",
 
     howThisWorks: {
       heading: "How this works",
@@ -315,6 +316,493 @@ export const en = {
 
     readyToTalk: "Ready to talk?",
     startConversation: "Start a conversation",
+  },
+
+  // The Coven product marketing section. Module ids, ordering and which modules
+  // each audience path shows live in @/lib/coven; only the words are here.
+  coven: {
+    name: "Coven",
+    navAriaLabel: "Coven sections",
+    nav: {
+      overview: "Overview",
+      nonprofits: "For nonprofits",
+      business: "For business",
+      modules: "Modules",
+      pricing: "Pricing",
+      security: "Security & data",
+      faq: "Docs & FAQ",
+    },
+    // The section's one conversion, repeated on every page.
+    demo: {
+      cta: "Try the demo",
+      newTabHint: "(opens in a new tab)",
+      note: "No signup. Fictional data, rebuilt from scratch every night.",
+    },
+    screenshotPending: "Screenshot",
+    breadcrumbCoven: "Coven",
+
+    overview: {
+      metaTitle: "Coven",
+      metaDescription:
+        "Coven replaces the spreadsheet, the shared drive, the donation form and the booking tool with one system. Built for small nonprofits and small businesses.",
+      title: "Coven",
+      tagline: "One system for small organizations that outgrew spreadsheets.",
+      intro:
+        "Most small organizations run on a pile: a spreadsheet for the money, a Drive folder for the documents, a form for donations or bookings, a separate tool for scheduling, and a website only one person can change. Coven is those things as one system, where the same record shows up everywhere it matters.",
+      audienceNote:
+        "Built for small nonprofits and small businesses. One product in your own vocabulary — not a separate edition for each.",
+      seeModules: "See the modules",
+
+      proof: {
+        modules: { label: "Modules", value: "8" },
+        signup: { label: "Signup to look around", value: "None" },
+        reset: { label: "Demo data", value: "Reset nightly" },
+      },
+
+      replaces: {
+        heading: "What it replaces",
+        todayLabel: "Today",
+        covenLabel: "With Coven",
+        rows: [
+          {
+            today: "A spreadsheet only one person fully understands",
+            withCoven:
+              "Money, budgets and reimbursements in one ledger the whole team can read",
+          },
+          {
+            today: "A Drive folder called Docs (new) FINAL",
+            withCoven:
+              "Documents attached to the thing they are about — a meeting, a grant, an event",
+          },
+          {
+            today: "A donation or checkout form that emails you",
+            withCoven:
+              "Payments that land on a person's record and in the books at the same time",
+          },
+          {
+            today: "A booking tool that has never heard of your members",
+            withCoven: "Events, sessions and signups against the same list of people",
+          },
+          {
+            today: "A website you have to ask someone to edit",
+            withCoven: "A public site your own team edits, on your own domain",
+          },
+        ],
+        footnote:
+          "The combination is the point. Plenty of tools do one row well; what you are paying for is the seams between them.",
+      },
+
+      strip: {
+        heading: "What it looks like",
+        shots: [
+          "The screen a small organization lands on: money in, money out, and what needs a decision this week.",
+          "An event with its signups, its volunteers and its costs on one page.",
+          "A person's record — membership, giving or purchase history, waivers, and the events they showed up to.",
+        ],
+      },
+
+      doors: {
+        heading: "Two front doors",
+        body:
+          "The product is the same. The words on the screen are not: every organization sets its own, so one reads donors where another reads customers.",
+        nonprofits: {
+          title: "For nonprofits",
+          body:
+            "Donations, grants, volunteers and programs — plus board governance, which no donor CRM does.",
+          cta: "See the nonprofit path",
+        },
+        business: {
+          title: "For small business",
+          body:
+            "Revenue, invoices, bookings, stock and staff scheduling in one place instead of four subscriptions.",
+          cta: "See the business path",
+        },
+      },
+
+      who: {
+        heading: "Who is behind it",
+        body:
+          "Coven is built and run by Rickie Cruz, who has sat on a nonprofit board and run its digital operations. It grew out of the infrastructure built for Chatter Snow, a community organization that is now its first customer.",
+        email: "hello@rickiecruz.com",
+        emailIntro: "Monitored, and answered by a person:",
+        aboutCta: "About Rickie",
+        contactCta: "Start a conversation",
+      },
+
+      closing: {
+        heading: "See it before you talk to anyone",
+        body:
+          "The demo is an ordinary organization on a demo plan, seeded with fictional data and rebuilt from scratch every night. Nothing you click can break anything, and nothing real is in it.",
+      },
+    },
+
+    nonprofits: {
+      metaTitle: "Coven for nonprofits",
+      metaDescription:
+        "Donations, grants, volunteers, programs, events and board governance in one system, built for small nonprofits.",
+      title: "Coven for nonprofits",
+      intro:
+        "You are running a 501(c)(3) — or working toward one — on a donation form, a spreadsheet, and the goodwill of two volunteers. Coven is one place for the money, the people, the programs and the board.",
+      leadHeading: "Governance is the part nobody else builds",
+      leadBody:
+        "Board roster and terms, meeting agendas, minutes, and resolutions recorded against the meeting that passed them. Donor CRMs stop at the donor and accounting software stops at the ledger. A small nonprofit's hardest month is the one where it has to prove what it decided and when.",
+      modulesHeading: "What you get",
+      modules: {
+        governance: {
+          title: "Board & governance",
+          body:
+            "Board roster with seats and terms, meeting agendas, minutes, and resolutions recorded against the meeting that passed them — the record your auditor, your state filing and your next board chair all ask for.",
+          caption: "A board meeting with its agenda, attendance and recorded resolutions.",
+        },
+        finance: {
+          title: "Donations, grants & reimbursements",
+          body:
+            "Donations with acknowledgements, restricted and unrestricted funds, grant reporting periods, and volunteer reimbursements that go through an approval instead of a payment app. Moving money between your own accounts is never counted as spending.",
+          caption:
+            "A month of donations, grants and reimbursements with restricted funds kept separate.",
+        },
+        people: {
+          title: "Members, donors & participants",
+          body:
+            "One record per person: membership status, giving history, waivers, the programs they joined and the events they attended. No second list to keep in sync.",
+          caption: "A person's record with membership, giving history and event attendance.",
+        },
+        volunteers: {
+          title: "Volunteers & shifts",
+          body:
+            "Roles, shifts, signups and hours. Hours roll up into the totals grant applications ask for, without anyone rebuilding the spreadsheet in March.",
+          caption: "A shift schedule with signups and logged volunteer hours.",
+        },
+        programs: {
+          title: "Programs & sessions",
+          body:
+            "Programs, their sessions, who ran them and who showed up — the numbers your annual report needs, collected as the year happens rather than reconstructed after it.",
+          caption: "A program with its sessions, leaders and attendance.",
+        },
+        events: {
+          title: "Fundraisers & community events",
+          body:
+            "Ticketed or free signup, capacity, volunteers assigned, and what the event actually cost against what it raised.",
+          caption:
+            "A fundraiser with its signups, assigned volunteers, and cost against what it raised.",
+        },
+        inventory: {
+          title: "Gear & donated goods",
+          body:
+            "What you own, what was donated, who has it and when it is due back. Gear libraries are where small organizations quietly lose the most money.",
+          caption: "A gear library showing what is checked out and to whom.",
+        },
+        content: {
+          title: "Public site & community calendar",
+          body:
+            "Your public website and the calendar your community actually reads, edited by your own team on your own domain — the same events, not a second copy of them.",
+          caption: "The public site and community calendar an organization publishes on its own domain.",
+        },
+      },
+      why: {
+        heading: "Why not a donor CRM",
+        body: [
+          "A donor CRM is excellent at donors and blind to everything else — your gear, your volunteer hours, your board minutes, your public calendar. You end up with the CRM plus four other subscriptions and a spreadsheet holding them together.",
+          "Coven's bet is the opposite one: the combination is the product. No donor CRM does board governance and gear inventory, because neither is a big enough market on its own. For a thirty-person organization they are the same job.",
+        ],
+      },
+    },
+
+    business: {
+      metaTitle: "Coven for small business",
+      metaDescription:
+        "Revenue, invoices, expenses, bookings, stock and staff scheduling in one system, built for small businesses.",
+      title: "Coven for small business",
+      intro:
+        "A studio, a shop, a small service business. You are paying for a booking tool, an invoicing tool, a spreadsheet for stock, a scheduling app and a website you cannot edit — and none of them have heard of each other. Coven is one system where a booking, a payment, a staff shift and a stock item are the same data.",
+      leadHeading: "The seams are what cost you",
+      leadBody:
+        "Every tool in the stack is fine on its own. The cost is in the gaps: a customer who exists in three systems under three spellings, stock only the spreadsheet knows about, and a month-end you reconcile by hand because nothing agrees.",
+      modulesHeading: "What you get",
+      modules: {
+        finance: {
+          title: "Revenue, invoices & expenses",
+          body:
+            "Invoices, payments, recurring revenue and expenses in one ledger, with receipts attached to the line they belong to. Moving money between your own accounts is never counted as spending.",
+          caption: "A month of revenue and expenses with invoices and attached receipts.",
+        },
+        events: {
+          title: "Classes, bookings & workshops",
+          body:
+            "Sessions with capacity, bookings, waitlists and cancellations, and what each one earned against what it cost to run.",
+          caption: "A class schedule with its bookings, capacity and waitlist.",
+        },
+        people: {
+          title: "Customers & contacts",
+          body:
+            "One record per customer: purchase and booking history, waivers, notes, and the classes they actually attended. No second list to keep in sync.",
+          caption: "A customer record with booking history and signed waivers.",
+        },
+        programs: {
+          title: "Services & offerings",
+          body:
+            "What you sell, what it costs to deliver, and who delivered it — so you can see which offering is carrying the others.",
+          caption: "A service offering with its sessions, staff and delivery cost.",
+        },
+        inventory: {
+          title: "Stock & equipment",
+          body:
+            "Stock levels, equipment, rentals and returns, with what is out and who has it. Equipment that leaves the building is where the margin quietly goes.",
+          caption: "Stock and equipment showing what is checked out and to whom.",
+        },
+        volunteers: {
+          title: "Staff scheduling",
+          body:
+            "Shifts, roles, coverage and hours, on the same calendar as the classes and bookings they staff.",
+          caption: "A staff schedule with shifts, roles and coverage.",
+        },
+        content: {
+          title: "Public site & calendar",
+          body:
+            "Your website and your bookable calendar, edited by your own team on your own domain — the same sessions customers book, not a second copy of them.",
+          caption: "The public site and bookable calendar a business publishes on its own domain.",
+        },
+      },
+      why: {
+        heading: "About the demo",
+        body: [
+          "The public demo is seeded as a nonprofit, so you will see donation and volunteer screens. It is the same product with different words: every label above is a per-organization setting, not a separate edition.",
+          "A business demo is coming. Until it lands, the fastest honest answer to would this fit us is a short call where the screens get renamed live.",
+        ],
+        cta: "Ask for a walkthrough",
+      },
+    },
+
+    modules: {
+      metaTitle: "Modules",
+      metaDescription:
+        "Finance, people, volunteers, programs, events, inventory, governance and a public site — the modules that ship in Coven today.",
+      title: "Modules",
+      itemsHeading: "What ships today",
+      intro:
+        "Everything below ships today and is in the demo. Every plan includes every module: the combination is the product, so selling it in pieces would sell the wrong thing.",
+      items: {
+        finance: {
+          title: "Finance",
+          body:
+            "Income and expenses in one ledger, with budgets, reimbursements or invoices, and receipts attached to the line they belong to. Moving money between your own accounts is never counted as spending.",
+          caption: "A month of income and expenses with budgets and attached receipts.",
+        },
+        people: {
+          title: "People",
+          body:
+            "One record per person — member, donor, customer or participant — carrying their history, their documents and everything they signed up for.",
+          caption: "A person's record with history, documents and signups.",
+        },
+        volunteers: {
+          title: "Volunteers & scheduling",
+          body:
+            "Roles, shifts, signups, coverage and logged hours, on the same calendar as the things being staffed.",
+          caption: "A shift schedule with signups, coverage and logged hours.",
+        },
+        programs: {
+          title: "Programs",
+          body:
+            "Recurring offerings and their sessions: who ran them, who attended, and what they cost to deliver.",
+          caption: "A program with its sessions, leaders and attendance.",
+        },
+        events: {
+          title: "Events",
+          body:
+            "One-off events with capacity, signups, waitlists and cancellations, and what each raised or earned against what it cost.",
+          caption: "An event with its signups, capacity and running costs.",
+        },
+        inventory: {
+          title: "Inventory",
+          body:
+            "What the organization owns, what is checked out, to whom, and when it is due back.",
+          caption: "An inventory list showing what is checked out and to whom.",
+        },
+        governance: {
+          title: "Governance",
+          body:
+            "Board roster and terms, meetings, agendas, minutes, and resolutions recorded against the meeting that passed them. Used by nonprofits, and simply left off for businesses.",
+          caption: "A board meeting with its agenda, attendance and recorded resolutions.",
+        },
+        content: {
+          title: "Public site & content calendar",
+          body:
+            "A public website and calendar for each organization, on its own domain, edited by the people who actually run it. Your brand tokens set how it looks — and generate a live brand guide at your own /brand, from the same tokens the product renders with, so the reference your volunteers and designers work from is never out of date and nobody maintains it by hand.",
+          caption: "A public site and community calendar on an organization's own domain.",
+        },
+      },
+      lexicon: {
+        heading: "The same product, in your words",
+        body:
+          "There is no nonprofit edition and no business edition. Every label — donor or customer, program or service, volunteer or staff — is a per-organization setting, alongside your own roles, branding and public copy. That is what makes one product, two audiences an honest claim rather than a marketing one.",
+      },
+    },
+
+    pricing: {
+      metaTitle: "Pricing",
+      metaDescription:
+        "Coven pricing: plans sized by organization, every module included, real numbers and no contact-sales gate.",
+      title: "Pricing",
+      intro:
+        "Plans are sized by how big your organization is, not by which features you are allowed to have. The same plans apply to nonprofits and to businesses.",
+      draftNote:
+        "Draft pricing. These numbers are a starting point and have not been finalized — confirm before quoting them anywhere.",
+      everyPlanHeading: "In every plan",
+      everyPlan: [
+        "Every module — finance, people, volunteers, programs, events, inventory, governance and your public site",
+        "Your own domain, carrying both the public site and your team's portal",
+        "Unlimited people, donor, customer and transaction records",
+        "A full export of your data, any time, without asking",
+        "Support from the person who built it",
+      ],
+      perMonth: "/month",
+      plans: {
+        small: {
+          name: "Small",
+          price: "$39",
+          annual: "or $390 a year",
+          fit: "All-volunteer, or under five people running it",
+          includes: ["Up to 5 staff accounts", "Nightly backups", "Email support"],
+        },
+        growing: {
+          name: "Growing",
+          price: "$89",
+          annual: "or $890 a year",
+          fit: "Five to twenty people running it, or one very busy season",
+          includes: [
+            "Up to 20 staff accounts",
+            "Nightly backups with point-in-time restore",
+            "Email support, next business day",
+          ],
+        },
+        established: {
+          name: "Established",
+          price: "$179",
+          annual: "or $1,790 a year",
+          fit: "Twenty or more staff, several programs, or more than one location",
+          includes: [
+            "Unlimited staff accounts",
+            "Nightly backups with point-in-time restore",
+            "Priority support and a quarterly review",
+          ],
+        },
+      },
+      onboarding: {
+        heading: "Onboarding",
+        price: "$750 one time",
+        body:
+          "Your data out of the spreadsheets and into Coven, your vocabulary and roles set up, your domain connected, and two training sessions for the people who will use it daily. It is not required — you can set it up yourself — but most organizations want it.",
+        nonprofit:
+          "Nonprofits with an annual budget under $250,000 pay $375, and I keep limited pro bono capacity each quarter. Ask.",
+      },
+      notes: [
+        "No contract, no minimum term, no per-record fees, and no charge for the people who only ever see your public site.",
+        "Cancel whenever you like and take a full export with you.",
+      ],
+      faqCta: "What happens if you leave",
+    },
+
+    security: {
+      metaTitle: "Security & data",
+      metaDescription:
+        "How Coven isolates each organization's data: row-level security in Postgres, permissions you control, an audit trail, and export and deletion on request.",
+      title: "Security & data",
+      intro:
+        "Boards and owners ask this before anything else, so here is the actual answer rather than a badge.",
+      items: [
+        {
+          title: "Isolation is enforced by the database, not by careful code",
+          body:
+            "Every table carries the organization a row belongs to, every row-level security policy is scoped to the current organization, and every foreign key between two of those tables is composite. Postgres itself rejects a cross-organization read or reference, including from a connection holding the service role. An application bug cannot leak another organization's data, because the query never returns it.",
+        },
+        {
+          title: "There is no super-admin account",
+          body:
+            "No platform-wide role can see across organizations. When support needs access, your organization issues a time-boxed support membership and revokes it afterwards. Nobody holds standing access to your data.",
+        },
+        {
+          title: "Permissions are yours to set",
+          body:
+            "Roles, and what each role can do, are per-organization settings rather than fixed tiers. A treasurer sees the ledger, a shift lead sees the schedule, a board member sees the minutes — you decide, and you change it without filing a ticket.",
+        },
+        {
+          title: "An audit trail on the records that matter",
+          body:
+            "Who changed a financial record, a membership, a role or a resolution, and when. The questions that actually come up are about money and access, so those are what is logged.",
+        },
+        {
+          title: "Export and deletion on request",
+          body:
+            "A full export of your organization's data is a feature, not a support request — it was built before the second organization was onboarded. Deletion on request is honored, and data-retention rules you set decide how long anything else is kept.",
+        },
+        {
+          title: "Your public site is the only public part",
+          body:
+            "Everything in the portal sits behind authentication and is scoped to your organization. What the world sees is the site and the calendar you chose to publish.",
+        },
+      ],
+      hosting: {
+        heading: "Where it runs",
+        body:
+          "The application runs on Vercel, the database is managed Postgres on Supabase, DNS and CDN go through Cloudflare, and transactional email is sent through Resend. Primary infrastructure is in United States regions, and backups run nightly.",
+      },
+      ask: {
+        heading: "Questions your board needs in writing",
+        body:
+          "Ask, and you will get a written answer rather than a sales call. Security questionnaires are fine too.",
+        cta: "Ask a security question",
+      },
+    },
+
+    faq: {
+      metaTitle: "Docs & FAQ",
+      metaDescription:
+        "Getting your data into Coven, who owns it, what happens if you leave, and how setup actually goes.",
+      title: "Docs & FAQ",
+      intro: "The questions that come up before anyone signs anything.",
+      items: [
+        {
+          question: "How do we get our data in?",
+          answer:
+            "Spreadsheets and CSV exports from whatever you use now: people, donations or invoices, and historical transactions. Onboarding includes the import. If you would rather do it yourself, the importer is in the product and it shows you what it matched before anything is written.",
+        },
+        {
+          question: "Who owns the data?",
+          answer:
+            "You do. Your organization's records are yours. Nothing in them is sold, shared, or used to train anything.",
+        },
+        {
+          question: "What happens if we leave?",
+          answer:
+            "You export everything, and the export is complete — the whole organization's data in open formats. Export already exists in the product; it is not a promise waiting to be built. After you leave, deletion is on request, and the retention rules you set decide the rest.",
+        },
+        {
+          question: "Can we use our own domain?",
+          answer:
+            "Yes, on every plan. Your public site and your team's portal both run on your domain. Connecting it is part of onboarding and is a settings change, not a rebuild.",
+        },
+        {
+          question: "Does it replace our accounting software?",
+          answer:
+            "No, and it does not try to. Coven is where the operational money lives: donations, invoices, reimbursements, what an event cost. Your bookkeeper still files the return, and the export is what you hand them.",
+        },
+        {
+          question: "Do our members and customers need accounts?",
+          answer:
+            "Only the people who run the organization need accounts, and those are what a plan is sized on. Everyone else signs up for an event, makes a donation or books a class without one.",
+        },
+        {
+          question: "How long does setup take?",
+          answer:
+            "A small organization is usually running in a week or two, and most of that is deciding your vocabulary and your roles rather than technical work. You can see the whole product today without talking to anyone.",
+        },
+        {
+          question: "Is it finished, or are we a beta test?",
+          answer:
+            "It runs a real organization's operations today, and did so before it was a product. It is young, and you would be an early customer — which means direct access to the person building it, and real influence over what comes next.",
+        },
+      ],
+    },
   },
 
   legal: {

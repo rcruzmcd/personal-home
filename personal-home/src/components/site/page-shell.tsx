@@ -16,17 +16,28 @@ import { cn } from "@/lib/utils"
 export function PageShell({
   as: Tag = "main",
   id,
+  brand,
   className,
   children,
 }: {
   as?: "main" | "article" | "div"
   id?: string
+  /**
+   * Swap the accent palette for the whole page. Coven is its own product
+   * brand (Indigo + Amber) and says so here rather than in each component;
+   * `src/app/globals.css` rebinds the accent tokens inside the scope, so
+   * every shared component follows without a Coven-specific variant. The
+   * header and footer sit outside the shell and stay on the personal brand
+   * — the site is hosting the product, not becoming it.
+   */
+  brand?: "coven"
   className?: string
   children: ReactNode
 }) {
   return (
     <Tag
       id={id}
+      data-brand={brand}
       className={cn(
         "mx-auto w-full max-w-5xl flex-1 px-4 py-16 sm:px-6 lg:px-10",
         className

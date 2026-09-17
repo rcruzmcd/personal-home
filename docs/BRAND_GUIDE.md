@@ -208,7 +208,7 @@ All paragraph text, body copy, case study narratives. Set in Strong Text. Extra 
 **Inter 400 · 14px · #6C717A · line-height 1.5**
 
 ```
-Published September 2026 · Board Member + Director of Digital Operations
+Published September 2026 · Board Member + Director of Technology and Media
 ```
 Bylines, dates, metadata, secondary information. Set in Muted Text.
 
@@ -363,7 +363,7 @@ Thin accent bar above featured content.
 - Padding: `px-6 py-3` (24px horizontal, 12px vertical)
 - Border radius: `rounded-lg` (8px)
 - Font: Inter 600, 16px
-- Hover: Slightly darker purple (#4A2A5F) or 90% opacity
+- Hover: `text-purple-hover` — the active accent mixed 78% with `--foreground`, which darkens it in light mode and lightens it in dark mode. It replaced a hardcoded #4A2A5F, which was only ever correct for this site's purple in light mode (see section 14 on why the accent is no longer always purple).
 - Focus: Visible outline in green (#2D7A4A), 2px, 2px offset
 
 **Example text:** "View my work" · "Start a conversation" · "Download resume"
@@ -807,6 +807,130 @@ Elements within card: mb-4 (headings), mb-2 (secondary)
 - Stripe (professional, minimal color, excellent typography)
 - GitHub (clean, technical, restrained)
 - Figma (sophisticated use of accent colors)
+
+---
+
+## 14 — Coven (the product brand)
+
+Coven is a product, not a page of this site. It has its own identity, and
+rickiecruz.com hosts it rather than absorbing it. Everything in sections 01–13
+still describes **this site**; this section describes Coven, and section 15
+describes what happens when the two appear together.
+
+### Naming and lockup
+
+The mark is **Coven**, alone. Not "Coven by RCM Labs", and not "Coven by
+Rickie":
+
+- **"by RCM Labs"** is true and useful — it says a studio owns the product,
+  which is what a second or third paying organization wants to know before it
+  trusts the platform with its data. But a "by X" lockup reads as clutter at
+  favicon and app-icon sizes.
+- **"by Rickie"** reads as a personal side project. That framing is deliberate
+  and correct on rickiecruz.com, where the product is portfolio evidence; it
+  actively works against the product when a board is deciding whether to run
+  its organization on it.
+
+So: **"an RCM Labs platform" lives in copy — footers, pricing, the vendor
+section a board actually reads — and never inside the mark.**
+
+### Palette: Indigo + Amber
+
+Deliberately not this site's Purple + Green. Coven has to stay visually
+distinct from the personal brand when both appear on the same page, and Indigo
+reads as software where the site's purple reads as portfolio.
+
+| Role | Value | Notes |
+| --- | --- | --- |
+| Indigo (deep) | `#241B3D` | Solid fills carrying white text. 16:1. |
+| Indigo | `#382C5C` | Primary accent: headings, links, accent bars. 12.5:1 on white. |
+| Amber (brand) | `#C98A2B` | The signature color. **Decorative only** — 2.9:1 on white fails AA for text. |
+| Amber (AA-safe) | `#9A6410` | What the token actually carries. 5.0:1 on `--surface`, 4.8:1 on `--background`. |
+| Silver / white | `#F5F4F2` / `#FFFFFF` | Shared with the site's neutrals. |
+
+Dark mode lightens the two accents the same way the site's do: Indigo becomes
+`#A99BD6` (6.6:1) and Amber `#E0A64B` (7.6:1). Solid fills stay on the darker
+literals, because white text needs them in either theme.
+
+This is the same compromise `--muted` already makes in section 01: the brand
+value and the shipped value are both recorded, with the contrast reason. Use
+`#C98A2B` for a large fill or an illustration; use `#9A6410` anywhere a
+visitor has to read it.
+
+### Mark direction
+
+The name points at gathering and circle — a community of organizations. The
+icon leans on that as a **network motif, not witchcraft imagery**, which would
+read wrong for an operations tool a nonprofit board is vetting.
+
+- **Cluster** — three nodes, one triangle: tenants under one platform. Scales
+  to a favicon cleanly. *Recommended.*
+- **Open Ring** — an unclosed circle, room for one more; the gap doubles as
+  the C.
+- **Constellation** — loose dots, no lines. Quieter, more abstract.
+- **Monogram** — lowercase `c` in a rounded square. Safest for app stores,
+  least distinctive.
+
+Wordmark: lowercase, tight tracking, geometric sans — the same Inter logic as
+section 02, in Coven's own color. `an RCM Labs platform` sits underneath as a
+secondary line where context calls for it.
+
+### How this is implemented
+
+Coven does **not** have a parallel set of components. `<PageShell
+brand="coven">` sets `data-brand="coven"` on the page, and
+`src/app/globals.css` rebinds the two accent slots inside that scope — so the
+accent bar, buttons, badges, stats and links all follow without knowing Coven
+exists. Site chrome (header, footer, nav) sits outside the shell and stays on
+the personal brand, which is the point: the site is hosting the product, not
+becoming it.
+
+---
+
+## 15 — Sibling brands on a project card
+
+A project card wears the brand of the organization it is about when that
+organization's palette would otherwise collide with this site's.
+
+### The collision is real, not hypothetical
+
+Chatter Snow's live brand page (chattersnow.org/brand) gives their accent as
+`#70419A` and their text/button color as `#32134F` — the same purple family as
+this site's Deep Purple `#5D3A7A`. Rendered untinted, their card reads as
+**rickiecruz.com's** brand rather than theirs.
+
+### The fix is context, not color-matching
+
+Don't nudge either palette toward the other. Give the card the organization's
+own page-background tint so the accent is read *in their context*:
+
+```yaml
+accentColor: "#70419a"     # their accent
+cardBackground: "#f7f0ff"  # their page background
+```
+
+Both are optional frontmatter fields (see `docs/CONTENT_SCHEMA.md`), validated
+as six-digit hex. The card passes them through as CSS custom properties and
+`globals.css` decides what to do with them.
+
+Coven needs neither: Indigo `#382C5C` doesn't collide with this site's purple,
+so a Coven card uses the default Cool Silver surface as-is.
+
+### Light mode only
+
+Tenant palettes are authored against a light page. A pale brand tint under
+dark-mode text is unreadable, and a mid-tone brand accent on a dark surface
+fails AA — `#70419A` on `#1C1F26` is 2.3:1. In dark mode the card drops the
+borrowed brand and uses this site's own tokens. That costs nothing, because
+the collision only exists in light mode: in dark mode this site's purple is
+already lightened well clear of any tenant's.
+
+### Someone else's logo is theirs
+
+Chatter Snow's mark is hand-drawn, and their brand page states it is not to be
+redrawn, recolored, or reduced to monochrome, with a 120px minimum width.
+Those rules apply here exactly as they do anywhere else — same source file,
+same constraints. This applies to any organization's mark used on this site.
 
 ---
 

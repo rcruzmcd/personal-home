@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Merriweather, Geist_Mono } from "next/font/google";
 import { locale as rootLocale } from "next/root-params";
-import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import "../globals.css";
 import { cn } from "@/lib/utils";
@@ -40,6 +39,11 @@ const geistMono = Geist_Mono({
 // doesn't flash to the system default and then correct itself post-hydration.
 // The locale needs no equivalent: it's in the URL, so the server already
 // rendered the right language.
+//
+// Deliberately a plain inline <script> rather than next/script: an app-router
+// `beforeInteractive` script is queued onto `self.__next_s` and executed by the
+// Next.js runtime, which lands after first paint — too late to stop the flash
+// this exists to prevent.
 const THEME_INIT_SCRIPT = `
 (function () {
   try {
@@ -86,9 +90,10 @@ export default async function RootLayout(props: LayoutProps<"/[locale]">) {
       className={cn("h-full", "antialiased", inter.variable, merriweather.variable, geistMono.variable, "font-sans")}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <Script id="theme-init" strategy="beforeInteractive">
-          {THEME_INIT_SCRIPT}
-        </Script>
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
+        />
         <JsonLd data={buildPersonJsonLd(locale, t.common.siteDescription)} />
         <JsonLd data={buildWebsiteJsonLd(locale, t.common.siteDescription)} />
         <I18nProvider locale={locale} messages={t.client}>

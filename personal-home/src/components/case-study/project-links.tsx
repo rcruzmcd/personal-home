@@ -23,7 +23,7 @@ export function ProjectLinks({
           onClick={() =>
             trackExternalProjectClick({ slug, url: link.url, linkType: link.type })
           }
-          className="text-body font-medium text-purple underline transition-colors duration-200 hover:italic hover:text-[#4A2A5F]"
+          className="text-body font-medium text-purple underline transition-colors duration-200 hover:italic hover:text-purple-hover"
         >
           {link.title} &rarr;
         </a>

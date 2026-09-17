@@ -51,6 +51,15 @@ const PersonalProjectSchema = z.object({
 // what's actually written — keep it this way, don't "fix" it back.
 const isoDate = z.iso.date()
 
+// An organization's own brand, borrowed for its card (docs/BRAND_GUIDE.md
+// section 15). Chatter Snow's accent sits in the same purple family as this
+// site's, so an untinted card reads as *this* brand rather than theirs. Both
+// are light-mode-only — tenant palettes are authored against a light page —
+// and src/app/globals.css is where that rule lives.
+const hexColor = z
+  .string()
+  .regex(/^#[0-9a-f]{6}$/i, "Expected a six-digit hex color, e.g. \"#70419a\"")
+
 export const ProjectFrontmatterSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
@@ -75,6 +84,9 @@ export const ProjectFrontmatterSchema = z.object({
   relationship: z.string().optional(),
 
   technologies: z.array(z.string()).min(1),
+
+  accentColor: hexColor.optional(),
+  cardBackground: hexColor.optional(),
 
   heroImage: z.string().optional(),
   images: z.array(z.string()).default([]),

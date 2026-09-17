@@ -42,6 +42,44 @@ describe("ProjectFrontmatterSchema", () => {
     expect(result.success).toBe(false)
   })
 
+  test("accepts a six-digit hex accentColor and cardBackground", () => {
+    const result = ProjectFrontmatterSchema.safeParse({
+      id: "example",
+      title: "Example",
+      slug: "example",
+      description: "An example project.",
+      category: "work",
+      status: "active",
+      startDate: "2026-01-01",
+      publishedDate: "2026-01-02",
+      technologies: ["Next.js"],
+      accentColor: "#70419A",
+      cardBackground: "#f7f0ff",
+    })
+    expect(result.success).toBe(true)
+  })
+
+  // The card hands these straight to CSS as custom property values, so a
+  // shorthand or named color would either not render or, worse, render as
+  // something arbitrary. Fail the build instead.
+  test("rejects a three-digit or named color", () => {
+    for (const accentColor of ["#abc", "rebeccapurple", "rgb(112 65 154)"]) {
+      const result = ProjectFrontmatterSchema.safeParse({
+        id: "example",
+        title: "Example",
+        slug: "example",
+        description: "An example project.",
+        category: "work",
+        status: "active",
+        startDate: "2026-01-01",
+        publishedDate: "2026-01-02",
+        technologies: ["Next.js"],
+        accentColor,
+      })
+      expect(result.success).toBe(false)
+    }
+  })
+
   test("rejects a missing required field", () => {
     const result = ProjectFrontmatterSchema.safeParse({
       id: "example",

@@ -30,6 +30,7 @@ modifiers, e.g. `bg-purple/10`).
 | `--color-purple-solid` | `bg-purple-solid` | `#5D3A7A` | `#5D3A7A` | Fixed fill for white-on-purple |
 | `--color-green-solid` | `bg-green-solid` | `#2D7A4A` | `#2D7A4A` | Fixed fill for white-on-green |
 | `--color-red-solid` | `bg-red-solid` | `#B3261E` | `#B3261E` | Fixed fill for white-on-red |
+| `--color-purple-hover` | `text-purple-hover` | derived | derived | Link/tertiary-button hover: `color-mix(in oklab, var(--purple) 78%, var(--foreground))` |
 
 **Never** use raw `white`/`black`/arbitrary hex in components — always the
 token names above, so dark mode "just works" once the toggle exists.
@@ -46,6 +47,34 @@ no way to say "over". Two rules come with it:
   to stay legible as *text*, which makes it too light to sit behind white text.
   Use `bg-red-solid` for a filled control, `text-red` for a figure — the same
   split `--purple`/`--purple-solid` already uses.
+
+### Brand scopes
+
+`--purple` and `--green` are **accent slots**, not literally "the purple one"
+and "the green one". Two subtrees rebind them, which is how a second brand
+ships without a second set of components (BRAND_GUIDE.md sections 14 and 15):
+
+| Scope | Set by | Rebinds |
+|---|---|---|
+| `[data-brand="coven"]` | `<PageShell brand="coven">` | Indigo `#382C5C` / `#241B3D` + Amber `#9A6410` |
+| `[data-brand="project"]` | `ProjectCard`, from an entry's `accentColor` / `cardBackground` | that organization's own accent and card surface |
+
+Consequences worth knowing before adding UI:
+
+- **Use the token classes, not literals.** `text-purple` follows the active
+  brand; `text-[#5D3A7A]` does not. This is why the link hover became
+  `--purple-hover` instead of the hardcoded `#4A2A5F` it used to be.
+- **`--purple-hover` is re-declared inside each scope.** A custom property is
+  substituted where it is *declared*, so an inherited `--purple-hover` would
+  still hold this site's purple. Any future derived token needs the same
+  treatment.
+- **Site chrome stays on the personal brand.** The header, footer and nav sit
+  outside `PageShell`, so a Coven page still has this site's purple nav — the
+  site is hosting the product, not becoming it.
+- **The project scope is light-mode only**, because tenant palettes are
+  authored against a light page. Dark mode declines to read the inline values
+  rather than overriding them, since a stylesheet cannot beat an inline
+  declaration.
 
 ### Dark mode
 
@@ -74,7 +103,7 @@ the brand guide. Font family utilities: `font-sans` (Inter, default body),
 | Body | `text-body text-foreground` | 16px / 1.6 | 400 | Strong Text |
 | Small / metadata | `text-small text-muted` | 14px / 1.5 | 400 | Muted |
 | Label / badge | `text-label font-medium uppercase text-green` | 12px / 1.4 | 500 | Green or Purple |
-| Link (inline) | `text-body font-medium text-purple underline hover:text-[#4A2A5F] hover:italic` | 16px | 500 | Purple |
+| Link (inline) | `text-body font-medium text-purple underline hover:text-purple-hover hover:italic` | 16px | 500 | Purple |
 
 Max 2 fonts per page (per brand guide §09) — Merriweather only for a single
 pull quote, never alongside body copy on the same block.
@@ -119,7 +148,7 @@ focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 foc
 
 **Tertiary / link button**
 ```
-text-purple underline hover:italic hover:text-[#4A2A5F] transition-colors duration-200
+text-purple underline hover:italic hover:text-purple-hover transition-colors duration-200
 ```
 
 **Standard card**

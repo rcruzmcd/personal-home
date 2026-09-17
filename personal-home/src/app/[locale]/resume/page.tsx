@@ -132,7 +132,7 @@ export default async function ResumePage() {
                   <div className="flex flex-wrap items-baseline gap-2">
                     <LocaleLink
                       href={projectPath(project)}
-                      className="font-medium text-purple underline hover:italic hover:text-[#4A2A5F]"
+                      className="font-medium text-purple underline hover:italic hover:text-purple-hover"
                     >
                       {project.title}
                     </LocaleLink>

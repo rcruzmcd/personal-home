@@ -12,9 +12,15 @@ startDate: "2025-01-15"
 publishedDate: "2026-08-31"
 updatedDate: "2026-09-10"
 
-role: "Board Member + Director of Digital Operations"
+role: "Board Member + Director of Technology and Media"
 organization: "Chatter Snow"
-relationship: "Board Member and Director of Digital Operations"
+relationship: "Board Member and Director of Technology and Media"
+
+# Chatter Snow's own brand, worn by this entry's card. Their accent sits in
+# the same purple family as this site's, so an untinted card would read as
+# rickiecruz.com's brand rather than theirs (docs/BRAND_GUIDE.md section 15).
+accentColor: "#70419a"
+cardBackground: "#f7f0ff"
 
 technologies:
   - Next.js
@@ -38,6 +44,9 @@ links:
     type: demo
   - title: "Chatter Snow Ops Portal (Login Required)"
     url: "https://portal.chattersnow.org"
+    type: live
+  - title: "Chatter Snow Brand Guide"
+    url: "https://chattersnow.org/brand"
     type: live
   - title: "GitHub"
     url: "https://github.com/rcruzmcd"
@@ -119,8 +128,11 @@ casestudy:
     volunteer coordination and shift signup, events and registrations, governance (board
     meetings, minutes, decisions, conflict-of-interest disclosures), donations, expenses, and
     reimbursements. Each organization edits its own copy, photos, and brand tokens from
-    Administration rather than filing a ticket. Access is role-based, with the permission matrix
-    itself editable per tenant, so an organization decides what its own roles can do.
+    Administration rather than filing a ticket. Those same tokens render each tenant's own brand
+    guide at /brand on its public site, so the reference a volunteer or a designer is handed is
+    generated from what the product actually renders with — it cannot go stale, and nobody
+    maintains it by hand. Access is role-based, with the permission matrix itself editable per
+    tenant, so an organization decides what its own roles can do.
   implementation: >
     Phase zero was infrastructure that didn't exist: registering chattersnow.org, moving off the
     shared Gmail account to organizational email, and setting up DNS, hosting, and accounts. The

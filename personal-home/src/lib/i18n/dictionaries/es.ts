@@ -14,6 +14,7 @@ export const es: Dictionary = {
       ariaLabel: "Principal",
       work: "Trabajo",
       projects: "Proyectos",
+      coven: "Coven",
       about: "Acerca de",
       consulting: "Consultoría",
       contact: "Contacto",
@@ -115,7 +116,7 @@ export const es: Dictionary = {
     intro:
       "Ingeniero de software y estratega tecnológico. Diseño y construyo aplicaciones web, plataformas de operaciones y herramientas que resuelven problemas reales. Ayudo a organizaciones pequeñas y sin fines de lucro a navegar la tecnología sin la burocracia corporativa ni complejidad innecesaria.",
     currently:
-      "Actualmente: reconstruyendo después de un despido, resolviendo mis propios retos financieros con código, y ayudando a Chatter Snow a escalar sus operaciones como miembro de la junta y director de operaciones digitales.",
+      "Actualmente: reconstruyendo después de un despido, resolviendo mis propios retos financieros con código, y ayudando a Chatter Snow a escalar sus operaciones como miembro de la junta y director de tecnología y medios.",
     viewWork: "Ver mi trabajo",
     letsTalk: "Conversemos",
     featuredWork: "Trabajo destacado",
@@ -202,7 +203,7 @@ export const es: Dictionary = {
 
     currently: {
       heading: "Actualmente",
-      body: "Estoy buscando lo que sigue, ya sea un puesto de tiempo completo o trabajo de consultoría con un equipo que lo necesite. Mientras tanto, estoy desarrollando este sitio y avanzando en las primeras etapas de una aplicación de finanzas personales que he querido construir durante años. También soy miembro de la junta y director de operaciones digitales en Chatter, una comunidad LGBTQ+ de esquí y snowboard que se está organizando para convertirse en una organización sin fines de lucro, donde lidero la parte técnica.",
+      body: "Estoy buscando lo que sigue, ya sea un puesto de tiempo completo o trabajo de consultoría con un equipo que lo necesite. Mientras tanto, estoy desarrollando este sitio y avanzando en las primeras etapas de una aplicación de finanzas personales que he querido construir durante años. También soy miembro de la junta y director de tecnología y medios en Chatter, una comunidad LGBTQ+ de esquí y snowboard que se está organizando para convertirse en una organización sin fines de lucro, donde lidero la parte técnica.",
     },
 
     outsideOfWork: {
@@ -224,7 +225,7 @@ export const es: Dictionary = {
       "Evaluaciones tecnológicas, sitios y aplicaciones web, estrategia técnica y herramientas internas para organizaciones pequeñas.",
     title: "Consultoría",
     intro:
-      "La tecnología no debería ser una fuente de confusión. Ayudo a organizaciones pequeñas y sin fines de lucro a definir lo que realmente necesitan, sin complejidad innecesaria ni burocracia corporativa. He hecho este trabajo (miembro de la junta y director de operaciones digitales en Chatter Snow) y entiendo sus limitaciones.",
+      "La tecnología no debería ser una fuente de confusión. Ayudo a organizaciones pequeñas y sin fines de lucro a definir lo que realmente necesitan, sin complejidad innecesaria ni burocracia corporativa. He hecho este trabajo (miembro de la junta y director de tecnología y medios en Chatter Snow) y entiendo sus limitaciones.",
 
     howThisWorks: {
       heading: "Cómo funciona",
@@ -309,6 +310,501 @@ export const es: Dictionary = {
 
     readyToTalk: "¿Listo para conversar?",
     startConversation: "Iniciar una conversación",
+  },
+
+  coven: {
+    name: "Coven",
+    navAriaLabel: "Secciones de Coven",
+    nav: {
+      overview: "Resumen",
+      nonprofits: "Para organizaciones sin fines de lucro",
+      business: "Para empresas",
+      modules: "Módulos",
+      pricing: "Precios",
+      security: "Seguridad y datos",
+      faq: "Documentación y preguntas",
+    },
+    demo: {
+      cta: "Prueba la demostración",
+      newTabHint: "(se abre en una pestaña nueva)",
+      note: "Sin registro. Datos ficticios, reconstruidos desde cero cada noche.",
+    },
+    screenshotPending: "Captura",
+    breadcrumbCoven: "Coven",
+
+    overview: {
+      metaTitle: "Coven",
+      metaDescription:
+        "Coven reemplaza la hoja de cálculo, la carpeta compartida, el formulario de donaciones y la herramienta de reservas con un solo sistema. Hecho para organizaciones sin fines de lucro y pequeñas empresas.",
+      title: "Coven",
+      tagline:
+        "Un solo sistema para las organizaciones pequeñas que ya no caben en una hoja de cálculo.",
+      intro:
+        "Casi toda organización pequeña funciona sobre un montón de piezas sueltas: una hoja de cálculo para el dinero, una carpeta compartida para los documentos, un formulario para donaciones o reservas, otra herramienta para los horarios y un sitio web que solo una persona puede cambiar. Coven es todo eso como un solo sistema, donde el mismo registro aparece en cada lugar donde importa.",
+      audienceNote:
+        "Hecho para organizaciones sin fines de lucro y pequeñas empresas. Un solo producto en tu propio vocabulario, no una edición distinta para cada quien.",
+      seeModules: "Ver los módulos",
+
+      proof: {
+        modules: { label: "Módulos", value: "8" },
+        signup: { label: "Registro para mirar", value: "Ninguno" },
+        reset: { label: "Datos de la demostración", value: "Se reinician cada noche" },
+      },
+
+      replaces: {
+        heading: "Qué reemplaza",
+        todayLabel: "Hoy",
+        covenLabel: "Con Coven",
+        rows: [
+          {
+            today: "Una hoja de cálculo que solo una persona entiende del todo",
+            withCoven:
+              "Dinero, presupuestos y reembolsos en un solo libro que todo el equipo puede leer",
+          },
+          {
+            today: "Una carpeta compartida llamada Documentos (nuevo) FINAL",
+            withCoven:
+              "Documentos adjuntos a aquello de lo que tratan: una reunión, una subvención, un evento",
+          },
+          {
+            today: "Un formulario de donación o de pago que te manda un correo",
+            withCoven:
+              "Pagos que quedan en el registro de la persona y en los libros al mismo tiempo",
+          },
+          {
+            today: "Una herramienta de reservas que nunca oyó hablar de tus miembros",
+            withCoven: "Eventos, sesiones e inscripciones sobre la misma lista de personas",
+          },
+          {
+            today: "Un sitio web que tienes que pedirle a alguien que edite",
+            withCoven: "Un sitio público que edita tu propio equipo, en tu propio dominio",
+          },
+        ],
+        footnote:
+          "La combinación es el punto. Muchas herramientas hacen bien una de esas filas; lo que estás pagando son las costuras entre ellas.",
+      },
+
+      strip: {
+        heading: "Cómo se ve",
+        shots: [
+          "La pantalla a la que llega una organización pequeña: dinero que entra, dinero que sale y qué necesita una decisión esta semana.",
+          "Un evento con sus inscripciones, su voluntariado y sus costos en una sola página.",
+          "El registro de una persona: membresía, historial de donaciones o compras, exenciones firmadas y los eventos a los que asistió.",
+        ],
+      },
+
+      doors: {
+        heading: "Dos puertas de entrada",
+        body:
+          "El producto es el mismo. Las palabras en pantalla no: cada organización define las suyas, así que donde una lee donantes otra lee clientes.",
+        nonprofits: {
+          title: "Para organizaciones sin fines de lucro",
+          body:
+            "Donaciones, subvenciones, voluntariado y programas, más el gobierno de la junta directiva, que ningún CRM de donantes cubre.",
+          cta: "Ver el camino para organizaciones sin fines de lucro",
+        },
+        business: {
+          title: "Para pequeñas empresas",
+          body:
+            "Ingresos, facturas, reservas, inventario y horarios del personal en un solo lugar en vez de cuatro suscripciones.",
+          cta: "Ver el camino para empresas",
+        },
+      },
+
+      who: {
+        heading: "Quién está detrás",
+        body:
+          "Coven lo construye y lo opera Rickie Cruz, que ha sido miembro de la junta directiva de una organización sin fines de lucro y ha dirigido sus operaciones digitales. Nació de la infraestructura construida para Chatter Snow, una organización comunitaria que hoy es su primer cliente.",
+        email: "hello@rickiecruz.com",
+        emailIntro: "Monitoreado, y respondido por una persona:",
+        aboutCta: "Sobre Rickie",
+        contactCta: "Iniciar una conversación",
+      },
+
+      closing: {
+        heading: "Míralo antes de hablar con nadie",
+        body:
+          "La demostración es una organización común en un plan de demostración, sembrada con datos ficticios y reconstruida desde cero cada noche. Nada de lo que toques puede romper algo, y no hay nada real adentro.",
+      },
+    },
+
+    nonprofits: {
+      metaTitle: "Coven para organizaciones sin fines de lucro",
+      metaDescription:
+        "Donaciones, subvenciones, voluntariado, programas, eventos y gobierno de la junta directiva en un solo sistema, hecho para organizaciones pequeñas.",
+      title: "Coven para organizaciones sin fines de lucro",
+      intro:
+        "Diriges una organización sin fines de lucro —o vas en camino a serlo— con un formulario de donaciones, una hoja de cálculo y la buena voluntad de dos personas voluntarias. Coven es un solo lugar para el dinero, las personas, los programas y la junta directiva.",
+      leadHeading: "El gobierno de la junta es la parte que nadie más construye",
+      leadBody:
+        "Composición y periodos de la junta directiva, órdenes del día, actas y resoluciones registradas junto a la reunión que las aprobó. Los CRM de donantes se detienen en el donante y la contabilidad se detiene en el libro mayor. El mes más difícil de una organización pequeña es aquel en que tiene que demostrar qué decidió y cuándo.",
+      modulesHeading: "Qué incluye",
+      modules: {
+        governance: {
+          title: "Junta directiva y gobernanza",
+          body:
+            "Composición de la junta con cargos y periodos, órdenes del día, actas y resoluciones registradas junto a la reunión que las aprobó: el registro que pedirán tu auditoría, tu trámite estatal y la próxima presidencia de la junta.",
+          caption:
+            "Una reunión de junta directiva con su orden del día, asistencia y resoluciones registradas.",
+        },
+        finance: {
+          title: "Donaciones, subvenciones y reembolsos",
+          body:
+            "Donaciones con sus acuses de recibo, fondos restringidos y no restringidos, periodos de reporte de subvenciones y reembolsos al voluntariado que pasan por una aprobación en vez de una app de pagos. Mover dinero entre tus propias cuentas nunca cuenta como gasto.",
+          caption:
+            "Un mes de donaciones, subvenciones y reembolsos con los fondos restringidos aparte.",
+        },
+        people: {
+          title: "Miembros, donantes y participantes",
+          body:
+            "Un registro por persona: estado de membresía, historial de donaciones, exenciones firmadas, los programas a los que se unió y los eventos a los que asistió. Sin una segunda lista que mantener al día.",
+          caption:
+            "El registro de una persona con su membresía, historial de donaciones y asistencia a eventos.",
+        },
+        volunteers: {
+          title: "Voluntariado y turnos",
+          body:
+            "Roles, turnos, inscripciones y horas. Las horas se suman en los totales que piden las solicitudes de subvenciones, sin que nadie rehaga la hoja de cálculo en marzo.",
+          caption: "Un calendario de turnos con inscripciones y horas de voluntariado registradas.",
+        },
+        programs: {
+          title: "Programas y sesiones",
+          body:
+            "Programas, sus sesiones, quién las dirigió y quién asistió: las cifras que necesita tu informe anual, recogidas mientras pasa el año en vez de reconstruidas después.",
+          caption: "Un programa con sus sesiones, responsables y asistencia.",
+        },
+        events: {
+          title: "Recaudaciones y eventos comunitarios",
+          body:
+            "Inscripción con boletos o gratuita, cupo, voluntariado asignado y lo que el evento costó de verdad frente a lo que recaudó.",
+          caption:
+            "Una recaudación con sus inscripciones, voluntariado asignado y su costo frente a lo recaudado.",
+        },
+        inventory: {
+          title: "Equipo y bienes donados",
+          body:
+            "Qué tienes, qué fue donado, quién lo tiene y cuándo debe volver. Los préstamos de equipo son donde las organizaciones pequeñas pierden más dinero en silencio.",
+          caption: "Un inventario de equipo que muestra qué está prestado y a quién.",
+        },
+        content: {
+          title: "Sitio público y calendario comunitario",
+          body:
+            "Tu sitio web público y el calendario que tu comunidad de verdad lee, editados por tu propio equipo en tu propio dominio: los mismos eventos, no una segunda copia.",
+          caption:
+            "El sitio público y el calendario comunitario que una organización publica en su propio dominio.",
+        },
+      },
+      why: {
+        heading: "Por qué no un CRM de donantes",
+        body: [
+          "Un CRM de donantes es excelente con los donantes y ciego con todo lo demás: tu equipo prestado, tus horas de voluntariado, tus actas de junta, tu calendario público. Terminas con el CRM más otras cuatro suscripciones y una hoja de cálculo sosteniéndolo todo.",
+          "La apuesta de Coven es la contraria: la combinación es el producto. Ningún CRM de donantes hace gobernanza de junta e inventario de equipo, porque ninguno de los dos es un mercado suficientemente grande por separado. Para una organización de treinta personas son el mismo trabajo.",
+        ],
+      },
+    },
+
+    business: {
+      metaTitle: "Coven para pequeñas empresas",
+      metaDescription:
+        "Ingresos, facturas, gastos, reservas, inventario y horarios del personal en un solo sistema, hecho para pequeñas empresas.",
+      title: "Coven para pequeñas empresas",
+      intro:
+        "Un estudio, una tienda, un pequeño negocio de servicios. Pagas por una herramienta de reservas, otra de facturación, una hoja de cálculo para el inventario, una app de horarios y un sitio web que no puedes editar, y ninguna ha oído hablar de las otras. Coven es un solo sistema donde una reserva, un pago, un turno del personal y un artículo de inventario son los mismos datos.",
+      leadHeading: "Las costuras son lo que te cuesta",
+      leadBody:
+        "Cada herramienta por separado está bien. El costo está en los huecos: un cliente que existe en tres sistemas con tres grafías distintas, inventario que solo conoce la hoja de cálculo y un cierre de mes que cuadras a mano porque nada coincide.",
+      modulesHeading: "Qué incluye",
+      modules: {
+        finance: {
+          title: "Ingresos, facturas y gastos",
+          body:
+            "Facturas, pagos, ingresos recurrentes y gastos en un solo libro, con los recibos adjuntos a la línea a la que pertenecen. Mover dinero entre tus propias cuentas nunca cuenta como gasto.",
+          caption: "Un mes de ingresos y gastos con facturas y recibos adjuntos.",
+        },
+        events: {
+          title: "Clases, reservas y talleres",
+          body:
+            "Sesiones con cupo, reservas, listas de espera y cancelaciones, y lo que cada una generó frente a lo que costó realizarla.",
+          caption: "Un calendario de clases con sus reservas, cupo y lista de espera.",
+        },
+        people: {
+          title: "Clientes y contactos",
+          body:
+            "Un registro por cliente: historial de compras y reservas, exenciones firmadas, notas y las clases a las que de verdad asistió. Sin una segunda lista que mantener al día.",
+          caption: "El registro de un cliente con su historial de reservas y exenciones firmadas.",
+        },
+        programs: {
+          title: "Servicios y ofertas",
+          body:
+            "Qué vendes, cuánto cuesta entregarlo y quién lo entregó, para ver qué oferta está cargando a las demás.",
+          caption: "Una oferta de servicio con sus sesiones, personal y costo de entrega.",
+        },
+        inventory: {
+          title: "Inventario y equipo",
+          body:
+            "Niveles de inventario, equipo, rentas y devoluciones, con qué está fuera y quién lo tiene. El equipo que sale del local es por donde se va el margen sin que nadie lo note.",
+          caption: "Inventario y equipo mostrando qué está prestado y a quién.",
+        },
+        volunteers: {
+          title: "Horarios del personal",
+          body:
+            "Turnos, roles, cobertura y horas, en el mismo calendario que las clases y reservas que atienden.",
+          caption: "Un horario de personal con turnos, roles y cobertura.",
+        },
+        content: {
+          title: "Sitio público y calendario",
+          body:
+            "Tu sitio web y tu calendario reservable, editados por tu propio equipo en tu propio dominio: las mismas sesiones que reservan tus clientes, no una segunda copia.",
+          caption:
+            "El sitio público y el calendario reservable que una empresa publica en su propio dominio.",
+        },
+      },
+      why: {
+        heading: "Sobre la demostración",
+        body: [
+          "La demostración pública está sembrada como organización sin fines de lucro, así que verás pantallas de donaciones y voluntariado. Es el mismo producto con otras palabras: cada etiqueta de arriba es una configuración por organización, no una edición distinta.",
+          "Viene una demostración para empresas. Mientras llega, la respuesta más honesta y rápida a si esto nos sirve es una llamada corta donde las pantallas se renombran en vivo.",
+        ],
+        cta: "Pedir una demostración guiada",
+      },
+    },
+
+    modules: {
+      metaTitle: "Módulos",
+      metaDescription:
+        "Finanzas, personas, voluntariado, programas, eventos, inventario, gobernanza y un sitio público: los módulos que Coven tiene hoy.",
+      title: "Módulos",
+      itemsHeading: "Qué existe hoy",
+      intro:
+        "Todo lo de abajo existe hoy y está en la demostración. Cada plan incluye todos los módulos: la combinación es el producto, así que venderlo por partes sería vender otra cosa.",
+      items: {
+        finance: {
+          title: "Finanzas",
+          body:
+            "Ingresos y gastos en un solo libro, con presupuestos, reembolsos o facturas, y los recibos adjuntos a la línea a la que pertenecen. Mover dinero entre tus propias cuentas nunca cuenta como gasto.",
+          caption: "Un mes de ingresos y gastos con presupuestos y recibos adjuntos.",
+        },
+        people: {
+          title: "Personas",
+          body:
+            "Un registro por persona —miembro, donante, cliente o participante— con su historial, sus documentos y todo aquello a lo que se inscribió.",
+          caption: "El registro de una persona con su historial, documentos e inscripciones.",
+        },
+        volunteers: {
+          title: "Voluntariado y horarios",
+          body:
+            "Roles, turnos, inscripciones, cobertura y horas registradas, en el mismo calendario que aquello que atienden.",
+          caption: "Un calendario de turnos con inscripciones, cobertura y horas registradas.",
+        },
+        programs: {
+          title: "Programas",
+          body:
+            "Ofertas recurrentes y sus sesiones: quién las dirigió, quién asistió y cuánto costó entregarlas.",
+          caption: "Un programa con sus sesiones, responsables y asistencia.",
+        },
+        events: {
+          title: "Eventos",
+          body:
+            "Eventos puntuales con cupo, inscripciones, listas de espera y cancelaciones, y lo que cada uno recaudó o generó frente a lo que costó.",
+          caption: "Un evento con sus inscripciones, cupo y costos.",
+        },
+        inventory: {
+          title: "Inventario",
+          body:
+            "Qué tiene la organización, qué está prestado, a quién y cuándo debe volver.",
+          caption: "Una lista de inventario que muestra qué está prestado y a quién.",
+        },
+        governance: {
+          title: "Gobernanza",
+          body:
+            "Composición y periodos de la junta directiva, reuniones, órdenes del día, actas y resoluciones registradas junto a la reunión que las aprobó. Lo usan las organizaciones sin fines de lucro, y para las empresas simplemente no aparece.",
+          caption:
+            "Una reunión de junta directiva con su orden del día, asistencia y resoluciones registradas.",
+        },
+        content: {
+          title: "Sitio público y calendario de contenido",
+          body:
+            "Un sitio web público y un calendario para cada organización, en su propio dominio, editados por quienes de verdad la operan. Tus tokens de marca definen cómo se ve — y generan una guía de marca viva en tu propio /brand, a partir de los mismos tokens con los que el producto renderiza, así que la referencia que usan tus voluntarios y tus diseñadores nunca queda desactualizada y nadie la mantiene a mano.",
+          caption:
+            "Un sitio público y un calendario comunitario en el dominio propio de una organización.",
+        },
+      },
+      lexicon: {
+        heading: "El mismo producto, en tus palabras",
+        body:
+          "No hay una edición para organizaciones sin fines de lucro ni una edición para empresas. Cada etiqueta —donante o cliente, programa o servicio, voluntariado o personal— es una configuración por organización, junto con tus propios roles, tu marca y tus textos públicos. Eso es lo que hace que un producto para dos públicos sea una afirmación honesta y no una de marketing.",
+      },
+    },
+
+    pricing: {
+      metaTitle: "Precios",
+      metaDescription:
+        "Precios de Coven: planes según el tamaño de la organización, todos los módulos incluidos, cifras reales y sin obligarte a hablar con ventas.",
+      title: "Precios",
+      intro:
+        "Los planes se dimensionan según el tamaño de tu organización, no según qué funciones te dejan usar. Son los mismos planes para organizaciones sin fines de lucro y para empresas.",
+      draftNote:
+        "Precios en borrador. Estas cifras son un punto de partida y todavía no están definidas; confírmalas antes de citarlas en cualquier lado.",
+      everyPlanHeading: "En todos los planes",
+      everyPlan: [
+        "Todos los módulos: finanzas, personas, voluntariado, programas, eventos, inventario, gobernanza y tu sitio público",
+        "Tu propio dominio, con el sitio público y el portal de tu equipo",
+        "Registros ilimitados de personas, donantes, clientes y transacciones",
+        "Una exportación completa de tus datos, cuando quieras, sin pedir permiso",
+        "Soporte de la persona que lo construyó",
+      ],
+      perMonth: "/mes",
+      plans: {
+        small: {
+          name: "Pequeña",
+          price: "$39",
+          annual: "o $390 al año",
+          fit: "Todo voluntariado, o menos de cinco personas al frente",
+          includes: [
+            "Hasta 5 cuentas de personal",
+            "Respaldos cada noche",
+            "Soporte por correo",
+          ],
+        },
+        growing: {
+          name: "En crecimiento",
+          price: "$89",
+          annual: "o $890 al año",
+          fit: "De cinco a veinte personas al frente, o una temporada muy cargada",
+          includes: [
+            "Hasta 20 cuentas de personal",
+            "Respaldos cada noche con restauración a un punto en el tiempo",
+            "Soporte por correo, al siguiente día hábil",
+          ],
+        },
+        established: {
+          name: "Establecida",
+          price: "$179",
+          annual: "o $1,790 al año",
+          fit: "Veinte personas o más, varios programas, o más de una sede",
+          includes: [
+            "Cuentas de personal ilimitadas",
+            "Respaldos cada noche con restauración a un punto en el tiempo",
+            "Soporte prioritario y una revisión trimestral",
+          ],
+        },
+      },
+      onboarding: {
+        heading: "Puesta en marcha",
+        price: "$750 una sola vez",
+        body:
+          "Tus datos fuera de las hojas de cálculo y dentro de Coven, tu vocabulario y tus roles configurados, tu dominio conectado y dos sesiones de capacitación para quienes lo usarán a diario. No es obligatorio —puedes configurarlo tú— pero casi todas las organizaciones lo quieren.",
+        nonprofit:
+          "Las organizaciones sin fines de lucro con un presupuesto anual menor a $250,000 pagan $375, y reservo una capacidad limitada pro bono cada trimestre. Pregunta.",
+      },
+      notes: [
+        "Sin contrato, sin plazo mínimo, sin cobros por registro y sin cobro por las personas que solo ven tu sitio público.",
+        "Cancela cuando quieras y llévate una exportación completa.",
+      ],
+      faqCta: "Qué pasa si te vas",
+    },
+
+    security: {
+      metaTitle: "Seguridad y datos",
+      metaDescription:
+        "Cómo Coven aísla los datos de cada organización: seguridad a nivel de fila en Postgres, permisos que tú defines, registro de auditoría, y exportación y borrado a solicitud.",
+      title: "Seguridad y datos",
+      intro:
+        "Las juntas directivas y las personas dueñas preguntan esto antes que nada, así que aquí está la respuesta real en vez de un sello.",
+      items: [
+        {
+          title: "El aislamiento lo impone la base de datos, no el cuidado al programar",
+          body:
+            "Cada tabla lleva la organización a la que pertenece cada fila, cada política de seguridad a nivel de fila está acotada a la organización actual y cada llave foránea entre dos de esas tablas es compuesta. Postgres mismo rechaza una lectura o una referencia entre organizaciones, incluso desde una conexión con el rol de servicio. Un error en la aplicación no puede filtrar los datos de otra organización, porque la consulta nunca los devuelve.",
+        },
+        {
+          title: "No existe una cuenta de superadministración",
+          body:
+            "Ningún rol de plataforma puede ver a través de las organizaciones. Cuando el soporte necesita acceso, tu organización emite una membresía de soporte con tiempo limitado y la revoca después. Nadie conserva acceso permanente a tus datos.",
+        },
+        {
+          title: "Los permisos los defines tú",
+          body:
+            "Los roles, y lo que cada rol puede hacer, son configuraciones por organización y no niveles fijos. Quien lleva la tesorería ve el libro mayor, quien coordina turnos ve el calendario, quien está en la junta ve las actas: tú decides y lo cambias sin abrir un ticket.",
+        },
+        {
+          title: "Un registro de auditoría sobre lo que importa",
+          body:
+            "Quién cambió un registro financiero, una membresía, un rol o una resolución, y cuándo. Las preguntas que de verdad aparecen son sobre dinero y sobre accesos, así que eso es lo que queda registrado.",
+        },
+        {
+          title: "Exportación y borrado a solicitud",
+          body:
+            "Una exportación completa de los datos de tu organización es una función del producto, no una solicitud de soporte: se construyó antes de dar de alta a la segunda organización. El borrado a solicitud se cumple, y las reglas de retención que tú definas deciden cuánto tiempo se guarda lo demás.",
+        },
+        {
+          title: "Tu sitio público es la única parte pública",
+          body:
+            "Todo lo del portal está detrás de autenticación y acotado a tu organización. Lo que ve el mundo es el sitio y el calendario que elegiste publicar.",
+        },
+      ],
+      hosting: {
+        heading: "Dónde corre",
+        body:
+          "La aplicación corre en Vercel, la base de datos es Postgres administrado en Supabase, el DNS y la CDN pasan por Cloudflare, y el correo transaccional se envía con Resend. La infraestructura principal está en regiones de Estados Unidos, y los respaldos corren cada noche.",
+      },
+      ask: {
+        heading: "Preguntas que tu junta necesita por escrito",
+        body:
+          "Pregunta y recibirás una respuesta escrita, no una llamada de ventas. Los cuestionarios de seguridad también sirven.",
+        cta: "Hacer una pregunta de seguridad",
+      },
+    },
+
+    faq: {
+      metaTitle: "Documentación y preguntas",
+      metaDescription:
+        "Cómo meter tus datos en Coven, quién es dueño de ellos, qué pasa si te vas y cómo es la puesta en marcha.",
+      title: "Documentación y preguntas",
+      intro: "Las preguntas que aparecen antes de que alguien firme algo.",
+      items: [
+        {
+          question: "¿Cómo metemos nuestros datos?",
+          answer:
+            "Con hojas de cálculo y exportaciones CSV de lo que uses hoy: personas, donaciones o facturas, y transacciones históricas. La puesta en marcha incluye la importación. Si prefieres hacerlo tú, el importador está en el producto y te muestra qué coincidió antes de escribir nada.",
+        },
+        {
+          question: "¿Quién es dueño de los datos?",
+          answer:
+            "Tú. Los registros de tu organización son tuyos. Nada de lo que hay en ellos se vende, se comparte ni se usa para entrenar nada.",
+        },
+        {
+          question: "¿Qué pasa si nos vamos?",
+          answer:
+            "Exportas todo, y la exportación es completa: los datos de toda la organización en formatos abiertos. La exportación ya existe en el producto; no es una promesa pendiente. Después de irte, el borrado es a solicitud, y las reglas de retención que definas deciden el resto.",
+        },
+        {
+          question: "¿Podemos usar nuestro propio dominio?",
+          answer:
+            "Sí, en todos los planes. Tu sitio público y el portal de tu equipo corren en tu dominio. Conectarlo es parte de la puesta en marcha y es un cambio de configuración, no una reconstrucción.",
+        },
+        {
+          question: "¿Reemplaza a nuestro software de contabilidad?",
+          answer:
+            "No, y no lo intenta. Coven es donde vive el dinero operativo: donaciones, facturas, reembolsos, lo que costó un evento. Quien lleva tu contabilidad sigue presentando la declaración, y la exportación es lo que le entregas.",
+        },
+        {
+          question: "¿Nuestros miembros y clientes necesitan cuenta?",
+          answer:
+            "Solo quienes operan la organización necesitan cuenta, y eso es lo que dimensiona el plan. Todos los demás se inscriben a un evento, hacen una donación o reservan una clase sin tener una.",
+        },
+        {
+          question: "¿Cuánto tarda la puesta en marcha?",
+          answer:
+            "Una organización pequeña suele estar funcionando en una o dos semanas, y la mayor parte de ese tiempo es decidir tu vocabulario y tus roles, no trabajo técnico. Puedes ver el producto completo hoy sin hablar con nadie.",
+        },
+        {
+          question: "¿Está terminado, o somos una prueba beta?",
+          answer:
+            "Hoy opera de verdad una organización, y lo hacía antes de ser un producto. Es joven, y serías un cliente temprano, lo que significa acceso directo a la persona que lo construye e influencia real sobre lo que sigue.",
+        },
+      ],
+    },
   },
 
   legal: {

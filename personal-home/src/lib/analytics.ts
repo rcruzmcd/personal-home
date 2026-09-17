@@ -38,3 +38,10 @@ export function trackGithubClick() {
 export function trackLinkedinClick() {
   track("linkedin_click")
 }
+
+// The Coven marketing section has one conversion: opening the live demo. `from`
+// is the page the visitor left, which is what tells us whether the audience
+// pages carry their own weight or only the overview does.
+export function trackCovenDemoClick(props: { from: string }) {
+  track("coven_demo_click", props)
+}

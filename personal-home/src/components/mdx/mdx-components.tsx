@@ -40,7 +40,7 @@ export const mdxComponents: NonNullable<MDXRemoteProps["components"]> = {
   // so they need the active locale's prefix; external ones are left alone.
   a: ({ href, children }) => {
     const className =
-      "font-medium text-purple underline transition-colors duration-200 hover:text-[#4A2A5F] hover:italic"
+      "font-medium text-purple underline transition-colors duration-200 hover:text-purple-hover hover:italic"
 
     if (href?.startsWith("/")) {
       return (

@@ -16,3 +16,14 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Personal financial reference data (real balances — never commit)
+*.xlsx
+*.xls
+*.csv
+!**/fixtures/**/*.csv
+!**/__tests__/**/*.csv
+
+# Personal finance analysis kept local: the repo is public and these docs
+# carry real institutions, balances and utilization figures.
+docs/PAYCHECK_PLANNER.md

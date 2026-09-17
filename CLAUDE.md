@@ -15,8 +15,9 @@ This is a monorepo with three top-level parts:
   - `CASE_STUDIES.md` — case study template and drafted content for two case studies (Chatter Snow, Personal Finance OS)
   - `TIMELINE.md` — week-by-week build/launch plan
   - `QUICK_START.md` — pre-launch checklist and week-by-week setup summary for both projects
-  - `BRAND_GUIDE.md` — brand identity reference (color palette, typography, usage rules) for rickiecruz.com; a living doc updated as the brand evolves
+  - `BRAND_GUIDE.md` — brand identity reference (color palette, typography, usage rules) for rickiecruz.com; a living doc updated as the brand evolves. Sections 14–15 cover the *other* brands the site carries: Coven (the product — Indigo + Amber, its own identity, never "by Rickie" in the lockup) and how a sibling organization's palette is worn by its project card without colliding with this site's purple
   - `UX_PATTERNS.md` — where things go on a page in **both** apps (breadcrumb/heading order, header stats and actions, filter vs. sort placement, pagination, empty states); check it before laying out a new page. Both apps have a `PageHeader`/`Breadcrumb`/`Stat` trio that carries these rules — use them instead of hand-rolling a page's title block
+  - `PAYCHECK_PLANNER.md` — analysis of the spreadsheet Rickie tracked money in from 2022-2026, and the spec for the `/plan` module it motivates (pay periods, allocations, `Cash Left`, utilization-based payoff). Read it before changing how `finance-os` presents planning or debt strategy; it records *why* allocation beats reconciliation here
 
   Keep your replies extremely concise and focus on conveying the key information. No unnecessary fluff, no long code snippets.
 

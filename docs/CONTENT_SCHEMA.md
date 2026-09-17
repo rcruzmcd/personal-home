@@ -30,6 +30,12 @@ interface Project {
   
   // Technology
   technologies: string[];        // ["Next.js", "TypeScript", "Supabase"]
+
+  // Sibling brand (BRAND_GUIDE.md section 15) — optional, six-digit hex.
+  // Set these when the organization's palette would collide with this site's,
+  // so its card reads as *their* brand. Light mode only.
+  accentColor?: string;          // "#70419a" — their accent
+  cardBackground?: string;       // "#f7f0ff" — their page background
   
   // Visual content
   heroImage?: string;            // Path to hero image
@@ -126,9 +132,12 @@ startDate: "2025-01-15"
 endDate: "2026-08-31"
 publishedDate: "2026-09-01"
 
-role: "Board Member + Director of Digital Operations"
+role: "Board Member + Director of Technology and Media"
 organization: "Chatter Snow"
-relationship: "Board Member and Director of Digital Operations"
+relationship: "Board Member and Director of Technology and Media"
+
+accentColor: "#70419a"
+cardBackground: "#f7f0ff"
 
 technologies:
   - Next.js
@@ -187,8 +196,10 @@ export const projects = {
       startDate: "2025-01-15",
       endDate: "2026-08-31",
       publishedDate: "2026-09-01",
-      role: "Board Member + Director of Digital Operations",
+      role: "Board Member + Director of Technology and Media",
       organization: "Chatter Snow",
+      accentColor: "#70419a",
+      cardBackground: "#f7f0ff",
       technologies: ["Next.js", "TypeScript", "Supabase", "Zoho", "Vercel", "Cloudflare"],
       heroImage: "/images/chatter-snow/hero.jpg",
       images: [

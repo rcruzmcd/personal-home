@@ -37,7 +37,7 @@ Focus on demonstrating:
 
 **Project:** Chatter Snow Digital Operations Platform
 
-**Your Role:** Board Member + Director of Digital Operations
+**Your Role:** Board Member + Director of Technology and Media
 
 **What it is:** The technical infrastructure supporting Chatter Snow, an LGBTQ+ ski and snowboard nonprofit. Evolved from inventory management to a comprehensive operations platform.
 

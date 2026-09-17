@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react"
 import { locale as rootLocale } from "next/root-params"
 
 import { AccentBar } from "@/components/ui/accent-bar"
@@ -33,8 +34,27 @@ export async function ProjectCard({
   const t = await getDictionary(assertLocale(await rootLocale()))
   const subheading = project.category === "work" ? project.role : undefined
 
+  // An entry that carries its own brand wears it here, so a card for an
+  // organization whose palette is close to this site's still reads as theirs
+  // (docs/BRAND_GUIDE.md section 15). The values are handed over as custom
+  // properties rather than classes because they are content, not design
+  // tokens; globals.css decides what to do with them, and ignores them
+  // entirely in dark mode.
+  const brand: CSSProperties | undefined =
+    project.accentColor || project.cardBackground
+      ? ({
+          "--brand-accent": project.accentColor,
+          "--brand-surface": project.cardBackground,
+        } as CSSProperties)
+      : undefined
+
   return (
-    <Card variant={featured ? "featured" : "standard"} className="flex flex-col">
+    <Card
+      variant={featured ? "featured" : "standard"}
+      className="flex flex-col"
+      data-brand={brand ? "project" : undefined}
+      style={brand}
+    >
       <CardHeader>
         <AccentBar width={featured ? "md" : "sm"} className="mb-4" />
         <CardAction>
@@ -63,7 +83,7 @@ export async function ProjectCard({
       <CardFooter>
         <LocaleLink
           href={projectPath(project)}
-          className="text-body font-medium text-purple underline transition-colors duration-200 hover:italic hover:text-[#4A2A5F]"
+          className="text-body font-medium text-purple underline transition-colors duration-200 hover:italic hover:text-purple-hover"
         >
           {t.common.readCaseStudy} &rarr;
         </LocaleLink>

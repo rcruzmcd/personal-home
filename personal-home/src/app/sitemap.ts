@@ -13,6 +13,15 @@ const STATIC_ROUTES = [
   { path: "/work", changeFrequency: "weekly", priority: 0.9 },
   { path: "/projects", changeFrequency: "weekly", priority: 0.8 },
   { path: "/consulting", changeFrequency: "monthly", priority: 0.7 },
+  // The Coven product section. The overview ranks with /work because it is a
+  // primary entry point, not a supporting page.
+  { path: "/coven", changeFrequency: "monthly", priority: 0.9 },
+  { path: "/coven/nonprofits", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/coven/business", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/coven/modules", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/coven/pricing", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/coven/security", changeFrequency: "yearly", priority: 0.5 },
+  { path: "/coven/faq", changeFrequency: "monthly", priority: 0.6 },
   { path: "/resume", changeFrequency: "monthly", priority: 0.5 },
   { path: "/contact", changeFrequency: "yearly", priority: 0.5 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.2 },

@@ -5,15 +5,7 @@ import { usePathname } from "next/navigation"
 import { LocaleLink } from "@/components/i18n/locale-link"
 import { useMessages } from "@/components/i18n/i18n-provider"
 import { cn } from "@/lib/utils"
-import { splitLocale } from "@/lib/i18n/routing"
-import { NAV_LINKS } from "@/lib/nav"
-
-// Compared against the locale-independent path, so "/es/work" highlights the
-// Work link exactly as "/work" does.
-function isLinkActive(pathname: string, href: string) {
-  const { path } = splitLocale(pathname)
-  return path === href || path.startsWith(`${href}/`)
-}
+import { isLinkActive, NAV_LINKS } from "@/lib/nav"
 
 export function NavLinks({
   className,
