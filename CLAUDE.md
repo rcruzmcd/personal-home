@@ -4,37 +4,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Structure
 
-This is a monorepo with three top-level parts:
+This repo is **public** and has two top-level parts. Two sibling apps live in their
+own **private** repos so personal and client data can't leak here:
+`rcruzmcd/finance-os` (Personal Finance OS) and `rcruzmcd/client-portal`. Both reuse
+this repo's brand and layout docs.
 
 - **`docs/`** — Planning and requirements documents for the project (not application code). These describe the *intended* product, not what's currently implemented:
   - `PROJECT_OVERVIEW.md` — goals, positioning, MVP scope for the personal site
-  - `TECH_STACK_AND_DOMAIN.md` — chosen/recommended tech stack for both the website and a planned "Personal Finance OS" app, hosting, domain/email setup
+  - `TECH_STACK_AND_DOMAIN.md` — chosen/recommended tech stack for both the website and the "Personal Finance OS" app, hosting, domain/email setup
   - `WEBSITE_REQUIREMENTS.md` — site architecture (routes), page-by-page content requirements, SEO/analytics/accessibility targets
-  - `PERSONAL_FINANCE_REQUIREMENTS.md` — full spec for a not-yet-built personal finance dashboard (data model, calculation logic for net worth/cash runway/debt payoff/forecasting)
   - `CONTENT_SCHEMA.md` — the `Project` content schema for case studies/portfolio entries (MDX with frontmatter under a planned `content/work/` and `content/projects/` structure), plus SEO metadata patterns
   - `CASE_STUDIES.md` — case study template and drafted content for two case studies (Chatter Snow, Personal Finance OS)
   - `TIMELINE.md` — week-by-week build/launch plan
   - `QUICK_START.md` — pre-launch checklist and week-by-week setup summary for both projects
   - `BRAND_GUIDE.md` — brand identity reference (color palette, typography, usage rules) for rickiecruz.com; a living doc updated as the brand evolves. Sections 14–15 cover the *other* brands the site carries: Coven (the product — Indigo + Amber, its own identity, never "by Rickie" in the lockup) and how a sibling organization's palette is worn by its project card without colliding with this site's purple
-  - `UX_PATTERNS.md` — where things go on a page in **both** apps (breadcrumb/heading order, header stats and actions, filter vs. sort placement, pagination, empty states); check it before laying out a new page. Both apps have a `PageHeader`/`Breadcrumb`/`Stat` trio that carries these rules — use them instead of hand-rolling a page's title block
-  - `PAYCHECK_PLANNER.md` — analysis of the spreadsheet Rickie tracked money in from 2022-2026, and the spec for the `/plan` module it motivates (pay periods, allocations, `Cash Left`, utilization-based payoff). Read it before changing how `finance-os` presents planning or debt strategy; it records *why* allocation beats reconciliation here
+  - `UX_PATTERNS.md` — where things go on a page in **every** app (this site, finance-os, client-portal): breadcrumb/heading order, header stats and actions, filter vs. sort placement, pagination, empty states; check it before laying out a new page. The apps have a `PageHeader`/`Breadcrumb`/`Stat` trio that carries these rules — use them instead of hand-rolling a page's title block
+  - `WEBSITE_REVIEW_PLAYBOOK.md` — repeatable process for auditing an *external* site (IA, a11y, SEO, performance, mobile, tracking, legal). Not about this monorepo; use it when reviewing someone else's website. Its core rule: static page source gives hypotheses, only a rendered browser pass gives findings
+  - The client portal's requirements live in the private `rcruzmcd/client-portal` repo, not here: this repo is public, and they carry client engagement detail. Keep client names, prices and findings out of this repo
 
   Keep your replies extremely concise and focus on conveying the key information. No unnecessary fluff, no long code snippets.
 
   Follow SOLID principles when developing.
 
-  When implementing a feature, check the relevant doc first — these encode real product decisions (e.g. transfers between own accounts must not count as spending, cash runway is the primary finance metric, avoid positioning as "web developer"/"React developer" in copy).
+  When implementing a feature, check the relevant doc first — these encode real product decisions (e.g. avoid positioning as "web developer"/"React developer" in copy).
 
 - **`personal-home/`** — The actual Next.js application (the personal portfolio site). The MVP described in `docs/` has been built out: homepage, About, Work/Projects listings + MDX case study detail pages (Chatter Snow, Personal Finance OS), Consulting, Resume, Contact (with API route, spam protection, Resend email), Privacy/Terms, dark/light mode, SEO metadata/JSON-LD/sitemap/robots, and Vercel Analytics event tracking.
 
-- **`finance-os/`** — The "Personal Finance OS" app (per `docs/PERSONAL_FINANCE_REQUIREMENTS.md`), built out and deployed at `finance.rickiecruz.com`. Accounts, transactions (with CSV/XLSX import, categorization rules, and transfer handling), recurring items, income, budgets (per-category standing monthly limits), statements/reconciliations, a bill calendar, debt payoff, forecasting, and cash runway are all implemented on Supabase/Postgres with Recharts. It shares `personal-home`'s design system (see `docs/BRAND_GUIDE.md` / `docs/STYLE_SYSTEM.md`) rather than inventing its own — port/reuse tokens and shadcn/ui components from `personal-home` instead of hand-picking new ones.
+The Personal Finance OS app that used to live in `finance-os/` is now the private
+`rcruzmcd/finance-os` repo (history included), along with its spec
+(`PERSONAL_FINANCE_REQUIREMENTS.md`) and the local-only `PAYCHECK_PLANNER.md`. Its
+showcase still runs at `finance.rickiecruz.com`, and this site's case study links
+there.
 
 ## Commands
 
-All app commands run from the app's own directory (`personal-home/` or `finance-os/`). Both use **bun** (`packageManager: bun@1.3.14`) — use `bun`, not `npm`/`yarn`/`pnpm`.
+App commands run from `personal-home/`. It uses **bun** (`packageManager: bun@1.3.14`) — use `bun`, not `npm`/`yarn`/`pnpm`.
 
 ```bash
-cd personal-home   # or finance-os
+cd personal-home
 bun install        # install dependencies
 bun dev             # start dev server (next dev)
 bun run build       # production build (next build)
@@ -42,25 +49,15 @@ bun start           # run production build (next start)
 bun run lint        # eslint
 ```
 
-Both apps have a test suite. Use `bun run test`, **not** `bun test` — the latter
-invokes bun's own test runner, which doesn't read `vitest.config.mts` and fails on
-the jsdom-dependent component tests.
+Use `bun run test`, **not** `bun test` — the latter invokes bun's own test runner,
+which doesn't read `vitest.config.mts` and fails on the jsdom-dependent component
+tests.
 
 ```bash
-cd personal-home      # or finance-os
+cd personal-home
 bun run test          # vitest run
 bun run test:watch    # vitest (watch mode)
 bun run test:coverage # vitest run --coverage
-```
-
-`finance-os/` also wraps the Supabase CLI for local database work:
-
-```bash
-cd finance-os
-bun run db:start      # supabase start
-bun run db:reset      # supabase db reset (re-applies migrations + seed)
-bun run db:migration:new <name>
-bun run db:types      # regenerate src/lib/supabase/types.ts from the local DB
 ```
 
 ## Architecture Notes (`personal-home/`)
@@ -70,7 +67,7 @@ bun run db:types      # regenerate src/lib/supabase/types.ts from the local DB
 - **Tailwind CSS v4** via `@tailwindcss/postcss` (no `tailwind.config.js` — v4 is CSS-first; check `src/app/globals.css` for theme tokens).
 - App Router structure: every renderable route sits under `src/app/[locale]/` — the root layout is `src/app/[locale]/layout.tsx` and the homepage is `src/app/[locale]/page.tsx`. See Internationalization below for why.
 - **Read `node_modules/next/dist/docs/` before writing Next.js code.** This Next.js version has breaking changes relative to older training data/conventions — `personal-home/AGENTS.md` (auto-generated by `next dev`) flags this explicitly. Don't assume Pages Router or older App Router APIs are current.
-- `personal-home/CLAUDE.md` (`@AGENTS.md`) and `personal-home/AGENTS.md` are auto-generated/rewritten by `next dev` — don't hand-edit them; edits will be overwritten. The same applies to `finance-os/CLAUDE.md` and `finance-os/AGENTS.md`.
+- `personal-home/CLAUDE.md` (`@AGENTS.md`) and `personal-home/AGENTS.md` are auto-generated/rewritten by `next dev` — don't hand-edit them; edits will be overwritten.
 
 ### Internationalization (`personal-home/`)
 
@@ -112,31 +109,12 @@ path so each page has exactly one public URL. Route slugs stay English in both l
   and add `index.<locale>.mdx` overlays. Routing, sitemap and hreflang derive from
   `LOCALES` and need no edits.
 
-## Architecture Notes (`finance-os/`)
-
-- Same Next.js 16 / React 19 / TypeScript / Tailwind v4 / bun stack as `personal-home`.
-- **Supabase/Postgres** for data and auth (`@supabase/ssr`), with the schema owned by
-  versioned migrations in `supabase/migrations/` — change the schema by adding a
-  migration and regenerating types (`bun run db:types`), never by editing
-  `src/lib/supabase/types.ts` by hand.
-- **Recharts** for charts, **Zod** for validation, **papaparse**/**xlsx** for statement
-  import. No react-hook-form or TanStack Query/Table despite what
-  `docs/TECH_STACK_AND_DOMAIN.md` proposed — forms are server actions plus native form
-  state.
-- Routes live under a `(app)` group with a parallel `@modal` slot: add/edit screens are
-  intercepting routes that render as sheets over the list, and the same route renders
-  standalone on a direct visit. A new add/edit screen needs both the real route and the
-  `@modal/(.)` interception.
-- Pure calculation logic (cash runway, burn, net worth, debt payoff, forecasting,
-  statements, recurring occurrences) lives in `src/lib/calculations/` and is unit-tested
-  there — keep it out of components.
-
 ## Docs vs. reality
 
-Both apps are built and in production. The `docs/` folder describes the *intended*
+The site is built and in production. The `docs/` folder describes the *intended*
 product and predates much of the implementation, so where a doc and the code disagree,
-the code is current — but consult `docs/PERSONAL_FINANCE_REQUIREMENTS.md` for the
-product decisions behind the finance logic (transfers between own accounts must not
-count as spending; cash runway is the primary metric) rather than re-deriving them.
+the code is current. Finance-specific docs (`TECH_STACK_AND_DOMAIN.md`'s Personal
+Finance sections, `TIMELINE.md`, `QUICK_START.md`) are historical here; the finance
+spec now lives in the `finance-os` repo.
 
 `docs/STYLE_SYSTEM.md` is the implementation reference for `docs/BRAND_GUIDE.md` — check it before hand-picking colors/spacing for new UI; a couple of brand-guide literal values (muted text) were adjusted during implementation for WCAG AA contrast and both docs now reflect the shipped values.
