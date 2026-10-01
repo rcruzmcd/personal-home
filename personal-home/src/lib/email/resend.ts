@@ -12,24 +12,18 @@ const REASON_LABELS = en.client.contactForm.reasons
 
 type ContactNotification = ContactFormData & { locale: Locale }
 
-// Resend's shared sandbox sender, which only delivers to the Resend account
-// owner's own verified address — hence the personal inbox below.
+// The verified Resend sending domain is the send.rickiecruz.com subdomain
+// (DKIM at resend._domainkey.send, return-path CNAMEs at send.send and
+// rsend.send). The root domain's SPF stays Zoho-only, since Zoho receives
+// mail for rickiecruz.com.
 //
-// rickiecruz.com is NOT yet a verified sending domain in Resend: its DNS has
-// Zoho's MX/SPF/DKIM for receiving mail, but no Resend DKIM record and no
-// Resend/SES include in the SPF record. Sending from an address at that
-// domain gets a 403 from Resend, which this module swallows into
-// { delivered: false } — so the form would look healthy while every message
-// went nowhere but the server log.
-//
-// To switch: verify the domain (or a send.* subdomain) in Resend, add its
-// DKIM record, and MERGE its include into the existing SPF record rather
-// than replacing it — dropping include:zohomail.com would break the actual
-// inbox. Then set FROM_ADDRESS to noreply@rickiecruz.com and TO_ADDRESS to
-// hello@rickiecruz.com. noreply@ needs no mailbox: sending depends only on
-// the domain's DNS, and replyTo is set per-send to the visitor's address.
-const FROM_ADDRESS = "onboarding@resend.dev"
-const TO_ADDRESS = "ricardo.cruzmcdougal@gmail.com"
+// The From address must be @send.rickiecruz.com. Sending from the bare
+// root domain gets a 403 from Resend, which this module swallows into
+// { delivered: false }, so the form would look healthy while every message
+// went nowhere but the server log. noreply@ needs no mailbox: sending
+// depends only on DNS, and replyTo is set per-send to the visitor's address.
+const FROM_ADDRESS = "noreply@send.rickiecruz.com"
+const TO_ADDRESS = "hello@rickiecruz.com"
 
 function formatSubmissionText(data: ContactNotification): string {
   const lines = [
