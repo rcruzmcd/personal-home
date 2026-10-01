@@ -4,10 +4,11 @@ Interaction/layout conventions for both apps — `finance-os` app screens and th
 `personal-home` site. `BRAND_GUIDE.md` covers *what things look like* and
 `STYLE_SYSTEM.md` *how that's wired into Tailwind*; this doc covers **where
 things go on the page** — heading, actions, filters, sorting and pagination —
+and **what a screen shows while it loads, when it's empty and when it fails**,
 so every screen is laid out the same way and the decisions don't get
 re-litigated per page.
 
-Rules 1, 2, 2a, 7 and 8 are general and hold in both apps; 3–6 are list-screen
+Rules 1, 2, 2a, 7, 8 and 9–12 are general and hold in both apps; 3–6 are list-screen
 rules and only bite where there are filters, sorting or pagination (today, only
 `finance-os`). See "Applying this to `personal-home`" at the end for what the
 marketing site does with them.
@@ -23,6 +24,8 @@ layout by using them rather than by re-deriving it:
 | `Breadcrumb` | `src/components/ui/breadcrumb.tsx` | `src/components/ui/breadcrumb.tsx` | The trail itself; reached through `PageHeader`'s `breadcrumb` prop. `personal-home`'s is the shadcn/ui breadcrumb restyled onto the brand tokens. |
 | `FormPage` | `src/components/form-page.tsx` | — | The single-form add/edit screens — compact header + breadcrumb above a `max-w-lg` card. |
 | `MonthNav` | `src/components/month-nav.tsx` | — | Prev / month / next / Today for any month-scoped screen (`/calendar`, `/budgets`). Takes an `href` builder so only the URL is route-specific, and a `trailing` slot for anything that describes rather than filters (the calendar's legend). Month state lives in the URL via `src/lib/month-params.ts`, so a month is bookmarkable. |
+| `Skeleton` + skeletons | `src/components/ui/skeleton.tsx`, `src/components/skeletons.tsx` | — | A route's `loading.tsx` (rule 9). `PageHeaderSkeleton`, `StatCardGridSkeleton`, `ListCardsSkeleton`, `FormCardSkeleton` mirror the real components, so a skeleton is assembled, not drawn. |
+| `Spinner` / `LoadingOverlay` | `src/components/ui/spinner.tsx`, `src/components/loading-overlay.tsx` | — | A mutation in flight (rule 10): the overlay dims and blocks the form that triggered it, with a purple spinner and `role="status"`. |
 
 ---
 
@@ -132,6 +135,98 @@ to read as the page it leads to. Nodes are always links except the current
 page, and the trail is `text-small text-muted` so it never competes with the
 title or the primary action.
 
+
+---
+
+## Loading, empty and error states
+
+Every screen has four states, not one: loading, empty, failed and loaded. The
+mockups and specs only draw the last, so these rules fill in the other three.
+They're written so the same component can serve every screen.
+
+### 9. Pages load as a skeleton of themselves, not a spinner
+
+Each route gets a `loading.tsx` built from the skeleton pieces of the
+components the page actually renders: `PageHeaderSkeleton` with the same
+number of actions, the same card grid, the same column of list rows. The real
+page then replaces it without the layout shifting. A skeleton shows the
+shape of what's coming, so the wait feels shorter than a blank page with a
+spinner ([NN/g, *Skeleton Screens*](https://www.nngroup.com/articles/skeleton-screens/)).
+
+- **The shell is not part of the skeleton.** Nav, footer, breadcrumb and the
+  page title (when it's known without a fetch) render for real; only the data
+  regions are placeholders.
+- **Blocks, not fake text.** Grey bars at the height of the line they replace,
+  `bg-border` fill, `rounded-md`, `motion-safe:animate-pulse` so the pulse
+  stops under `prefers-reduced-motion`.
+- **Announce it once.** The skeleton's wrapper takes `aria-busy="true"` and an
+  `sr-only` `role="status"` line ("Loading transactions"); the bars themselves
+  are `aria-hidden`.
+- **A spinner alone is for spaces too small for a skeleton:** a button, an
+  overlay, a single inline value. Never a full-page spinner.
+
+### 10. A change shows progress where it was made
+
+When the user submits, the control they pressed answers:
+
+- **The button changes its label and disables:** `Save` → `Saving…`,
+  `Send` → `Sending…`, `Delete` → `Deleting…`. Present-continuous verb of the
+  button's own label, with an ellipsis. Disabling it is what stops double
+  submits; the label is what tells the user why.
+- **A form that does real work** (a server round trip) also gets
+  `LoadingOverlay` over the form, not over the page. The rest of the screen
+  stays usable.
+- **Success is the result, not a message.** A save redirects to the page that
+  shows the saved thing, or updates the row in place. No toast for routine
+  saves; a toast that says "Saved" next to the saved value says it twice
+  (rule 6's logic). Use a confirmation message only when the outcome isn't
+  visible on screen ("Invitation sent to ana@example.com").
+- **Under a second, nothing else.** Don't add a delay-only spinner to make a
+  fast action feel substantial. Past ~10 seconds (an import, a payoff
+  simulation), say what's happening and roughly how long it takes
+  ([NN/g, *Response Times*](https://www.nngroup.com/articles/response-times-3-important-limits/)).
+
+### 11. Empty states say what's missing and name the way out
+
+"No accounts yet." on its own is a dead end. An empty state has:
+
+1. **What would be here**, in the page's own words: `text-body text-muted`.
+   One sentence.
+2. **The action that fills it**: the page's primary action as a button, or a
+   link to where it can be done. If the header already carries that action
+   (rule 2a), repeat it in the body: the empty body is where the eye lands.
+3. **No list chrome.** No column headers, select-all, pager or sort control
+   over zero rows (rule 5).
+
+Two variants:
+
+- **Nothing matches the filter** is not the same as nothing exists. Say so
+  ("No transactions in June 2026 match “rent”") and offer to clear the
+  filter, not to create a record.
+- **The viewer can't fill it.** When someone else creates the content (a
+  client waiting on a consultant, a visitor on an unpublished listing), say
+  who will and, if known, when, then link to what *is* available. Never offer
+  an action the viewer isn't allowed to take.
+
+### 12. Errors say what happened and what to do next, at the scope they happened
+
+| Scope | Where | How |
+|---|---|---|
+| A field | Under the field | `text-small font-medium text-purple`, linked by `aria-describedby`, field gets `aria-invalid`. Shown on submit, then live as the user fixes it. |
+| A form | Above the submit button | `role="alert"`, same text style. The server's reason in plain language ("That email already has an account"), never the raw error or a code. Fields keep what the user typed. |
+| A route | `error.tsx`, inside `PageShell` | The page's own header with "This page didn't load" and one sentence; then **Try again** (primary, calls `reset`) and a way out (secondary: back to the parent page or home). Show `error.digest` in `text-small text-muted` as a reference to quote. |
+| Not found | `not-found.tsx` | Same shape as a route error, but say the thing doesn't exist or was moved, and link to its listing. Never "something went wrong" for a 404. |
+
+- **Errors are purple, not red.** Deep Purple is the brand's warning colour
+  (BRAND_GUIDE §10) and `--color-red` is reserved for over-limit and
+  destructive actions (`STYLE_SYSTEM.md`). Red on every validation message
+  would wear that meaning out.
+- **Keep the frame.** A failed region inside a working page fails alone (its
+  own boundary or inline message); one failed fetch never blanks the nav.
+- **Copy:** say what didn't happen and what to do, in the second person, no
+  blame: "We couldn't save your changes. Check your connection and try
+  again.", not "Error 500" or "Invalid input".
+
 ---
 
 ## Applying this to `personal-home`
@@ -193,6 +288,15 @@ rule — on a marketing page the 48px heading is the brand voice, not chrome.
 - **Explicit Cancel on forms.** Only `transaction-form` has one; the rest rely
   on the breadcrumb. Worth making uniform — a Cancel beside Save is a more
   obvious exit than a trail node.
-- **Empty states.** Several screens answer with a bare sentence ("No income
-  sources yet."). Each should pair that with the action that fixes it, the way
-  the Dashboard and Forecast empty states already do.
+- **Empty states (rule 11).** Several `finance-os` screens answer with a bare
+  sentence ("No income sources yet.", "No accounts yet."). Each should pair
+  that with the action that fixes it, the way the Dashboard and Forecast empty
+  states already do.
+- **`finance-os` drift from rules 9 and 12.** `Skeleton` fills with `bg-muted`
+  (the muted *text* colour, so the bars are dark grey) and pulses regardless of
+  reduced motion; switch to `bg-border motion-safe:animate-pulse`. Form errors
+  render in the green `callout` Alert, which reads as success; they should be
+  purple text with `role="alert"`. No route has an `error.tsx` yet.
+- **Shared state components.** `Skeleton`, `Spinner`, `LoadingOverlay` and an
+  `EmptyState` (message + action slot) belong in the `@rickie` registry so
+  `client-portal` installs them instead of re-deriving rules 9–12.
