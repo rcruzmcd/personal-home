@@ -1,0 +1,158 @@
+---
+id: client-portal
+title: "Client Portal"
+slug: client-portal
+description: "A private, invite-only portal where consulting clients follow their engagement, read deliverables, ask questions, and vote on recommendations, with visibility enforced by the database, not the UI."
+featured: false
+category: project
+subcategory: portal
+status: active
+
+startDate: "2026-09-30"
+publishedDate: "2026-10-02"
+
+role: "Sole Developer"
+
+technologies:
+  - Next.js
+  - TypeScript
+  - Supabase
+  - PostgreSQL
+  - shadcn/ui
+  - Zod
+  - Resend
+  - Vercel
+
+casestudy:
+  problem: >
+    A consulting engagement runs on email, attachments, and memory. Reports go out as PDFs
+    and get forwarded, so nobody knows which version is current. Questions about one
+    recommendation get buried in a thread about another. When a client has a board, getting
+    a decision means chasing several people for a yes, and their reasons never end up
+    anywhere I can find later. Nobody on either side could answer "where does this stand, and
+    who are we waiting on?" without digging through email.
+  context: >
+    This is the tool behind my own consulting work, served at clients.rickiecruz.com. Many of
+    the clients are small organizations with a board and a staff, so the people who read the
+    work aren't always the people who decide on it. The portal holds real client material:
+    draft findings, internal notes, pricing, and invoices. That made the security model the
+    first thing to get right. It lives in its own private repository and its own Supabase
+    project, apart from this public site and from Personal Finance OS, so client accounts
+    never share a user pool or database with anything else.
+  goals:
+    - Give each client one place that shows where the engagement stands and who it's waiting on
+    - Let decision-makers vote on each recommendation (approve, discuss, or decline) and say which way to get the work done they prefer
+    - Keep questions attached to the exact item they're about, whether a recommendation, finding, deliverable, or path
+    - Let me run every engagement from an admin side of the same app, including invitations, publishing, billing, and follow-on work
+    - Make it impossible for a client to see drafts, internal notes, or another client's engagement, whatever the UI does
+  constraints:
+    - One developer, and every hour spent on the portal is an hour not spent on client work
+    - Real client data, so a visibility bug is a breach of trust, not a cosmetic defect
+    - "Clients are not technical: no passwords to manage, and every screen has to work on a phone"
+    - Must reuse this site's brand and layout rules instead of inventing a second design system
+    - "Not indexed and no tracking: no sitemap, robots.txt disallows everything, and no analytics that record ids or page content"
+  research: >
+    Before any code, the whole portal was written down: 25 screen specs, each with acceptance
+    criteria; a shared data model and route map; and a questions file listing each open
+    decision with a proposed default, where some were marked as blocking a build. A design
+    canvas with 28 artboards covered the client and admin screens on desktop and phone. Doing
+    this first is what made the build fast. Most hard questions were settled on paper, for
+    example who can see a finding before I've verified it, or what happens when a client
+    signs in on a link meant for someone else.
+  architecture: >
+    Next.js 16 on Vercel, with Supabase for Postgres, auth, and Storage, and Resend for email.
+    Visibility lives in the database. Row-level security decides what a client session can
+    read, and admin-only data (internal notes, question reviews, private preference notes)
+    lives in admin-only tables rather than behind a flag on a client-readable one. API access
+    is explicit: new tables and functions start with no grants, and every migration grants
+    the authenticated role exactly what it needs, never anything to anonymous users. Each new
+    table ships with a test that proves a client can't read what it shouldn't. Files sit in a
+    private bucket; clients only ever receive 60-second signed URLs for published
+    deliverables of engagements they belong to. Every client-visible change writes an
+    activity event, and that single log feeds activity lists, notification emails, and an
+    hourly cron that sends a morning digest and waiting-on reminders. Email is a side effect:
+    a save succeeds even if sending fails, and the failure shows up with a Retry button.
+  design: >
+    It follows this site's style system and layout rules, installed from the same shared
+    source rather than copied by hand. On the client side, the engagement page leads with
+    where things stand and who it's waiting on. Next come the recommendations, grouped
+    ("Do these first", "Website fixes") and numbered so people can refer to them in a
+    meeting. Then the deliverables, which can be a document viewer or a set of web findings
+    with score tiles. Paths compare the ways of getting the work done side by side, with
+    pricing. The admin side has an engagement workspace, an inbox of questions that need a
+    reply, templates, client records, and a preview mode that renders any client page as a
+    given role. It targets WCAG 2.1 AA, with status shown by text as well as color, visible
+    focus, and 44px touch targets.
+  implementation: >
+    Built in eight phases, following the build order in the spec. First came the schema, row-level
+    security, and the tests that prove it holds. Then sign-in and invitations; then the admin
+    engagement workspace, enough to publish; then the client read path; then options,
+    decisions, and findings; then the optional discovery questionnaire. After those came the
+    inbox, preview, templates, and settings, and finally an email audit log, billing and
+    invoices, and follow-on engagements that start from the path a client chose. Late
+    changes stayed small because the spec had already made the decisions. One example: the
+    questionnaire was decoupled into reusable question sets, and file uploads moved to go
+    straight to Storage instead of through the server.
+  challenges:
+    - "Email scanners open every link first, which uses up single-use sign-in links before the person ever clicks them"
+    - Keeping preview mode honest, so it runs the same queries a client session would and never writes anything
+    - Letting a client save a private note with a preference without any query exposing that note to the other people on the engagement
+    - Modeling one recommendation that appears in more than one group without duplicating it or its votes
+    - "Finding visibility: a finding is unreadable to clients until it has been verified and placed in the report"
+  decisions:
+    - title: "A click-through confirm page, not a direct magic link"
+      description: "The emailed link opens a page, and the session is created only when the person presses a button. GET never changes state anywhere in the app."
+      tradeoffs: >
+        It adds one click to every sign-in. In exchange, a corporate email scanner that
+        pre-fetches the link can't burn it, and that would otherwise be the most common
+        "the link doesn't work" support request.
+    - title: "Enforce visibility with row-level security, not the UI"
+      description: "Every rule about who can see what is a database policy, backed by a test, and admin-only data lives in admin-only tables."
+      tradeoffs: >
+        Each feature costs more to build, because every table needs a policy, explicit grants,
+        and a test. The payoff is that a forgotten filter in a page can't leak a draft or
+        another client's data, because the query itself returns nothing.
+    - title: "Its own repository and its own Supabase project"
+      description: "The portal doesn't share a codebase, a user pool, or a database with the public site or the finance app."
+      tradeoffs: >
+        It means more infrastructure and some duplicated setup. The upside is that client
+        specs and data can't end up in a public repository by accident, and a mistake in one
+        app can't reach another's users.
+    - title: "Invite-only, with public sign-up disabled"
+      description: "Every account starts as an invitation from me to a specific person on a specific engagement."
+      tradeoffs: >
+        I have to add every person myself. That's a small cost at consulting scale, and it
+        removes a whole class of abuse and support questions.
+    - title: "Write the spec and designs before the code"
+      description: "Screens, acceptance criteria, data model, and open decisions were all written down before the first migration."
+      tradeoffs: >
+        It's slower to start, and nothing is clickable for the first day. Then the build moves
+        quickly and predictably, because each phase is checked against criteria that already
+        exist rather than worked out while coding.
+  result: >
+    The portal is built through all eight planned phases. Clients have sign-in, the
+    engagement page, recommendations with voting, paths and preferences, deliverables and
+    findings, questions on any item, an optional questionnaire, and billing. The admin side
+    covers publishing, invitations, the inbox, preview, templates, client records, email
+    auditing, invoices, and follow-on engagements. Outcome measures, such as how quickly
+    clients reach a decision and how much less email an engagement needs, are TBD until it
+    has carried a few engagements end to end.
+  lessonLearned:
+    - Putting security in the database changes how fast you can build. Once row-level security and its tests were in place, new screens could be built without re-checking who can see what on every page.
+    - Real-world email behavior is a design input. Link scanners, forwarded messages, and someone signing in on another person's link all needed their own screen.
+    - A spec with acceptance criteria and a list of open questions with proposed defaults made eight phases of building quick and predictable, because each phase had already been decided on paper.
+    - Admin-only data belongs in admin-only tables. A boolean flag on a client-readable table is one missed filter away from a leak.
+
+seoTitle: "Client Portal — Private Consulting Portal | Rickie Cruz"
+seoDescription: "An invite-only portal where consulting clients follow their engagement, read deliverables, and vote on recommendations, with visibility enforced by the database."
+tags:
+  - consulting
+  - full-stack
+  - security
+---
+
+## Why there's no demo link
+
+The portal holds real client engagements, so it's invite-only and kept out of search
+engines. This page describes how it's built. Screenshots will be added once an engagement
+can be shown with placeholder data.

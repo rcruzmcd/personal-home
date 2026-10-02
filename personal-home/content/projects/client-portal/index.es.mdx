@@ -1,0 +1,154 @@
+---
+# Superposición de traducción; ver content/work/chatter-snow/index.es.mdx.
+title: "Portal de clientes"
+description: "Un portal privado, solo por invitación, donde los clientes de consultoría siguen su proyecto, leen los entregables, hacen preguntas y votan las recomendaciones. Lo que cada quien puede ver lo decide la base de datos, no la interfaz."
+subcategory: portal
+
+role: "Desarrollador único"
+
+casestudy:
+  problem: >
+    Un proyecto de consultoría funciona con correos, adjuntos y memoria. Los informes salen
+    como PDF y se reenvían, así que nadie sabe cuál es la versión vigente. Las preguntas sobre
+    una recomendación se pierden en un hilo sobre otra. Cuando el cliente tiene una junta
+    directiva, conseguir una decisión significa perseguir a varias personas para obtener un
+    sí, y sus razones nunca quedan en un lugar donde yo pueda encontrarlas después. Nadie de
+    ninguno de los dos lados podía responder "¿en qué punto estamos y a quién estamos
+    esperando?" sin buscar entre correos.
+  context: >
+    Es la herramienta detrás de mi propio trabajo de consultoría, publicada en
+    clients.rickiecruz.com. Muchos clientes son organizaciones pequeñas con una junta y un
+    equipo de personal, así que quienes leen el trabajo no siempre son quienes deciden sobre
+    él. El portal guarda material real de clientes: hallazgos en borrador, notas internas,
+    precios y facturas. Por eso el modelo de seguridad fue lo primero que había que resolver.
+    Vive en su propio repositorio privado y en su propio proyecto de Supabase, separado de
+    este sitio público y de Personal Finance OS, para que las cuentas de clientes nunca
+    compartan usuarios ni base de datos con nada más.
+  goals:
+    - Dar a cada cliente un solo lugar que muestre en qué punto está el proyecto y a quién se está esperando
+    - "Permitir que quienes deciden voten cada recomendación (aprobar, conversar o rechazar) y digan qué forma de hacer el trabajo prefieren"
+    - Mantener cada pregunta ligada al elemento exacto del que trata, sea una recomendación, un hallazgo, un entregable o un camino
+    - Dirigir cada proyecto desde un lado de administración en la misma aplicación, incluidas invitaciones, publicación, facturación y trabajo de seguimiento
+    - Hacer imposible que un cliente vea borradores, notas internas o el proyecto de otro cliente, haga lo que haga la interfaz
+  constraints:
+    - Un solo desarrollador, y cada hora dedicada al portal es una hora menos de trabajo con clientes
+    - Datos reales de clientes, así que un error de visibilidad es una falta de confianza, no un defecto estético
+    - "Los clientes no son técnicos: nada de contraseñas que administrar, y cada pantalla tiene que funcionar en el teléfono"
+    - Debía reutilizar la marca y las reglas de diseño de este sitio en lugar de inventar un segundo sistema de diseño
+    - "Sin indexación ni rastreo: sin sitemap, robots.txt lo bloquea todo y no hay analítica que registre identificadores o el contenido de las páginas"
+  research: >
+    Antes de escribir código, todo el portal quedó por escrito: 25 especificaciones de
+    pantalla, cada una con criterios de aceptación; un modelo de datos y un mapa de rutas
+    compartidos; y un archivo de preguntas con cada decisión pendiente y una respuesta
+    propuesta por defecto, donde algunas se marcaron como bloqueantes. Un lienzo de diseño
+    con 28 mesas de trabajo cubrió las pantallas de cliente y de administración en
+    escritorio y en teléfono. Hacer esto primero es lo que permitió construir rápido. Casi
+    todas las preguntas difíciles se resolvieron en papel, por ejemplo quién puede ver un
+    hallazgo antes de que yo lo verifique, o qué pasa cuando un cliente entra con un enlace
+    pensado para otra persona.
+  architecture: >
+    Next.js 16 en Vercel, con Supabase para Postgres, autenticación y almacenamiento, y
+    Resend para el correo. Lo que cada quien puede ver se define en la base de datos. La
+    seguridad a nivel de fila decide qué puede leer una sesión de cliente, y los datos solo
+    para administración (notas internas, revisiones de preguntas, notas privadas de
+    preferencia) viven en tablas exclusivas de administración, no detrás de una bandera en
+    una tabla que el cliente puede leer. El acceso a la API es explícito: las tablas y
+    funciones nuevas nacen sin permisos, y cada migración otorga al rol autenticado
+    exactamente lo que necesita, nunca nada a usuarios anónimos. Cada tabla nueva llega con
+    una prueba que demuestra que un cliente no puede leer lo que no debe. Los archivos están
+    en un bucket privado; los clientes solo reciben URL firmadas de 60 segundos para los
+    entregables publicados de proyectos a los que pertenecen. Cada cambio visible para el
+    cliente escribe un evento de actividad, y ese único registro alimenta las listas de
+    actividad, los correos de aviso y una tarea programada cada hora que envía un resumen
+    matutino y recordatorios de pendientes. El correo es un efecto secundario: un guardado
+    funciona aunque el envío falle, y la falla aparece con un botón para reintentar.
+  design: >
+    Sigue el sistema de estilos y las reglas de diseño de este sitio, instalados desde la
+    misma fuente compartida en lugar de copiarlos a mano. Del lado del cliente, la página del
+    proyecto empieza por en qué punto está y a quién se espera. Después vienen las
+    recomendaciones, agrupadas ("Hacer primero", "Arreglos del sitio web") y numeradas para
+    poder mencionarlas en una reunión. Luego los entregables, que pueden ser un visor de
+    documentos o un conjunto de hallazgos web con indicadores de puntuación. Los caminos
+    comparan lado a lado las formas de hacer el trabajo, con precios. El lado de
+    administración tiene un espacio de trabajo por proyecto, una bandeja de preguntas que
+    esperan respuesta, plantillas, fichas de clientes y un modo de vista previa que muestra
+    cualquier página de cliente como la vería un rol dado. Apunta a WCAG 2.1 AA, con el
+    estado indicado con texto además de color, foco visible y áreas táctiles de 44 px.
+  implementation: >
+    Se construyó en ocho fases, siguiendo el orden de la especificación. Primero el esquema,
+    la seguridad a nivel de fila y las pruebas que demuestran que se cumple. Después el
+    inicio de sesión y las invitaciones; luego el espacio de trabajo de administración, lo
+    suficiente para publicar; luego la vista de lectura del cliente; luego opciones,
+    decisiones y hallazgos; y luego el cuestionario de descubrimiento opcional. Después
+    llegaron la bandeja, la vista previa, las plantillas y la configuración, y al final un
+    registro de correos enviados, la facturación y los proyectos de seguimiento que parten
+    del camino que eligió el cliente. Los cambios tardíos fueron pequeños porque la
+    especificación ya había tomado las decisiones. Un ejemplo: el cuestionario se separó en
+    conjuntos de preguntas reutilizables, y la subida de archivos pasó a ir directo al
+    almacenamiento en lugar de pasar por el servidor.
+  challenges:
+    - Los escáneres de correo abren primero cada enlace, lo que gasta los enlaces de inicio de sesión de un solo uso antes de que la persona haga clic
+    - Mantener honesta la vista previa, para que ejecute las mismas consultas que una sesión de cliente y nunca escriba nada
+    - Permitir que un cliente guarde una nota privada con su preferencia sin que ninguna consulta muestre esa nota a las demás personas del proyecto
+    - Modelar una recomendación que aparece en más de un grupo sin duplicarla a ella ni a sus votos
+    - "Visibilidad de los hallazgos: un hallazgo es ilegible para el cliente hasta que se verifica y se ubica en el informe"
+  decisions:
+    - title: "Una página de confirmación, no un enlace mágico directo"
+      description: "El enlace del correo abre una página, y la sesión se crea solo cuando la persona pulsa un botón. Ninguna petición GET cambia el estado en ninguna parte de la aplicación."
+      tradeoffs: >
+        Agrega un clic a cada inicio de sesión. A cambio, un escáner de correo corporativo
+        que abre el enlace por adelantado no puede gastarlo, y eso sería de otro modo la
+        consulta de soporte más común: "el enlace no funciona".
+    - title: "Hacer cumplir la visibilidad con seguridad a nivel de fila, no con la interfaz"
+      description: "Cada regla sobre quién puede ver qué es una política de la base de datos respaldada por una prueba, y los datos de administración viven en tablas exclusivas de administración."
+      tradeoffs: >
+        Cada función cuesta más de construir, porque cada tabla necesita una política,
+        permisos explícitos y una prueba. La ventaja es que un filtro olvidado en una página
+        no puede filtrar un borrador ni los datos de otro cliente, porque la consulta misma
+        no devuelve nada.
+    - title: "Su propio repositorio y su propio proyecto de Supabase"
+      description: "El portal no comparte código, usuarios ni base de datos con el sitio público ni con la aplicación de finanzas."
+      tradeoffs: >
+        Significa más infraestructura y algo de configuración duplicada. La ventaja es que
+        las especificaciones y los datos de clientes no pueden terminar por accidente en un
+        repositorio público, y un error en una aplicación no puede alcanzar a los usuarios de
+        otra.
+    - title: "Solo por invitación, sin registro público"
+      description: "Cada cuenta empieza como una invitación mía a una persona concreta en un proyecto concreto."
+      tradeoffs: >
+        Tengo que agregar a cada persona yo mismo. Es un costo pequeño a escala de
+        consultoría, y elimina toda una clase de abusos y consultas de soporte.
+    - title: "Escribir la especificación y los diseños antes del código"
+      description: "Pantallas, criterios de aceptación, modelo de datos y decisiones pendientes quedaron por escrito antes de la primera migración."
+      tradeoffs: >
+        Arranca más lento, y el primer día no hay nada en qué hacer clic. Después la
+        construcción avanza rápido y de forma predecible, porque cada fase se comprueba
+        contra criterios que ya existen en lugar de resolverlos mientras se programa.
+  result: >
+    El portal está construido en sus ocho fases planeadas. Los clientes tienen inicio de
+    sesión, la página del proyecto, recomendaciones con votación, caminos y preferencias,
+    entregables y hallazgos, preguntas sobre cualquier elemento, un cuestionario opcional y
+    facturación. El lado de administración cubre publicación, invitaciones, la bandeja, la
+    vista previa, plantillas, fichas de clientes, el registro de correos, facturas y
+    proyectos de seguimiento. Las medidas de resultado, como cuánto tardan los clientes en
+    decidir y cuánto correo menos necesita un proyecto, quedan pendientes hasta que haya
+    acompañado algunos proyectos de principio a fin.
+  lessonLearned:
+    - Poner la seguridad en la base de datos cambia la velocidad con la que se construye. Con la seguridad a nivel de fila y sus pruebas en su lugar, las pantallas nuevas se pudieron construir sin volver a revisar en cada página quién puede ver qué.
+    - El comportamiento real del correo es un dato de diseño. Los escáneres de enlaces, los mensajes reenviados y alguien que entra con el enlace de otra persona necesitaron cada uno su propia pantalla.
+    - Una especificación con criterios de aceptación y una lista de preguntas pendientes con respuestas propuestas hizo que ocho fases de construcción fueran rápidas y predecibles, porque cada fase ya estaba decidida en papel.
+    - Los datos de administración pertenecen a tablas de administración. Una bandera booleana en una tabla que el cliente puede leer está a un filtro olvidado de una filtración.
+
+seoTitle: "Portal de clientes — Portal privado de consultoría | Rickie Cruz"
+seoDescription: "Un portal solo por invitación donde los clientes de consultoría siguen su proyecto, leen entregables y votan recomendaciones, con la visibilidad garantizada por la base de datos."
+tags:
+  - consultoría
+  - full-stack
+  - seguridad
+---
+
+## Por qué no hay enlace de demostración
+
+El portal guarda proyectos reales de clientes, así que es solo por invitación y queda
+fuera de los buscadores. Esta página describe cómo está construido. Se agregarán capturas
+de pantalla cuando se pueda mostrar un proyecto con datos de ejemplo.
