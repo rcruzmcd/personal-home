@@ -1,0 +1,146 @@
+---
+# Superposición de traducción. Sólo campos dependientes del idioma: el id, el
+# slug, las fechas, las tecnologías, las imágenes y las URL de los enlaces viven
+# únicamente en index.mdx para que no puedan desincronizarse entre idiomas.
+title: "Llevar a multirregión un servicio al límite de su capacidad"
+description: "Un microservicio Express muy utilizado estaba al límite de su capacidad y bloqueaba la incorporación de nuevos clientes. Lo optimicé de ~500 a ~1.350 TPS, descubrí que su almacenamiento lo ataba a una sola región de AWS y lo migré de Amazon EFS a Amazon S3 en fases controladas por un feature flag para que pudiera operar en más de una región."
+subcategory: infraestructura
+
+role: "Desarrollador líder de aplicaciones"
+organization: "ADP"
+
+casestudy:
+  problem: >
+    Un microservicio de cara al cliente que atendía alrededor de un millón de solicitudes de API
+    al día estaba al límite de su capacidad, y eso impedía incorporar nuevos clientes al producto
+    que respaldaba. Además era frágil: los cambios solían provocar incidentes, casi siempre
+    problemas de rendimiento o efectos secundarios que nadie podía anticipar. Mientras investigaba
+    la capacidad, encontré un segundo problema: el servicio sólo podía operar en una región de
+    AWS. Una caída regional lo dejaría fuera de servicio, y los ejercicios de recuperación ante
+    desastres de la empresa no podían ejecutarse correctamente sobre él.
+  context: >
+    El servicio era una base de código Express.js antigua respaldada por MongoDB, ejecutándose en
+    Amazon ECS con la infraestructura definida en CloudFormation. Yo era desarrollador líder en un
+    equipo de 4 a 8 ingenieros. El equipo de SRE era dueño de la infraestructura y realizaba las
+    pruebas de rendimiento. Los despliegues eran graduales (rolling), dentro de una ventana de
+    mantenimiento semanal los jueves por la noche. El servicio había cambiado de dueño un par de
+    veces y había estado casi siempre en modo de mantenimiento antes de que lo heredara mi equipo.
+    Gran parte del razonamiento detrás de su diseño se había ido con los dueños anteriores, y por
+    eso nadie en el equipo sabía que estaba limitado a una región, ni por qué.
+  goals:
+    - "Aumentar la capacidad del servicio para poder incorporar nuevos clientes"
+    - "Descubrir por qué estaba atado a una sola región y eliminar ese límite"
+    - "Hacerlo capaz de sobrevivir a una caída regional y de pasar los ejercicios de recuperación ante desastres"
+    - "Migrar todas las imágenes almacenadas sin perder ninguna ni afectar a ningún cliente"
+  constraints:
+    - "Alto tráfico y de cara al cliente, con cambios sólo dentro de una ventana de mantenimiento semanal"
+    - "Un servicio con historial de incidentes cada vez que se modificaba"
+    - "Infraestructura y pruebas de rendimiento a cargo de otro equipo (SRE)"
+    - "Imágenes existentes repartidas en varios entornos, algunas huérfanas"
+  research: >
+    Primero vino la capacidad. El análisis reveló paquetes desactualizados, un driver de Mongoose
+    antiguo, lecturas frecuentes sin caché y llamadas redundantes a la base de datos en las
+    solicitudes más comunes. Corregir eso llevó el servicio de unas 500 a unas 1.350 transacciones
+    por segundo, y el tiempo de respuesta de unos 2,5 segundos a unos 100 milisegundos. Revisando
+    las definiciones de tareas de ECS y la documentación de CloudFormation, encontré por qué
+    estaba atado a una región: las imágenes se guardaban en Amazon EFS, un sistema de archivos
+    regional, montado directamente en las tareas del servicio. Una tarea en una segunda región no
+    tenía nada que montar. Mover las imágenes a Amazon S3, con replicación entre regiones,
+    eliminaría esa dependencia. También sumaría capacidad, porque más regiones significan más
+    instancias para repartir la carga.
+  architecture: >
+    Las imágenes pasaron de un montaje de EFS a S3, con una regla de replicación de S3 que las
+    copia entre regiones. Durante la transición, un feature flag decidía si cada solicitud se
+    servía desde S3 o desde EFS, y cualquier falla de S3 volvía automáticamente a EFS. Las nuevas
+    cargas se guardaban en ambos. El documento de MongoDB de cada imagen registraba las dos
+    ubicaciones, para que cualquiera de las dos rutas pudiera servirla hasta retirar la antigua.
+    Unos diez endpoints creados para este fin ejecutaron la migración.
+  implementation: >
+    Como el servicio era tan sensible, cada fase se desplegó por separado y se validó antes de la
+    siguiente. SRE realizó pruebas de rendimiento en varias etapas, y trabajé con ellos durante
+    todo el proceso, ya que eran los dueños de la infraestructura.
+  implementationSteps:
+    - "Definir el almacenamiento en S3 y agregar el código para conectarse a él detrás de un feature flag, con retorno automático a EFS"
+    - "Guardar las nuevas cargas tanto en EFS como en S3"
+    - "Analizar el volumen de EFS de cada entorno: cuántos datos había, cómo estaban organizados y qué imágenes eran huérfanas"
+    - "Eliminar las imágenes huérfanas para no migrarlas"
+    - "Copiar las imágenes de EFS a S3 conservando la copia en EFS; verificar que ambas copias fueran accesibles y registrar las dos ubicaciones en cada documento de MongoDB"
+    - "Activar el flag para clientes piloto y luego para todos, una vez que funcionó sin problemas"
+    - "Con todo el tráfico confirmado en S3, limpiar EFS y validar"
+    - "Quitar la configuración de EFS de CloudFormation para que el servicio pudiera desplegarse en más de una región, y validar"
+    - "Eliminar el feature flag"
+    - "Configurar la regla de replicación de S3 y validar"
+  challenges:
+    - "Nadie sabía que el servicio era de una sola región, así que el trabajo empezó con una investigación, no con un ticket"
+    - "Modificar un servicio conocido por incidentes inexplicables sin provocar uno"
+    - "Imágenes huérfanas en todos los entornos, que había que encontrar y limpiar antes de migrar"
+    - "Coordinar cada fase con SRE, dueños de la infraestructura y de las pruebas de rendimiento"
+    - "Acomodar una migración de varias fases en una sola ventana de mantenimiento por semana"
+    - "Incidentes menores con las rutas de las imágenes a mitad de la migración, detectados y contenidos por el mecanismo de retorno"
+  decisions:
+    - title: "Resolver la capacidad antes de sumar regiones"
+      description: "Optimicé primero el servicio existente: actualización de paquetes y del driver de Mongoose, caché y eliminación de llamadas redundantes a la base de datos."
+      tradeoffs: >
+        Desbloqueó la incorporación de clientes de inmediato, sin esperar a la migración. El costo
+        fue modificar dos veces un servicio frágil: una por rendimiento y otra por almacenamiento.
+    - title: "Migrar a S3 en lugar de sincronizar EFS entre regiones"
+      description: "Reemplacé el sistema de archivos compartido por almacenamiento de objetos y replicación de S3, en vez de intentar operar EFS en más de una región."
+      tradeoffs: >
+        S3 está hecho para la replicación entre regiones y no necesita montarse, y eso es lo que
+        hizo posible la multirregión. El costo fue tocar cada lugar donde el servicio leía o
+        escribía imágenes.
+    - title: "Un feature flag con EFS como respaldo"
+      description: "Servir desde S3 o EFS según un flag, volver a EFS ante cualquier falla de S3 y guardar las nuevas cargas en ambos."
+      tradeoffs: >
+        Cada paso podía revertirse con el flag, y algunos clientes podían probarlo antes que el
+        resto. El costo fue mantener dos rutas de almacenamiento, escrituras dobles y validación
+        adicional durante toda la migración.
+    - title: "Limpiar antes de mover"
+      description: "Medí el volumen de EFS de cada entorno y eliminé las imágenes huérfanas antes de copiar nada."
+      tradeoffs: >
+        Menos datos que mover y validar, y nada sin uso en el nuevo almacenamiento. El costo fue
+        una fase de análisis adicional antes de empezar la migración.
+  result: >
+    El servicio maneja aproximadamente 2,7 veces el tráfico con una veinticincoava parte del
+    tiempo de respuesta, lo que reabrió la incorporación de clientes. Ahora sirve sus imágenes
+    desde S3 en lugar de un sistema de archivos regional, lo que abre el camino para operar en
+    más de una región y participar correctamente en los ejercicios de recuperación ante
+    desastres. Alrededor de 10 GB de imágenes de producción se migraron mediante un despliegue
+    por fases controlado por un flag, sin tiempo de inactividad. Surgieron algunos incidentes
+    menores con las rutas de las imágenes, y el flag y el respaldo en EFS los mantuvieron
+    acotados. El último paso del plan era desplegar en una segunda región y operar ambas en modo
+    activo/activo. Dejé ADP antes de que eso entrara en producción. Para entonces el flag estaba
+    activado para todo el tráfico, las imágenes se servían desde S3 y estaban validadas, y el
+    pull request que quitaba la configuración de EFS ya tenía fecha de merge, así que la segunda
+    región podía construirse sobre ese trabajo.
+  metrics:
+    - metric: "Rendimiento"
+      value: "~500 → ~1.350 TPS"
+    - metric: "Tiempo de respuesta"
+      value: "~2,5 s → ~100 ms"
+    - metric: "Solicitudes de API diarias"
+      value: "~1 millón"
+    - metric: "Imágenes de producción migradas"
+      value: "~10 GB"
+    - metric: "Tiempo de inactividad durante la migración"
+      value: "Ninguno"
+  lessonLearned:
+    - "Preguntar por qué antes de preguntar cómo. El límite de una sola región era una línea de infraestructura que nadie había rastreado."
+    - "Los servicios heredados traen restricciones que nadie dejó por escrito. Hay que leer la infraestructura, no sólo el código."
+    - "Un servicio frágil se cambia con seguridad en fases pequeñas, cada una validada y reversible."
+    - "Un mecanismo de respaldo convierte un cambio de golpe en uno gradual. El flag con retorno a EFS hizo que ningún paso fuera de todo o nada."
+    - "El trabajo de infraestructura entre equipos avanza más rápido cuando le llevas al otro equipo un plan, no un problema."
+
+seoTitle: "Escalar y llevar a multirregión un servicio de alto tráfico (de EFS a S3) | Rickie Cruz"
+seoDescription: "Estudio de caso: llevé un microservicio Express de alto tráfico de ~500 a ~1.350 TPS, descubrí que Amazon EFS lo ataba a una sola región de AWS y lo migré a Amazon S3 en fases reversibles controladas por un flag, para soportar multirregión y recuperación ante desastres."
+tags:
+  - infraestructura
+  - aws
+  - rendimiento
+  - migración
+---
+
+## Lo que no puedo mostrar
+
+Este fue un trabajo interno en ADP, así que aquí no hay capturas de pantalla, código ni
+diagramas de arquitectura. El texto se limita al problema, las decisiones y el resultado.

@@ -1,0 +1,160 @@
+---
+id: adp-multi-region-storage
+title: "Taking a Service at Capacity Multi-Region"
+slug: adp-multi-region-storage
+description: "A heavily used Express microservice was running at capacity and blocking new clients. I tuned it from ~500 to ~1,350 TPS, found that its storage pinned it to one AWS region, and moved it from Amazon EFS to Amazon S3 in flagged phases so it could run in more than one region."
+featured: false
+category: work
+subcategory: infrastructure
+status: completed
+
+startDate: "2025-12-01"
+endDate: "2026-06-30"
+publishedDate: "2026-11-24"
+
+role: "Lead Application Developer"
+organization: "ADP"
+
+technologies:
+  - Node.js
+  - Express.js
+  - TypeScript
+  - MongoDB
+  - Mongoose
+  - Amazon S3
+  - Amazon EFS
+  - AWS ECS
+  - CloudFormation
+  - Docker
+  - Jest
+
+casestudy:
+  problem: >
+    A customer-facing microservice handling roughly a million API requests a day was running at
+    capacity. That was blocking new clients from being onboarded onto the product it served.
+    It was also fragile: changes to it regularly caused incidents, usually performance problems
+    or side effects nobody could explain ahead of time. While investigating capacity, I found a
+    second problem: the service could only run in one AWS region. That meant a regional outage
+    would take it down, and the company's disaster-recovery exercises couldn't be run against it
+    properly.
+  context: >
+    The service was an older Express.js codebase backed by MongoDB, running on Amazon ECS with
+    infrastructure defined in CloudFormation. I was a lead developer on a team of 4–8 engineers.
+    The SRE team owned the infrastructure and ran performance testing.
+    Deployments were rolling, inside a weekly Thursday-night maintenance window. The service had
+    changed owners a couple of times and had mostly been in maintenance mode before my team
+    inherited it. Much of the reasoning behind how it was built had left with earlier owners,
+    which is why nobody on the team knew it was limited to one region, or why.
+  goals:
+    - "Raise the service's capacity so new clients could be onboarded"
+    - "Find out why it was pinned to one region, and remove that limit"
+    - "Make it able to survive a regional outage and pass disaster-recovery exercises"
+    - "Move every stored image without losing one or breaking a client"
+  constraints:
+    - "High traffic and customer-facing, with changes only in a weekly maintenance window"
+    - "A service with a history of incidents whenever it was changed"
+    - "Infrastructure and performance testing owned by another team (SRE)"
+    - "Existing image data spread across several environments, some of it orphaned"
+  research: >
+    Capacity came first. Profiling turned up outdated packages, an old Mongoose driver, no
+    caching on hot reads, and redundant database calls on common requests. Fixing those took the
+    service from about 500 to about 1,350 transactions per second, and response time from about
+    2.5 seconds to about 100 milliseconds. Going through the ECS task definitions and the
+    CloudFormation docs, I found why it was stuck in one region: images were stored on Amazon
+    EFS, a regional file system, mounted directly into the service's tasks. A task in a second
+    region had nothing to mount. Moving images to Amazon S3, with replication between regions,
+    would remove that dependency. It would also add capacity, since more regions means more
+    instances to share the load.
+  architecture: >
+    Images moved from an EFS mount to S3, with an S3 replication rule copying them between
+    regions. During the transition a feature flag decided whether a given request served from
+    S3 or EFS, and any S3 failure fell back to EFS automatically. New uploads went to both. Each
+    image's MongoDB document recorded both locations, so either path could serve it until the
+    old one was retired. About ten purpose-built endpoints ran the migration itself.
+  implementation: >
+    Because the service was so sensitive, every phase shipped separately and was validated
+    before the next one. SRE ran performance tests at several stages, and I worked with them
+    throughout, since they owned the infrastructure.
+  implementationSteps:
+    - "Define the S3 storage and add code to connect to it behind a feature flag, with automatic fallback to EFS"
+    - "Write new uploads to both EFS and S3"
+    - "Analyze each environment's EFS volume: how much data, how it was organized, and which images were orphaned"
+    - "Clean up orphaned images so they weren't migrated"
+    - "Copy images from EFS to S3, keeping the EFS copy; check both copies are reachable and record both locations in each MongoDB document"
+    - "Turn the flag on for pilot clients, then for everyone once it had run without issues"
+    - "Once all traffic was confirmed on S3, clean up EFS and validate"
+    - "Remove the EFS configuration from CloudFormation so the service could be deployed to more than one region, and validate"
+    - "Remove the feature flag"
+    - "Set up the S3 replication rule and validate"
+  challenges:
+    - "Nobody knew the service was single-region, so the work started with investigation, not a ticket"
+    - "Changing a service known for unexplained incidents without causing one"
+    - "Orphaned images in every environment, which had to be found and cleaned up before migrating"
+    - "Coordinating each phase with SRE, who owned the infrastructure and the performance testing"
+    - "Fitting a multi-phase migration into one maintenance window a week"
+    - "Minor incidents with image paths mid-migration, caught and contained by the fallback"
+  decisions:
+    - title: "Fix capacity before adding regions"
+      description: "Tuned the existing service first: package and Mongoose driver upgrades, caching, and removing redundant database calls."
+      tradeoffs: >
+        It unblocked client onboarding right away instead of waiting on a migration. The cost
+        was changing a fragile service twice: once for performance, then again for storage.
+    - title: "Move to S3 instead of syncing EFS across regions"
+      description: "Replaced the shared file system with object storage and S3 replication rather than trying to run EFS in more than one region."
+      tradeoffs: >
+        S3 is built for cross-region replication and doesn't need to be mounted, which is what
+        made multi-region possible. The cost was touching every place the service read or wrote
+        images.
+    - title: "A feature flag with EFS as the fallback"
+      description: "Served from S3 or EFS based on a flag, fell back to EFS on any S3 failure, and wrote new uploads to both."
+      tradeoffs: >
+        Every step could be rolled back with the flag, and clients could pilot it before
+        everyone moved. The cost was running two storage paths, double writes and extra
+        validation for the length of the migration.
+    - title: "Clean up before moving"
+      description: "Measured each environment's EFS volume and removed orphaned images before copying anything."
+      tradeoffs: >
+        Less data to move and validate, and nothing unused carried into the new storage. The
+        cost was an extra analysis phase before any migration started.
+  result: >
+    The service handles roughly 2.7 times the traffic at a twenty-fifth of the response time,
+    which reopened client onboarding. It now serves its images from S3 instead of a regional file system, clearing the way to
+    run in more than one region and be included properly in disaster-recovery exercises. About
+    10 GB of production images moved over a phased, flag-controlled rollout with no downtime.
+    A few minor incidents with image paths came up along the way, and the flag and EFS fallback
+    kept them small. The plan's last step was deploying to a second region and running both as
+    active/active. I left ADP before that went live. By then the flag was on for all traffic,
+    images were being served from S3 and validated, and the pull request removing the EFS
+    configuration had a merge date set, so the second region could be built
+    on that work.
+  metrics:
+    - metric: "Throughput"
+      value: "~500 → ~1,350 TPS"
+    - metric: "Response time"
+      value: "~2.5 s → ~100 ms"
+    - metric: "Daily API requests"
+      value: "~1 million"
+    - metric: "Production images migrated"
+      value: "~10 GB"
+    - metric: "Downtime during migration"
+      value: "None"
+  lessonLearned:
+    - "Ask why before asking how. The single-region limit was one line of infrastructure nobody had traced."
+    - "Inherited services carry constraints nobody wrote down. Read the infrastructure, not just the code."
+    - "A fragile service changes safely in small phases, each one validated and reversible."
+    - "A fallback turns a risky cutover into a gradual one. The flag plus EFS fallback meant no step had to be all-or-nothing."
+    - "Infrastructure work across team boundaries goes faster when you bring the other team a plan, not a problem."
+
+seoTitle: "Scaling and Taking a High-Traffic Service Multi-Region (EFS to S3) | Rickie Cruz"
+seoDescription: "Case study: took a high-traffic Express microservice from ~500 to ~1,350 TPS, found it was pinned to one AWS region by Amazon EFS, and migrated it to Amazon S3 in flagged, reversible phases for multi-region support and disaster recovery."
+tags:
+  - infrastructure
+  - aws
+  - performance
+  - migration
+---
+
+## What I can't show
+
+This was internal work at ADP, so there are no screenshots, code or architecture diagrams here.
+The write-up sticks to the problem, the decisions and the outcome.
