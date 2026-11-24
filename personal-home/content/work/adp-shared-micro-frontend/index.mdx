@@ -2,14 +2,13 @@
 id: adp-shared-micro-frontend
 title: "One Component, Many Products"
 slug: adp-shared-micro-frontend
-description: "Rebuilt an Angular admin module at ADP as a Stencil.js micro frontend that several products could embed, whatever framework each was built with, so the platform could modernize piece by piece instead of all at once."
-draft: true
+description: "My team inherited features whose components had been copied and adjusted for each product that used them. I consolidated them into shared Stencil.js micro frontends, published as an internal npm package, now used by three products across Angular, React and other micro frontends."
 featured: false
 category: work
 subcategory: architecture
 status: completed
 
-# DRAFT: dates are placeholders inside the ADP tenure (Feb 2022 – Jul 2026).
+# Approximate, within the ADP tenure. Not displayed anywhere on the site.
 startDate: "2023-01-01"
 endDate: "2023-06-30"
 publishedDate: "2026-11-24"
@@ -22,84 +21,89 @@ technologies:
   - Angular
   - TypeScript
   - Web Components
+  - npm
   - Jest
 
 casestudy:
   problem: >
-    An administrative module of ADP's community platform [TBD: which one, in general terms,
-    e.g. "survey administration"] was built in Angular and lived inside one application. Other
-    ADP products needed the same capability, but [TBD: they were built with different frameworks
-    or versions / embedding the Angular app wasn't possible]. The options were to rebuild it in
-    every product, or to keep it locked to the one.
+    My team inherited several features whose components had grown a copy per product. Where two
+    products needed slightly different behavior, the code had been duplicated and adjusted
+    rather than shared. Every fix or change had to be made, and tested, in more than one place,
+    and the copies drifted apart over time. The components were also tied to the Angular
+    application they lived in, so a product built on anything else couldn't use them at all.
   context: >
-    The platform was being modernized gradually, not rewritten. Any new approach had to sit
-    alongside existing Angular code, ship without a big-bang cutover, and be maintainable by a
-    team of 4–8 engineers. [TBD: how many products needed to consume the component, and who
-    owned them.]
+    The company already had a larger micro-frontend framework built on Stencil.js, which also
+    handled authentication, styling and shared state for everything running inside it. Choosing
+    Stencil wasn't my decision; the framework was the standard. My job was to move my team's
+    inherited components onto it: deciding how they should be structured, consolidating the
+    duplicated code, and making them something other teams could pick up and use.
   goals:
-    - "Build the capability once and let every product that needs it embed it"
-    - "Don't tie consumers to a framework or framework version"
-    - "Let each product configure what it needs without forking the component"
-    - "Make modernization incremental, one module at a time"
+    - "Replace each product's copy of a component with one shared implementation"
+    - "Make the components usable from any product, whatever it was built with"
+    - "Bring accessibility and the components themselves up to date during the move"
+    - "Keep existing users unaffected while the replacements shipped"
   constraints:
-    - "Consumers built with different stacks [TBD: confirm which]"
-    - "No rewrite of the host applications"
-    - "Existing behavior had to keep working for current users during the move"
-    - "[TBD: design-system, accessibility or bundle-size requirements]"
-  research: >
-    [TBD: what you compared, e.g. Angular Elements, Module Federation, Stencil.js, an iframe.]
-    Stencil compiles to standard web components, which any framework (or none) can render, and
-    produces small bundles without shipping a framework runtime with them.
+    - "Built on the company's existing Stencil.js micro-frontend framework, not a framework of my choosing"
+    - "Authentication, styling and shared state belonged to that framework, so they were out of scope"
+    - "Consumers used a mix of Angular, React and other micro frontends"
+    - "Existing features had to keep working for current users throughout"
   architecture: >
-    The module became a set of Stencil web components with a public API made of properties
-    in and events out. Each consuming product passes its own configuration [TBD: e.g. which
-    features are on, its labels, its API endpoint or auth token], so product differences are
-    data, not branches in the code. [TBD: how it was published and versioned: an npm package,
-    a CDN bundle?]
+    Each feature's duplicated components became a single Stencil web component, which any
+    framework, or another micro frontend, can render. Differences between products moved out of
+    copied code and into the component's public API: properties in, events out. Each product
+    passes in what it needs, including the viewer's role, so the same component serves both an
+    administrator and an employee view, and listens for the events it cares about. The
+    components shipped as an internal npm package, so consuming teams installed and upgraded
+    them like any other dependency.
   implementation: >
-    [TBD: the order you did it in, e.g. extract the logic, build the components, swap the
-    Angular version out in the original app first, then onboard the next product.] Jest tests
-    covered the component contract so consuming teams could upgrade with confidence.
+    Each component went through the same sequence, so the existing application proved it before
+    any other team depended on it.
+  implementationSteps:
+    - "Extract the logic from the duplicated Angular components into one shared implementation"
+    - "Build the Stencil component on the company framework, updating it and fixing accessibility along the way"
+    - "Swap it into the original application in place of the Angular version"
+    - "Publish it to the internal npm package and make it available to the consuming teams"
   challenges:
-    - "Designing one component API that fit several products without turning into a pile of flags"
-    - "Re-architecting the module's internals for reuse, not just porting it to a new framework"
-    - "Keeping the existing Angular experience working while the replacement shipped"
-    - "[TBD: styling, auth, or shared-state problems across host applications]"
+    - "Finding which differences between the copies were real product needs and which were just drift"
+    - "Designing one component that fit three products and two roles (administrator and employee) without turning into a pile of flags"
+    - "Keeping the original application's behavior identical while replacing what was under it"
+    - "Serving consumers on different stacks: Angular, React and other micro frontends"
   decisions:
-    - title: "Stencil.js web components, not an Angular-only solution"
-      description: "Built the micro frontend as framework-agnostic web components with Stencil."
+    - title: "One implementation instead of a copy per product"
+      description: "Merged each feature's duplicated components into a single shared one, with product and role differences handled through its properties and events."
       tradeoffs: >
-        Any product can embed it regardless of its stack, and it outlives any one framework
-        version. The cost was moving off Angular's tooling and patterns the team already knew.
-    - title: "Configuration over forks"
-      description: "Let each product configure the component through its public API instead of maintaining product-specific copies."
+        One place to fix bugs and make changes, for every product. The cost was careful API
+        design up front, and saying no to product-specific requests that didn't generalize.
+    - title: "Prove it in the original app before sharing it"
+      description: "Swapped each new component into my team's own application before publishing it for other teams."
       tradeoffs: >
-        One codebase to fix and improve for everyone. The cost was a more careful API design up
-        front, and saying no to product-specific requests that didn't generalize.
-    - title: "[TBD: a third decision, e.g. versioning or how shared styles were handled]"
-      description: "[TBD]"
+        Problems surfaced with the team that owned the code, not with another team that had
+        just adopted it. The cost was a slower path to the other products.
+    - title: "Modernize while moving, not after"
+      description: "Updated the components and addressed accessibility as part of rebuilding them, rather than porting them as-is."
       tradeoffs: >
-        [TBD]
+        Every consumer got the improvements on day one, and nobody had to revisit the
+        components later. The cost was a bigger change per component than a straight port.
   result: >
-    The capability is built once and embedded by [TBD: N products], and the platform has a
-    proven path for modernizing other modules one at a time. Maintenance overhead dropped
-    [TBD: how you'd measure it, e.g. one place to fix bugs instead of N].
+    The duplicated components became shared micro frontends, published as an internal npm
+    package and used by three products owned by different teams, across Angular, React and
+    other micro frontends. A fix or improvement now ships once and reaches every product. The
+    move also brought the components up to date and improved their accessibility.
   metrics:
-    - metric: "Products consuming the component"
-      value: "[TBD]"
-    - metric: "Bundle size or load time vs. the Angular module"
-      value: "[TBD, if known]"
+    - metric: "Products consuming the components"
+      value: "3"
   lessonLearned:
-    - "A reusable component's real design work is its API: what goes in, what comes out, and what you refuse to configure."
-    - "Incremental modernization needs a unit small enough to ship on its own. A micro frontend is that unit."
-    - "[TBD: something you'd do differently]"
+    - "Duplicated code is usually a missing API. The copies existed because there was no clean way to express the difference between products."
+    - "Prove a shared component with its first owner before handing it to anyone else."
+    - "A migration is the cheapest moment to fix accessibility. The component is already being rebuilt and retested."
 
-seoTitle: "Shared Micro Frontend with Stencil.js at ADP: Case Study | Rickie Cruz"
-seoDescription: "Case study: rebuilt an Angular admin module at ADP as a framework-agnostic Stencil.js micro frontend that multiple products embed and configure, enabling incremental platform modernization."
+seoTitle: "Consolidating Duplicated Components into Shared Micro Frontends | Rickie Cruz"
+seoDescription: "Case study: consolidated duplicated, product-specific Angular components into shared Stencil.js micro frontends at ADP, published as an internal npm package and used by three products across Angular, React and other micro frontends."
 tags:
   - architecture
   - frontend
   - micro-frontends
+  - accessibility
 ---
 
 ## What I can't show

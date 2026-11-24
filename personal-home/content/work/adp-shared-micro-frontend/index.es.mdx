@@ -1,0 +1,101 @@
+---
+# Superposición de traducción. Sólo campos dependientes del idioma: el id, el
+# slug, las fechas, las tecnologías, las imágenes y las URL de los enlaces viven
+# únicamente en index.mdx para que no puedan desincronizarse entre idiomas.
+title: "Un componente, muchos productos"
+description: "Mi equipo heredó funcionalidades cuyos componentes se habían copiado y ajustado para cada producto que los usaba. Los consolidé en micro frontends compartidos con Stencil.js, publicados como un paquete npm interno y usados hoy por tres productos con Angular, React y otros micro frontends."
+subcategory: arquitectura
+
+role: "Desarrollador líder de aplicaciones"
+organization: "ADP"
+
+casestudy:
+  problem: >
+    Mi equipo heredó varias funcionalidades cuyos componentes tenían una copia por producto.
+    Cuando dos productos necesitaban un comportamiento ligeramente distinto, el código se había
+    duplicado y ajustado en lugar de compartirse. Cada corrección o cambio había que hacerlo, y
+    probarlo, en más de un lugar, y las copias se iban separando con el tiempo. Además, los
+    componentes estaban atados a la aplicación Angular donde vivían, así que un producto hecho
+    con otra tecnología no podía usarlos.
+  context: >
+    La empresa ya contaba con un framework de micro frontends más amplio basado en Stencil.js,
+    que también se encargaba de la autenticación, los estilos y el estado compartido de todo lo
+    que corría dentro de él. Elegir Stencil no fue decisión mía; el framework era el estándar. Mi
+    trabajo era llevar a él los componentes heredados por mi equipo: decidir cómo estructurarlos,
+    consolidar el código duplicado y convertirlos en algo que otros equipos pudieran adoptar.
+  goals:
+    - "Reemplazar la copia de cada producto por una sola implementación compartida"
+    - "Hacer que los componentes pudieran usarse desde cualquier producto, sin importar con qué estuviera hecho"
+    - "Actualizar los componentes y su accesibilidad durante la migración"
+    - "No afectar a los usuarios existentes mientras se desplegaban los reemplazos"
+  constraints:
+    - "Construido sobre el framework de micro frontends con Stencil.js que ya tenía la empresa, no uno elegido por mí"
+    - "La autenticación, los estilos y el estado compartido eran del framework, así que quedaban fuera de alcance"
+    - "Los consumidores usaban una mezcla de Angular, React y otros micro frontends"
+    - "Las funcionalidades existentes debían seguir funcionando para los usuarios actuales en todo momento"
+  architecture: >
+    Los componentes duplicados de cada funcionalidad se convirtieron en un solo web component de
+    Stencil, que cualquier framework, u otro micro frontend, puede renderizar. Las diferencias
+    entre productos salieron del código copiado y pasaron a la API pública del componente:
+    propiedades de entrada, eventos de salida. Cada producto le pasa lo que necesita, incluido
+    el rol de quien lo ve, de modo que el mismo componente sirve tanto la vista de administrador
+    como la de empleado, y escucha los eventos que le interesan. Los componentes se publicaron
+    como un paquete npm interno, así que los equipos consumidores los instalaban y actualizaban
+    como cualquier otra dependencia.
+  implementation: >
+    Cada componente siguió la misma secuencia, para que la aplicación original lo probara antes
+    de que cualquier otro equipo dependiera de él.
+  implementationSteps:
+    - "Extraer la lógica de los componentes Angular duplicados a una sola implementación compartida"
+    - "Construir el componente de Stencil sobre el framework de la empresa, actualizándolo y corrigiendo la accesibilidad en el camino"
+    - "Reemplazar con él la versión Angular en la aplicación original"
+    - "Publicarlo en el paquete npm interno y ponerlo a disposición de los equipos consumidores"
+  challenges:
+    - "Distinguir qué diferencias entre las copias eran necesidades reales del producto y cuáles eran simple desviación"
+    - "Diseñar un componente que sirviera a tres productos y dos roles (administrador y empleado) sin convertirse en un montón de flags"
+    - "Mantener idéntico el comportamiento de la aplicación original mientras se reemplazaba lo que tenía debajo"
+    - "Atender a consumidores con tecnologías distintas: Angular, React y otros micro frontends"
+  decisions:
+    - title: "Una implementación en lugar de una copia por producto"
+      description: "Fusioné los componentes duplicados de cada funcionalidad en uno solo compartido, con las diferencias de producto y de rol manejadas mediante sus propiedades y eventos."
+      tradeoffs: >
+        Un solo lugar para corregir errores y hacer cambios, para todos los productos. El costo
+        fue un diseño cuidadoso de la API desde el principio, y decir que no a pedidos
+        específicos de un producto que no se generalizaban.
+    - title: "Probarlo en la aplicación original antes de compartirlo"
+      description: "Integré cada componente nuevo en la aplicación de mi propio equipo antes de publicarlo para otros equipos."
+      tradeoffs: >
+        Los problemas aparecían con el equipo dueño del código, no con otro equipo que acababa
+        de adoptarlo. El costo fue un camino más lento hacia los demás productos.
+    - title: "Modernizar al migrar, no después"
+      description: "Actualicé los componentes y atendí la accesibilidad como parte de reconstruirlos, en lugar de trasladarlos tal cual."
+      tradeoffs: >
+        Cada consumidor recibió las mejoras desde el primer día, y nadie tuvo que volver a los
+        componentes más adelante. El costo fue un cambio más grande por componente que una
+        migración directa.
+  result: >
+    Los componentes duplicados se convirtieron en micro frontends compartidos, publicados como
+    un paquete npm interno y usados por tres productos de distintos equipos, con Angular, React
+    y otros micro frontends. Una corrección o mejora ahora se publica una vez y llega a todos los
+    productos. La migración también actualizó los componentes y mejoró su accesibilidad.
+  metrics:
+    - metric: "Productos que consumen los componentes"
+      value: "3"
+  lessonLearned:
+    - "El código duplicado suele ser una API que falta. Las copias existían porque no había una forma limpia de expresar la diferencia entre productos."
+    - "Hay que probar un componente compartido con su primer dueño antes de entregárselo a nadie más."
+    - "Una migración es el momento más barato para corregir la accesibilidad: el componente ya se está reconstruyendo y volviendo a probar."
+
+seoTitle: "Consolidar componentes duplicados en micro frontends compartidos | Rickie Cruz"
+seoDescription: "Estudio de caso: consolidé componentes Angular duplicados por producto en micro frontends compartidos con Stencil.js en ADP, publicados como un paquete npm interno y usados por tres productos con Angular, React y otros micro frontends."
+tags:
+  - arquitectura
+  - frontend
+  - micro-frontends
+  - accesibilidad
+---
+
+## Lo que no puedo mostrar
+
+Este fue un trabajo interno en ADP, así que aquí no hay capturas de pantalla, código ni
+diagramas de arquitectura. El texto se limita al problema, las decisiones y el resultado.
