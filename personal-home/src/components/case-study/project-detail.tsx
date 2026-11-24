@@ -135,9 +135,16 @@ export async function ProjectDetail({
               </Section>
             ) : null}
 
-            {cs.implementation ? (
+            {cs.implementation || cs.implementationSteps?.length ? (
               <Section title={t.caseStudy.implementation}>
-                <p>{cs.implementation}</p>
+                {cs.implementation ? <p>{cs.implementation}</p> : null}
+                {cs.implementationSteps?.length ? (
+                  <ol className="list-decimal space-y-2 pl-6">
+                    {cs.implementationSteps.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ol>
+                ) : null}
               </Section>
             ) : null}
 

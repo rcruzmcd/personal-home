@@ -9,7 +9,22 @@ import {
   getProjectWithContent,
   getProjectsByTechnology,
   getWorkProjects,
+  isVisible,
 } from "@/lib/content/projects"
+
+describe("isVisible", () => {
+  test("hides a draft when drafts aren't shown (production)", () => {
+    expect(isVisible({ draft: true }, false)).toBe(false)
+  })
+
+  test("shows a draft when drafts are shown (dev)", () => {
+    expect(isVisible({ draft: true }, true)).toBe(true)
+  })
+
+  test("always shows a published entry", () => {
+    expect(isVisible({ draft: false }, false)).toBe(true)
+  })
+})
 
 describe("ProjectFrontmatterSchema", () => {
   test("accepts a well-formed frontmatter object", () => {

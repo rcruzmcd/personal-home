@@ -7,7 +7,9 @@ import type { Project } from "@/lib/content/types"
 
 // Reads the real content/ directory, like projects.test.ts does, so these
 // assertions fail on the actual published entries rather than on fixtures.
-const ENGLISH = getAllProjects(DEFAULT_LOCALE)
+// Drafts are excluded: they're translated once the English is final, and
+// production never serves them in any locale.
+const ENGLISH = getAllProjects(DEFAULT_LOCALE).filter((project) => !project.draft)
 
 function spanish(project: Project): Project {
   const result = getProjectWithContent(project.category, project.slug, "es")
@@ -81,6 +83,7 @@ describe("Spanish translations", () => {
       expect(esCs.challenges).toHaveLength(cs.challenges.length)
       expect(esCs.decisions).toHaveLength(cs.decisions.length)
       expect(esCs.lessonLearned).toHaveLength(cs.lessonLearned.length)
+      expect(esCs.implementationSteps?.length ?? 0).toBe(cs.implementationSteps?.length ?? 0)
       expect(esCs.metrics?.length ?? 0).toBe(cs.metrics?.length ?? 0)
     }
   )
@@ -94,7 +97,13 @@ describe("Spanish translations", () => {
       const cs = spanish(project).casestudy
       if (!cs) return
 
-      for (const list of [cs.goals, cs.constraints, cs.challenges, cs.lessonLearned]) {
+      for (const list of [
+        cs.goals,
+        cs.constraints,
+        cs.challenges,
+        cs.lessonLearned,
+        cs.implementationSteps ?? [],
+      ]) {
         for (const entry of list) {
           expect(typeof entry).toBe("string")
         }

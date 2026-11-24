@@ -32,6 +32,9 @@ const CaseStudySchema = z.object({
   architecture: z.string().optional(),
   design: z.string().optional(),
   implementation: z.string().optional(),
+  // Ordered phases rendered as a numbered list after the implementation
+  // paragraph, for rollouts whose order is the point.
+  implementationSteps: z.array(z.string()).optional(),
   challenges: z.array(z.string()).min(1),
   decisions: z.array(DecisionSchema).default([]),
   result: z.string().min(1),
@@ -66,6 +69,10 @@ export const ProjectFrontmatterSchema = z.object({
   slug: z.string().min(1),
   description: z.string().min(1),
   featured: z.boolean().default(false),
+  // A draft renders in `next dev` for review but is left out of production
+  // entirely: listings, detail routes, the sitemap and the resume page.
+  // Placeholders like "[TBD: …]" can live in a draft without reaching the site.
+  draft: z.boolean().default(false),
 
   category: z.enum(["work", "project"]),
   subcategory: z.string().optional(),
