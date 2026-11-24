@@ -49,6 +49,9 @@ export function LocaleSwitcher({ className }: { className?: string }) {
             key={locale}
             href={switchLocaleHref(pathname, locale)}
             hrefLang={locale}
+            // No prefetch: "/" redirects by the locale cookie, which the click
+            // itself changes, so a prefetched response would be stale.
+            prefetch={false}
             // aria-current marks the active language; the visible label is a
             // two-letter code, so the full language name is announced instead.
             aria-current={isActive ? "true" : undefined}

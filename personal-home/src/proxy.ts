@@ -23,9 +23,10 @@ export function proxy(request: NextRequest) {
   const url = request.nextUrl.clone()
   url.pathname = route.pathname
 
-  // 308 keeps the method and tells crawlers the unprefixed URL is canonical.
+  // 308 keeps the method and tells crawlers the unprefixed URL is canonical;
+  // 307 for preference-based redirects, which browsers must not cache.
   return route.kind === "redirect"
-    ? NextResponse.redirect(url, 308)
+    ? NextResponse.redirect(url, route.permanent ? 308 : 307)
     : NextResponse.rewrite(url)
 }
 

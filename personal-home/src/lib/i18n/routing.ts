@@ -46,8 +46,10 @@ export type LocaleRoute =
   // prerendered "/en/about" is served. This is what keeps English unprefixed
   // without duplicating the route files.
   | { kind: "rewrite"; pathname: string }
-  // Redirect is visible, and exists so a page has exactly one public URL.
-  | { kind: "redirect"; pathname: string }
+  // Redirect is visible. Permanent ones exist so a page has exactly one public
+  // URL; temporary ones follow the visitor's remembered choice, which can change
+  // — a cached permanent redirect would pin "/" to the old language for good.
+  | { kind: "redirect"; pathname: string; permanent: boolean }
 
 /**
  * The whole locale routing policy, as a pure function so it can be tested
@@ -57,9 +59,13 @@ export function resolveLocaleRoute(pathname: string, cookieLocale?: string): Loc
   // "/en/about" is an internal address, not a public one — the public URL is
   // "/about". Without this redirect both would serve identical HTML and split
   // their own search ranking.
-  if (pathname === `/${DEFAULT_LOCALE}`) return { kind: "redirect", pathname: "/" }
+  if (pathname === `/${DEFAULT_LOCALE}`) return { kind: "redirect", pathname: "/", permanent: true }
   if (pathname.startsWith(`/${DEFAULT_LOCALE}/`)) {
-    return { kind: "redirect", pathname: pathname.slice(DEFAULT_LOCALE.length + 1) }
+    return {
+      kind: "redirect",
+      pathname: pathname.slice(DEFAULT_LOCALE.length + 1),
+      permanent: true,
+    }
   }
 
   for (const locale of PREFIXED_LOCALES) {
@@ -73,7 +79,7 @@ export function resolveLocaleRoute(pathname: string, cookieLocale?: string): Loc
   // someone chose to send) and hand crawlers a different page than the one they
   // requested.
   if (pathname === "/" && isLocale(cookieLocale) && cookieLocale !== DEFAULT_LOCALE) {
-    return { kind: "redirect", pathname: `/${cookieLocale}` }
+    return { kind: "redirect", pathname: `/${cookieLocale}`, permanent: false }
   }
 
   return { kind: "rewrite", pathname: localizeInternal(pathname) }

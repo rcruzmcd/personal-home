@@ -78,12 +78,12 @@ describe("resolveLocaleRoute", () => {
 
   // "/en/about" and "/about" would otherwise serve identical HTML at two URLs.
   it("redirects the internal English address to the public one", () => {
-    expect(resolveLocaleRoute("/en/about")).toEqual({ kind: "redirect", pathname: "/about" })
-    expect(resolveLocaleRoute("/en")).toEqual({ kind: "redirect", pathname: "/" })
+    expect(resolveLocaleRoute("/en/about")).toEqual({ kind: "redirect", pathname: "/about", permanent: true })
+    expect(resolveLocaleRoute("/en")).toEqual({ kind: "redirect", pathname: "/", permanent: true })
   })
 
   it("honours a remembered locale at the root", () => {
-    expect(resolveLocaleRoute("/", "es")).toEqual({ kind: "redirect", pathname: "/es" })
+    expect(resolveLocaleRoute("/", "es")).toEqual({ kind: "redirect", pathname: "/es", permanent: false })
   })
 
   it("ignores a remembered locale on any other path, so shared links stay put", () => {
