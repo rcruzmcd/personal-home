@@ -8,6 +8,7 @@ import { useMessages } from "@/components/i18n/i18n-provider"
 import {
   getThemeServerSnapshot,
   getThemeSnapshot,
+  restoreTheme,
   setTheme,
   subscribeTheme,
   type Theme,
@@ -20,6 +21,9 @@ export function ThemeToggle() {
     getThemeSnapshot,
     getThemeServerSnapshot
   )
+
+  // Layout effect so the theme is back before paint, with no flash.
+  React.useLayoutEffect(restoreTheme, [])
 
   function toggle() {
     const next: Theme = theme === "dark" ? "light" : "dark"

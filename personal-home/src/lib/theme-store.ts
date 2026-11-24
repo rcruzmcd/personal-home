@@ -30,3 +30,18 @@ export function setTheme(theme: Theme) {
   window.localStorage.setItem(STORAGE_KEY, theme)
   listeners.forEach((listener) => listener())
 }
+
+// Re-apply the stored choice to <html>. The inline init script only runs on a
+// full page load; a client navigation that remounts the root layout (switching
+// locale changes the [locale] root param) makes React clear <html>'s
+// attributes, dropping data-theme.
+export function restoreTheme() {
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY)
+    if (stored === "dark" || stored === "light") {
+      document.documentElement.dataset.theme = stored
+    }
+  } catch {
+    // Storage blocked: nothing was persisted, so there is nothing to restore.
+  }
+}
