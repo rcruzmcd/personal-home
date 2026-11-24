@@ -1,0 +1,108 @@
+---
+id: adp-shared-micro-frontend
+title: "One Component, Many Products"
+slug: adp-shared-micro-frontend
+description: "Rebuilt an Angular admin module at ADP as a Stencil.js micro frontend that several products could embed, whatever framework each was built with, so the platform could modernize piece by piece instead of all at once."
+draft: true
+featured: false
+category: work
+subcategory: architecture
+status: completed
+
+# DRAFT: dates are placeholders inside the ADP tenure (Feb 2022 – Jul 2026).
+startDate: "2023-01-01"
+endDate: "2023-06-30"
+publishedDate: "2026-11-24"
+
+role: "Lead Application Developer"
+organization: "ADP"
+
+technologies:
+  - Stencil.js
+  - Angular
+  - TypeScript
+  - Web Components
+  - Jest
+
+casestudy:
+  problem: >
+    An administrative module of ADP's community platform [TBD: which one, in general terms,
+    e.g. "survey administration"] was built in Angular and lived inside one application. Other
+    ADP products needed the same capability, but [TBD: they were built with different frameworks
+    or versions / embedding the Angular app wasn't possible]. The options were to rebuild it in
+    every product, or to keep it locked to the one.
+  context: >
+    The platform was being modernized gradually, not rewritten. Any new approach had to sit
+    alongside existing Angular code, ship without a big-bang cutover, and be maintainable by a
+    team of 4–8 engineers. [TBD: how many products needed to consume the component, and who
+    owned them.]
+  goals:
+    - "Build the capability once and let every product that needs it embed it"
+    - "Don't tie consumers to a framework or framework version"
+    - "Let each product configure what it needs without forking the component"
+    - "Make modernization incremental, one module at a time"
+  constraints:
+    - "Consumers built with different stacks [TBD: confirm which]"
+    - "No rewrite of the host applications"
+    - "Existing behavior had to keep working for current users during the move"
+    - "[TBD: design-system, accessibility or bundle-size requirements]"
+  research: >
+    [TBD: what you compared, e.g. Angular Elements, Module Federation, Stencil.js, an iframe.]
+    Stencil compiles to standard web components, which any framework (or none) can render, and
+    produces small bundles without shipping a framework runtime with them.
+  architecture: >
+    The module became a set of Stencil web components with a public API made of properties
+    in and events out. Each consuming product passes its own configuration [TBD: e.g. which
+    features are on, its labels, its API endpoint or auth token], so product differences are
+    data, not branches in the code. [TBD: how it was published and versioned: an npm package,
+    a CDN bundle?]
+  implementation: >
+    [TBD: the order you did it in, e.g. extract the logic, build the components, swap the
+    Angular version out in the original app first, then onboard the next product.] Jest tests
+    covered the component contract so consuming teams could upgrade with confidence.
+  challenges:
+    - "Designing one component API that fit several products without turning into a pile of flags"
+    - "Re-architecting the module's internals for reuse, not just porting it to a new framework"
+    - "Keeping the existing Angular experience working while the replacement shipped"
+    - "[TBD: styling, auth, or shared-state problems across host applications]"
+  decisions:
+    - title: "Stencil.js web components, not an Angular-only solution"
+      description: "Built the micro frontend as framework-agnostic web components with Stencil."
+      tradeoffs: >
+        Any product can embed it regardless of its stack, and it outlives any one framework
+        version. The cost was moving off Angular's tooling and patterns the team already knew.
+    - title: "Configuration over forks"
+      description: "Let each product configure the component through its public API instead of maintaining product-specific copies."
+      tradeoffs: >
+        One codebase to fix and improve for everyone. The cost was a more careful API design up
+        front, and saying no to product-specific requests that didn't generalize.
+    - title: "[TBD: a third decision, e.g. versioning or how shared styles were handled]"
+      description: "[TBD]"
+      tradeoffs: >
+        [TBD]
+  result: >
+    The capability is built once and embedded by [TBD: N products], and the platform has a
+    proven path for modernizing other modules one at a time. Maintenance overhead dropped
+    [TBD: how you'd measure it, e.g. one place to fix bugs instead of N].
+  metrics:
+    - metric: "Products consuming the component"
+      value: "[TBD]"
+    - metric: "Bundle size or load time vs. the Angular module"
+      value: "[TBD, if known]"
+  lessonLearned:
+    - "A reusable component's real design work is its API: what goes in, what comes out, and what you refuse to configure."
+    - "Incremental modernization needs a unit small enough to ship on its own. A micro frontend is that unit."
+    - "[TBD: something you'd do differently]"
+
+seoTitle: "Shared Micro Frontend with Stencil.js at ADP: Case Study | Rickie Cruz"
+seoDescription: "Case study: rebuilt an Angular admin module at ADP as a framework-agnostic Stencil.js micro frontend that multiple products embed and configure, enabling incremental platform modernization."
+tags:
+  - architecture
+  - frontend
+  - micro-frontends
+---
+
+## What I can't show
+
+This was internal work at ADP, so there are no screenshots, code or architecture diagrams here.
+The write-up sticks to the problem, the decisions and the outcome.

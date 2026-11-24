@@ -1,0 +1,90 @@
+---
+id: fiserv-timezone-incident
+title: "The Timezone Incident"
+slug: fiserv-timezone-incident
+description: "A production timezone bug in Fiserv's fraud alert platform, and how I led my team through finding it, fixing it and making sure that class of bug didn't ship again."
+draft: true
+featured: false
+category: work
+subcategory: incident-response
+status: completed
+
+# DRAFT: dates are placeholders inside the Fiserv manager role (Jun 2020 – Feb 2022).
+startDate: "2021-01-01"
+endDate: "2021-01-31"
+publishedDate: "2026-11-24"
+
+role: "Team Lead / Manager"
+organization: "Fiserv"
+
+technologies:
+  - Angular
+  - Java
+  - "[TBD: the database or services involved]"
+
+casestudy:
+  problem: >
+    [TBD: what users saw, in general terms, e.g. "alerts showed the wrong time" or "scheduled
+    alerts fired an hour early for clients in some time zones".] The fraud alert platform
+    serves financial institutions, so anything wrong with when an alert happened is a problem
+    for the client and their customers, not just a display bug.
+  context: >
+    I managed the team that owned [TBD: the affected part of the platform]. [TBD: how it was
+    reported: a client, monitoring, support?] [TBD: when it started relative to when it was
+    noticed, e.g. after a daylight-saving change or a release.]
+  goals:
+    - "Stop the impact for affected clients first"
+    - "Find the actual root cause, not just the visible symptom"
+    - "Keep clients and stakeholders informed while it was open"
+    - "Make sure this class of bug couldn't ship again"
+  constraints:
+    - "Production financial data: fixes had to be careful, and any data correction had to be right the first time"
+    - "[TBD: release process, e.g. a fix couldn't skip CAT/UAT]"
+    - "Team spread across time zones, which is its own irony for this one"
+  research: >
+    [TBD: how the team found the cause, e.g. reproducing it with a client's time-zone settings,
+    comparing stored vs. displayed timestamps.] The root cause was [TBD: e.g. times stored in
+    server local time instead of UTC, a conversion done twice, a DST rule missing].
+  implementation: >
+    [TBD: the immediate mitigation, the actual fix, and any correction of affected data.] As
+    manager, I [TBD: ran the response / kept the team focused on one fix path / handled client
+    and stakeholder communication so engineers could work].
+  challenges:
+    - "Separating a symptom that looked like a display bug from a data problem underneath it [TBD: confirm]"
+    - "Communicating impact and progress to clients while the cause was still unknown"
+    - "[TBD: anything specific about the fix or the data correction]"
+  decisions:
+    - title: "[TBD: e.g. mitigate first, then fix]"
+      description: "[TBD]"
+      tradeoffs: >
+        [TBD]
+    - title: "[TBD: e.g. fix the storage convention (UTC everywhere), not just the display]"
+      description: "[TBD]"
+      tradeoffs: >
+        [TBD]
+  result: >
+    [TBD: time to mitigate and time to full fix.] Affected clients were [TBD: notified and their
+    data corrected]. Afterward the team [TBD: the follow-ups, e.g. tests across time zones and DST
+    boundaries, a UTC storage rule, a checklist item in code review].
+  metrics:
+    - metric: "Time to mitigate"
+      value: "[TBD]"
+    - metric: "Time to full resolution"
+      value: "[TBD]"
+  lessonLearned:
+    - "Store time in one zone, convert at the edge. Every timezone bug I've seen breaks that rule somewhere."
+    - "During an incident a manager's job is to protect the people fixing it: take the communication, keep the scope to one fix path."
+    - "[TBD: what the postmortem changed in how the team worked]"
+
+seoTitle: "Leading a Production Timezone Incident at Fiserv | Rickie Cruz"
+seoDescription: "Incident write-up: how I led a team through a production timezone bug in a fraud alert platform for financial institutions, from mitigation and root cause to the changes that kept it from recurring."
+tags:
+  - incident-response
+  - leadership
+  - operations
+---
+
+## A blameless write-up
+
+This is written the way a postmortem should be: about the system and the response, not about
+who wrote the line that broke. Client names and affected-account details are left out.

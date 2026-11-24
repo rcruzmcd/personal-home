@@ -1,0 +1,114 @@
+---
+id: fiserv-support-self-service
+title: "Giving Support the Tools to Fix It Themselves"
+slug: fiserv-support-self-service
+description: "Led a team at Fiserv that built an internal UI on top of an existing backend so product and customer support could investigate and fix customer issues without pulling in developers, freeing engineering capacity for roadmap work."
+draft: true
+featured: false
+category: work
+subcategory: internal-tools
+status: completed
+
+# DRAFT: dates are placeholders inside the Fiserv tenure (Mar 2019 – Feb 2022).
+startDate: "2020-06-01"
+endDate: "2021-06-30"
+publishedDate: "2026-11-24"
+
+role: "Team Lead / Manager"
+organization: "Fiserv"
+
+technologies:
+  - Angular
+  - TypeScript
+  - Java
+  - Jenkins
+  - "[TBD: anything else in the stack]"
+
+casestudy:
+  problem: >
+    When a customer of Fiserv's fraud alert platform had a problem, product and customer support
+    couldn't see enough to diagnose it, or change anything to fix it. Every case became a
+    developer ticket. [TBD: rough volume, e.g. N tickets a week/month] That pulled engineers off
+    roadmap work, and customers waited on a developer's availability for things that were often
+    a lookup or a configuration change.
+  context: >
+    I managed a cross-functional engineering team, with onshore and offshore engineers,
+    supporting enterprise fraud alert platforms for financial institutions, from smaller
+    agencies to enterprise accounts with millions of accounts. The backend already held the data
+    and operations support needed; what was missing was a safe way for non-developers to reach
+    them. I wrote the stories, set priorities with the Product Owner, and made most delivery
+    decisions without escalating to the director.
+  goals:
+    - "Let support and product investigate a customer issue without a developer"
+    - "Let them make the common fixes themselves, safely"
+    - "Give engineering its time back for roadmap work"
+  constraints:
+    - "Financial institutions' data: access had to be controlled and changes auditable [TBD: confirm what controls existed]"
+    - "Build on the existing backend rather than a new service [TBD: confirm]"
+    - "A distributed team across time zones, onshore and offshore"
+    - "[TBD: timeline or headcount constraints]"
+  research: >
+    [TBD: how you chose what to build first. Likely: sorting recent developer tickets from
+    support by type, and picking the ones that were really a lookup or a routine change.]
+  design: >
+    [TBD: what the tool let support do, e.g. look up a customer's alert configuration, see the
+    history of alerts sent, re-send or correct something, change a setting.] Read-only views
+    came first; actions that changed data were added behind [TBD: role permissions, approval,
+    an audit log].
+  implementation: >
+    I broke the work into stories the offshore team could pick up and finish without waiting on
+    a question across time zones: clear acceptance criteria, the backend endpoints named, and
+    the edge cases written down. [TBD: how long it took, how it was released, how support was
+    trained on it.]
+  challenges:
+    - "Deciding which developer-only operations were safe to hand to support, and which weren't"
+    - "Keeping an offshore team unblocked across time zones with stories that stood on their own"
+    - "Making delivery and priority calls myself rather than escalating each one to the director"
+    - "[TBD: a specific hard moment]"
+  decisions:
+    - title: "A UI on the existing backend, not a new system"
+      description: "Exposed operations the backend already had through an internal UI instead of building new services for support."
+      tradeoffs: >
+        Faster to ship and nothing new to operate. The cost was being limited to what the
+        backend could already do, and [TBD: anything the backend needed added].
+    - title: "Read first, write later"
+      description: "Shipped investigation views before any action that changed customer data."
+      tradeoffs: >
+        Support got value right away and trust in the tool built before it could change
+        anything. The cost was a second release before the biggest time savings arrived.
+    - title: "[TBD: a decision you made as manager, e.g. how you split the work between onshore and offshore]"
+      description: "[TBD]"
+      tradeoffs: >
+        [TBD]
+  result: >
+    Product and support can now investigate and resolve [TBD: the most common kinds of issues]
+    without a developer. Developer tickets from support dropped [TBD: by how much], and that time
+    went back to roadmap work.
+  metrics:
+    - metric: "Support tickets needing a developer"
+      value: "[TBD: before → after]"
+    - metric: "Time to resolve a common support issue"
+      value: "[TBD: before → after]"
+  lessonLearned:
+    - "The cheapest way to add engineering capacity is to stop needing engineers for work that isn't engineering."
+    - "A distributed team moves as fast as its stories are clear. Writing them well was most of my job."
+    - "[TBD: something you'd do differently]"
+
+seoTitle: "Support Self-Service Tooling at Fiserv: Case Study | Rickie Cruz"
+seoDescription: "Case study: led a team at Fiserv building an internal UI that let product and customer support investigate and fix fraud alert platform issues without developers, freeing engineering capacity."
+tags:
+  - internal-tools
+  - leadership
+  - operations
+---
+
+## Also in this role
+
+[TBD: confirm which role this was in.] I led the modernization of 15+ legacy AngularJS
+interfaces to current Angular, and walked existing clients through the new versions in webinars
+and working sessions so the move landed with the people using them, not just in the codebase.
+
+## What I can't show
+
+This was internal work at Fiserv on systems that hold financial institutions' data, so there are
+no screenshots or code here. The write-up sticks to the problem, the decisions and the outcome.
