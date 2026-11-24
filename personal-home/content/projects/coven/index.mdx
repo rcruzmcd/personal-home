@@ -1,0 +1,217 @@
+---
+id: coven
+title: "Coven"
+slug: coven
+description: "A multi-tenant operations platform for small nonprofits and small businesses, generalized from one organization's production system, with each tenant's data isolated by the database rather than by application code."
+featured: true
+category: project
+subcategory: platform
+status: active
+
+# DRAFT: startDate is when the Chatter Snow codebase this grew out of began;
+# replace with the date the multi-tenant conversion started if you'd rather
+# date the platform itself.
+startDate: "2025-01-15"
+publishedDate: "2026-11-23"
+
+role: "Founder and Architect"
+organization: "RCM Labs"
+
+# No accentColor/cardBackground: Coven's Indigo doesn't collide with this
+# site's purple, so its card uses the default surface (docs/BRAND_GUIDE.md §15).
+
+technologies:
+  - Next.js
+  - TypeScript
+  - Supabase
+  - PostgreSQL
+  - Resend
+  - Vercel
+  - Cloudflare
+
+links:
+  - title: "Product Site"
+    url: "https://rickiecruz.com/coven"
+    type: live
+  - title: "Public Site Demo"
+    url: "https://demo.rickiecruz.com"
+    type: demo
+  - title: "Ops Portal Demo"
+    url: "https://demo.rickiecruz.com/portal"
+    type: demo
+
+casestudy:
+  problem: >
+    Small organizations run on a pile: a spreadsheet for the money, a Drive folder for the
+    documents, a form for donations or bookings, a separate tool for scheduling, and a website
+    only one person can change. Chatter Snow's operations portal had already replaced that pile
+    for one organization, and nothing in it was really about snow sports. Gear libraries,
+    volunteer shifts, board minutes and donation records are the same problems everywhere. But
+    the code assumed exactly one organization. One tenant's domain was hardcoded as the
+    platform's routing table, every table held one organization's rows with nothing separating
+    them, and controls like data-retention purges and role administration acted on the whole
+    database. Serving a second organization meant answering one question first: where would
+    its data leak?
+  context: >
+    Coven is the platform Chatter Snow's system became, and Chatter Snow is its first tenant.
+    The conversion had to happen against a live production system holding real member, donor
+    and financial data, so it couldn't pause, and nothing from it could be copied into a
+    fixture or a demo. The audience also widened along the way. The same product now serves
+    small nonprofits and small businesses, so one organization reads donors where another reads
+    customers, and board governance is a module a business simply doesn't switch on. It's an
+    RCM Labs platform with its own brand and its own product site, and it's built and run by
+    one person.
+  goals:
+    - Serve any number of organizations from one codebase and one database, with each tenant's data isolated by Postgres itself rather than by care in every query
+    - Make a missing isolation guard a build failure, not a code-review catch
+    - Give every tenant its own domain, branding, public copy, roles and vocabulary without a fork or a rebuild
+    - Let an organization export or delete everything it owns, and set its own data-retention rules
+    - Provision a new tenant from an admin page, not a shell session
+    - Ship a public demo anyone can walk through as an administrator, with no real data in it
+  constraints:
+    - "Retrofitted onto a live single-tenant system: no outage, and no migration a user would notice"
+    - "Real member, donor and financial data in production: none of it can reach fixtures, tests, demos or screenshots"
+    - "No super-admin: platform staff can't hold a standing way into a customer organization's data"
+    - One developer, no dedicated ops team, and a nonprofit-sized hosting budget
+    - "Generic by default: no organization's name in platform code, and no single industry's assumptions in the schema"
+  research: >
+    The design started from a threat question rather than a feature list: where would a second
+    organization's data leak? The honest answer was "anywhere a developer forgot." An
+    application-level tenant filter has to be remembered in every query, every script, and
+    every future refactor, and it's only as good as the least careful of them. So the work went
+    into finding the lowest layer that could hold the rule on its own. Postgres row-level
+    security was already in place, and composite foreign keys could make the relationships
+    themselves tenant-aware. Together they meant the database could refuse a cross-tenant read
+    or reference whoever wrote it.
+  architecture: >
+    Multi-tenancy is a property of the schema, not a convention in the application. Every
+    tenant table carries a `tenant_id` whose default resolves from the session, then the
+    request host. Every row-level security policy is scoped to the current tenant. Every
+    foreign key between two tenant tables is composite, so Postgres rejects a cross-tenant
+    reference even from a service-role connection. A diagnostic query lists any table missing
+    either guard and fails the build. Two surfaces ship from the same codebase: a public site,
+    which resolves its tenant from the request `Host` matched against custom domains (longest
+    match wins), and an operations portal, which resolves it from the signed-in user's
+    membership and never looks at the host. Branding tokens, public copy and the role
+    permission matrix are per-tenant rows over platform defaults. Deliberately not built: a
+    custom CMS, a separate edition per audience, and any super-admin role.
+  design: >
+    Each organization configures itself from its own Administration area, not through a
+    support ticket: copy, photos, brand tokens, roles, and the words the product uses. The
+    same tokens render each tenant's brand guide at /brand on its public site, so the reference
+    a volunteer or a designer is handed is generated from what the product actually renders
+    with, and nobody maintains it by hand. Support access follows the same shape as everything
+    else. A tenant issues platform staff a time-boxed membership with a reason and an expiry,
+    and can revoke it, so platform access is covered by the same policies as everyone else's.
+  implementation: >
+    The conversion ran in phases against the live system. First came tenancy tables and
+    membership. Next, a `tenant_id` column and scoped policy on all 73 tenant tables, plus 110
+    composite foreign keys. Then host-based tenant resolution, followed by provisioning,
+    per-tenant branding and site content, per-tenant data-retention rules, and export and
+    deletion. Last came a platform administration page, so provisioning a tenant no longer
+    needs a shell. The order was load-bearing: the first tenant's custom domain had to be set
+    and verified before a second tenant went active, because a "sole active tenant" fallback
+    had been quietly holding the public site together until then. The demo tenant went live
+    last, because it was the strictest test of everything before it.
+  challenges:
+    - "Retrofitting tenancy onto a live database: one forgotten policy or single-column foreign key is a silent cross-tenant leak, so the schema had to police itself"
+    - "Controls that were harmless with one tenant: data-retention purges and role administration were platform-wide, so any organization's admin could act on every organization's data"
+    - "Showing the system without exposing anyone: a demo needs an admin account that an anonymous stranger holds, which turns every remaining cross-tenant control into a public one"
+    - "Composite foreign keys change how embedded queries are written, and every migration has to seed per tenant"
+    - "Staying generic while the only production tenant is one specific organization with its own brand and vocabulary"
+  decisions:
+    - title: "Isolation lives in the database, not the application"
+      description: "Scoped every row-level security policy to the current tenant and made every foreign key between tenant tables composite, instead of filtering by tenant in queries."
+      tradeoffs: >
+        Postgres rejects a cross-tenant read or reference whatever writes it, including a
+        service-role script or a future bug, and a diagnostic query fails the build if any
+        table is missing either guard. The cost is a heavier schema: composite keys change how
+        embedded queries are written, and every migration has to seed per tenant.
+    - title: "No super-admin: support access is granted by the tenant"
+      description: "Platform staff hold a time-boxed support membership that the organization issues and revokes, instead of a role that bypasses tenant scoping."
+      tradeoffs: >
+        Every policy has exactly one shape, so the isolation test suite covers platform access
+        too and there's no privileged path outside it. The cost is that support can't
+        self-serve into an account to debug it. Someone at the organization has to open the
+        door, with a reason and an expiry.
+    - title: "The host decides the tenant for public pages; membership decides it for the portal"
+      description: "Public requests resolve a tenant from the request Host matched against custom domains; portal requests resolve it from the signed-in user's membership."
+      tradeoffs: >
+        One domain column serves a tenant's site and portal subdomains together, and a forged
+        host header can only reach the public surface a visitor could reach anyway. The cost
+        is an operational step per tenant, registering domains with the host and the auth
+        redirect allowlist, that can't be fully automated yet.
+    - title: "Ship the demo as a real tenant, not a demo mode"
+      description: "The public demo at demo.rickiecruz.com is an ordinary tenant on a demo plan with seeded fictional data, rebuilt from scratch nightly, not a special code path."
+      tradeoffs: >
+        Anyone can walk through the whole portal as an administrator in one click, and the demo
+        runs the same policies as a paying tenant instead of a parallel path that could drift.
+        The cost is that the demo's admin is effectively an anonymous stranger, so every
+        control still reaching outside a tenant had to be closed before it could go live.
+        That's the work that made the platform genuinely multi-tenant.
+    - title: "One product in each organization's own vocabulary, not an edition per audience"
+      description: "Nonprofits and small businesses run the same product; each organization sets the words on its screens and which modules it uses."
+      tradeoffs: >
+        One codebase, one schema and one set of isolation guarantees to maintain, and a
+        feature built for one audience reaches the other for free. The cost is that every
+        label has to be configurable rather than written once, and a module that only makes
+        sense for one audience, like board governance, needs an explicit way to be absent.
+    - title: "Draw the ownership line before the work has value"
+      description: "Split the repository into the generic platform on one side and Chatter Snow's brand, copy, content and data on the other, with production data never crossing into fixtures or demos."
+      tradeoffs: >
+        The first organization keeps its identity and records outright, and the platform stays
+        reusable, which is what makes a second organization possible at all. The cost is
+        discipline in every commit: no organization's name in platform code, and no
+        snow-sports assumption in the schema.
+  result: >
+    Coven serves organizations from one codebase with their data isolated at the database
+    level. Every tenant table carries a scoped policy and every relationship a composite key,
+    and the build fails if one is missing. A new organization can be provisioned from an admin
+    page with its own domain, branding, copy, roles, vocabulary and retention rules, and it can
+    export or delete everything it owns. Chatter Snow runs on it in production as tenant one.
+    A fully seeded demo of both surfaces is public at demo.rickiecruz.com, and the product has
+    its own site with modules, pricing and a security page. What's not proven yet is a second
+    real organization: provisioning has been exercised against the demo tenant and fixtures,
+    not yet a paying customer.
+  lessonLearned:
+    - "Push isolation as low as it will go. A rule enforced by the database holds even when a developer, a script or a future refactor forgets it, and a rule enforced by convention doesn't."
+    - "Every shortcut that was fine with one tenant becomes a vulnerability with two. A platform-wide purge job or a global admin control is invisible until the day it isn't."
+    - "Building a demo is a security exercise, not a marketing one. Handing an anonymous visitor an admin account is the most honest audit of tenant isolation there is."
+    - "Make the guard a test, not a habit. A query that fails the build when a table is missing its policy catches what review won't."
+    - "Draw the ownership line early. Separating the generic platform from one organization's material is cheap before either has value and expensive to untangle after."
+
+seoTitle: "Coven: Multi-Tenant Operations Platform Case Study | Rickie Cruz"
+seoDescription: "How one nonprofit's operations portal became Coven, a multi-tenant platform for small organizations, with tenant isolation enforced by Postgres row-level security and composite foreign keys. Public demo available."
+tags:
+  - platform
+  - multi-tenant
+  - security
+  - full-stack
+---
+
+## See it running
+
+- **[demo.rickiecruz.com](https://demo.rickiecruz.com)**: a seeded demo tenant's public site.
+  Everything on it is fictional; no person, donation or record there describes anybody.
+- **[demo.rickiecruz.com/portal](https://demo.rickiecruz.com/portal)**: the operations portal.
+  One click signs you in as an administrator of the demo organization, no account needed.
+  Change whatever you like; the whole tenant is torn down and rebuilt every night.
+- **[The product site](/coven)**: modules, pricing, and how Coven handles your data.
+
+## Tenant one
+
+Coven started as the system I built for [Chatter Snow](/work/chatter-snow), where I sit on the
+board. That case study covers the organization's side: going from a shared Gmail account to
+real infrastructure, and why the operational record matters for a group organizing toward
+nonprofit status.
+
+## Metrics
+
+Platform metrics (tenants live, time to provision, isolation test coverage, hosting cost per
+tenant) are TBD and will be added once a second organization is running in production.
+
+## What's next
+
+Onboard a second real organization and let provisioning prove itself against a customer instead
+of a fixture. Then make the operational steps that still need an operator, like custom domains
+and verified sending addresses, self-service for each tenant.

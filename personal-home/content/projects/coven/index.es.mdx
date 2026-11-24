@@ -1,0 +1,208 @@
+---
+# Superposición de traducción. Sólo campos dependientes del idioma: el id, el
+# slug, las fechas, las tecnologías, las imágenes y las URL de los enlaces viven
+# únicamente en index.mdx para que no puedan desincronizarse entre idiomas.
+title: "Coven"
+description: "Una plataforma multiinquilino de operaciones para pequeñas organizaciones sin fines de lucro y pequeños negocios, generalizada a partir del sistema en producción de una organización, con los datos de cada inquilino aislados por la base de datos y no por el código de la aplicación."
+subcategory: plataforma
+
+role: "Fundador y arquitecto"
+organization: "RCM Labs"
+
+links:
+  - title: "Sitio del producto"
+  - title: "Demo del sitio público"
+  - title: "Demo del portal de operaciones"
+
+casestudy:
+  problem: >
+    Las organizaciones pequeñas funcionan con un montón de piezas sueltas: una hoja de cálculo
+    para el dinero, una carpeta de Drive para los documentos, un formulario para donaciones o
+    reservas, otra herramienta para la agenda y un sitio web que sólo una persona sabe cambiar.
+    El portal de operaciones de Chatter Snow ya había reemplazado ese montón para una
+    organización, y nada en él era realmente sobre deportes de nieve. Las bibliotecas de equipo,
+    los turnos de voluntariado, las actas de la junta y los registros de donaciones son los
+    mismos problemas en todas partes. Pero el código asumía exactamente una organización. El
+    dominio de un solo inquilino estaba escrito a mano como la tabla de ruteo de la plataforma,
+    cada tabla guardaba las filas de una sola organización sin nada que las separara, y
+    controles como las purgas por retención de datos y la administración de roles actuaban
+    sobre toda la base de datos. Servir a una segunda organización exigía responder primero una
+    pregunta: ¿por dónde se filtrarían sus datos?
+  context: >
+    Coven es la plataforma en la que se convirtió el sistema de Chatter Snow, y Chatter Snow es
+    su primer inquilino. La conversión tuvo que hacerse sobre un sistema vivo en producción, con
+    datos reales de miembros, donantes y finanzas, así que no podía detenerse, y nada de ahí
+    podía copiarse a un fixture o a una demostración. El público también se amplió en el camino.
+    El mismo producto ahora sirve a pequeñas organizaciones sin fines de lucro y a pequeños
+    negocios, de modo que una organización lee "donantes" donde otra lee "clientes", y la
+    gobernanza de la junta es un módulo que un negocio simplemente no activa. Es una plataforma
+    de RCM Labs con su propia marca y su propio sitio de producto, y la construye y la opera una
+    sola persona.
+  goals:
+    - Servir a cualquier número de organizaciones desde un mismo código y una misma base de datos, con los datos de cada inquilino aislados por el propio Postgres y no por el cuidado puesto en cada consulta
+    - Que una protección de aislamiento faltante rompa el build, en lugar de depender de una revisión de código
+    - Darle a cada inquilino su propio dominio, marca, contenido público, roles y vocabulario sin un fork ni una reconstrucción
+    - Permitir que una organización exporte o elimine todo lo que le pertenece y defina sus propias reglas de retención de datos
+    - Aprovisionar un inquilino nuevo desde una página de administración, no desde una terminal
+    - Publicar una demostración que cualquiera pueda recorrer como administrador, sin ningún dato real dentro
+  constraints:
+    - "Adaptada sobre un sistema vivo de un solo inquilino: sin caídas y sin una migración que un usuario notara"
+    - "Datos reales de miembros, donantes y finanzas en producción: nada de eso puede llegar a fixtures, pruebas, demostraciones ni capturas de pantalla"
+    - "Sin superadministrador: el personal de la plataforma no puede tener una entrada permanente a los datos de una organización cliente"
+    - Un solo desarrollador, sin equipo de operaciones y con un presupuesto de hosting del tamaño de una organización sin fines de lucro
+    - "Genérica por defecto: ningún nombre de organización en el código de la plataforma y ningún supuesto de una sola industria en el esquema"
+  research: >
+    El diseño partió de una pregunta de amenazas y no de una lista de funciones: ¿por dónde se
+    filtrarían los datos de una segunda organización? La respuesta honesta era "por donde a
+    alguien se le olvide". Un filtro de inquilino a nivel de aplicación tiene que recordarse en
+    cada consulta, cada script y cada refactorización futura, y es tan bueno como el menos
+    cuidadoso de ellos. Así que el trabajo se concentró en encontrar la capa más baja capaz de
+    sostener la regla por sí sola. La seguridad a nivel de fila de Postgres ya estaba en uso, y
+    las claves foráneas compuestas podían hacer que las propias relaciones conocieran al
+    inquilino. Juntas, permitían que la base de datos rechazara una lectura o una referencia
+    entre inquilinos sin importar quién la escribiera.
+  architecture: >
+    La multiinquilinidad es una propiedad del esquema, no una convención de la aplicación. Cada
+    tabla de inquilino tiene un `tenant_id` cuyo valor por defecto se resuelve desde la sesión y,
+    si no, desde el host de la solicitud. Cada política de seguridad a nivel de fila está
+    acotada al inquilino actual. Cada clave foránea entre dos tablas de inquilino es compuesta,
+    así que Postgres rechaza una referencia entre inquilinos incluso desde una conexión de
+    service role. Una consulta de diagnóstico lista cualquier tabla a la que le falte alguna de
+    las dos protecciones y rompe el build. Dos superficies salen del mismo código: un sitio
+    público, que resuelve su inquilino a partir del `Host` de la solicitud comparado con los
+    dominios propios (gana la coincidencia más larga), y un portal de operaciones, que lo
+    resuelve a partir de la membresía del usuario y nunca consulta el host. Los tokens de marca,
+    el contenido público y la matriz de permisos por rol son filas por inquilino sobre valores
+    por defecto de la plataforma. Deliberadamente no se construyó: un CMS propio, una edición
+    distinta por público ni ningún rol de superadministrador.
+  design: >
+    Cada organización se configura desde su propia área de Administración, no mediante un
+    ticket de soporte: textos, fotos, tokens de marca, roles y las palabras que usa el producto.
+    Esos mismos tokens generan la guía de marca de cada inquilino en /brand de su sitio público,
+    así que la referencia que recibe un voluntario o un diseñador sale de lo que el producto
+    realmente usa para dibujar, y nadie la mantiene a mano. El acceso de soporte sigue la misma
+    forma que todo lo demás. Un inquilino le otorga al personal de la plataforma una membresía
+    temporal con un motivo y una fecha de vencimiento, y puede revocarla, así que el acceso de
+    la plataforma queda cubierto por las mismas políticas que el de cualquier otra persona.
+  implementation: >
+    La conversión avanzó por fases sobre el sistema vivo. Primero, las tablas de inquilinos y la
+    membresía. Después, una columna `tenant_id` y una política acotada en las 73 tablas de
+    inquilino, más 110 claves foráneas compuestas. Luego, la resolución del inquilino por host,
+    seguida del aprovisionamiento, la marca y el contenido por inquilino, las reglas de
+    retención por inquilino y la exportación y eliminación. Al final, una página de
+    administración de la plataforma, para que aprovisionar un inquilino ya no requiriera una
+    terminal. El orden importaba: el dominio propio del primer inquilino tenía que estar
+    configurado y verificado antes de activar a un segundo, porque un respaldo de "único
+    inquilino activo" había estado sosteniendo el sitio público en silencio hasta entonces. El
+    inquilino de demostración se lanzó al final, porque era la prueba más estricta de todo lo
+    anterior.
+  challenges:
+    - "Adaptar la multiinquilinidad a una base de datos viva: una política olvidada o una clave foránea de una sola columna es una fuga silenciosa entre inquilinos, así que el esquema tenía que vigilarse solo"
+    - "Controles que eran inofensivos con un inquilino: las purgas por retención y la administración de roles abarcaban toda la plataforma, así que el administrador de cualquier organización podía actuar sobre los datos de todas"
+    - "Mostrar el sistema sin exponer a nadie: una demostración necesita una cuenta de administrador en manos de un desconocido anónimo, lo que vuelve público cualquier control entre inquilinos que quede"
+    - "Las claves foráneas compuestas cambian cómo se escriben las consultas anidadas, y cada migración tiene que sembrar datos por inquilino"
+    - "Mantenerse genérica mientras el único inquilino en producción es una organización concreta con su propia marca y su propio vocabulario"
+  decisions:
+    - title: "El aislamiento vive en la base de datos, no en la aplicación"
+      description: "Cada política de seguridad a nivel de fila se acotó al inquilino actual y cada clave foránea entre tablas de inquilino se hizo compuesta, en lugar de filtrar por inquilino en las consultas."
+      tradeoffs: >
+        Postgres rechaza una lectura o una referencia entre inquilinos sin importar quién la
+        escriba, incluso un script con service role o un error futuro, y una consulta de
+        diagnóstico rompe el build si a alguna tabla le falta cualquiera de las dos
+        protecciones. El costo es un esquema más pesado: las claves compuestas cambian cómo se
+        escriben las consultas anidadas, y cada migración tiene que sembrar datos por inquilino.
+    - title: "Sin superadministrador: el acceso de soporte lo otorga el inquilino"
+      description: "El personal de la plataforma tiene una membresía de soporte temporal que la organización emite y revoca, en lugar de un rol que se salta el acotamiento por inquilino."
+      tradeoffs: >
+        Todas las políticas tienen exactamente una forma, así que las pruebas de aislamiento
+        cubren también el acceso de la plataforma y no existe un camino privilegiado fuera de
+        ellas. El costo es que soporte no puede entrar por su cuenta a depurar. Alguien de la
+        organización tiene que abrir la puerta, con un motivo y una fecha de vencimiento.
+    - title: "El host decide el inquilino en las páginas públicas; la membresía lo decide en el portal"
+      description: "Las solicitudes públicas resuelven el inquilino a partir del Host comparado con los dominios propios; las del portal lo resuelven a partir de la membresía del usuario."
+      tradeoffs: >
+        Una sola columna de dominio sirve juntos al sitio y al subdominio del portal de un
+        inquilino, y un header de host falsificado sólo alcanza la superficie pública que un
+        visitante ya podría ver. El costo es un paso operativo por inquilino, registrar los
+        dominios en el hosting y en la lista de redirecciones permitidas de autenticación, que
+        todavía no se puede automatizar del todo.
+    - title: "La demostración es un inquilino real, no un modo demo"
+      description: "La demostración pública en demo.rickiecruz.com es un inquilino común en un plan de demostración, con datos ficticios sembrados y reconstruido desde cero cada noche, no una ruta de código especial."
+      tradeoffs: >
+        Cualquiera puede recorrer todo el portal como administrador con un clic, y la
+        demostración ejecuta las mismas políticas que un inquilino que paga en lugar de un
+        camino paralelo que podría desviarse. El costo es que el administrador de la demostración
+        es en la práctica un desconocido anónimo, así que había que cerrar todo control que aún
+        alcanzara fuera de un inquilino antes de publicarla. Ese trabajo es el que hizo a la
+        plataforma realmente multiinquilino.
+    - title: "Un solo producto en el vocabulario de cada organización, no una edición por público"
+      description: "Las organizaciones sin fines de lucro y los pequeños negocios usan el mismo producto; cada organización define las palabras de sus pantallas y qué módulos usa."
+      tradeoffs: >
+        Un solo código, un solo esquema y un solo conjunto de garantías de aislamiento que
+        mantener, y una función hecha para un público le llega gratis al otro. El costo es que
+        cada etiqueta tiene que ser configurable en lugar de escribirse una vez, y un módulo que
+        sólo tiene sentido para un público, como la gobernanza de la junta, necesita una manera
+        explícita de no estar.
+    - title: "Trazar la línea de propiedad antes de que el trabajo tenga valor"
+      description: "El repositorio se dividió entre la plataforma genérica de un lado y la marca, los textos, el contenido y los datos de Chatter Snow del otro, sin que los datos de producción pasen nunca a fixtures ni demostraciones."
+      tradeoffs: >
+        La primera organización conserva por completo su identidad y sus registros, y la
+        plataforma sigue siendo reutilizable, que es lo que hace posible una segunda
+        organización. El costo es disciplina en cada commit: ningún nombre de organización en el
+        código de la plataforma y ningún supuesto de deportes de nieve en el esquema.
+  result: >
+    Coven sirve a varias organizaciones desde un mismo código, con sus datos aislados a nivel de
+    base de datos. Cada tabla de inquilino tiene una política acotada y cada relación una clave
+    compuesta, y el build falla si falta alguna. Una organización nueva se puede aprovisionar
+    desde una página de administración con su propio dominio, marca, contenido, roles,
+    vocabulario y reglas de retención, y puede exportar o eliminar todo lo que le pertenece.
+    Chatter Snow funciona sobre ella en producción como primer inquilino. Hay una demostración
+    completa de ambas superficies, con datos sembrados, en demo.rickiecruz.com, y el producto
+    tiene su propio sitio con módulos, precios y una página de seguridad. Lo que todavía no está
+    probado es una segunda organización real: el aprovisionamiento se ha ejercitado con el
+    inquilino de demostración y con fixtures, todavía no con un cliente que paga.
+  lessonLearned:
+    - "Baja el aislamiento tan abajo como se pueda. Una regla que exige la base de datos se sostiene aunque una persona, un script o una refactorización futura la olviden, y una regla sostenida por convención no."
+    - "Todo atajo que estaba bien con un inquilino se vuelve una vulnerabilidad con dos. Un trabajo de purga de toda la plataforma o un control global de administración es invisible hasta el día que deja de serlo."
+    - "Construir una demostración es un ejercicio de seguridad, no de mercadotecnia. Darle una cuenta de administrador a un visitante anónimo es la auditoría más honesta que existe del aislamiento entre inquilinos."
+    - "Convierte la protección en una prueba, no en un hábito. Una consulta que rompe el build cuando a una tabla le falta su política atrapa lo que una revisión no ve."
+    - "Traza la línea de propiedad temprano. Separar la plataforma genérica del material de una organización es barato antes de que cualquiera de los dos tenga valor y caro de desenredar después."
+
+seoTitle: "Coven: estudio de caso de una plataforma multiinquilino de operaciones | Rickie Cruz"
+seoDescription: "Cómo el portal de operaciones de una organización se convirtió en Coven, una plataforma multiinquilino para organizaciones pequeñas, con aislamiento entre inquilinos garantizado por la seguridad a nivel de fila de Postgres y claves foráneas compuestas. Con demostración pública."
+tags:
+  - plataforma
+  - multiinquilino
+  - seguridad
+  - full-stack
+---
+
+## Míralo funcionando
+
+- **[demo.rickiecruz.com](https://demo.rickiecruz.com)**: el sitio público de un inquilino de
+  demostración. Todo ahí es ficticio; ninguna persona, donación ni registro describe a nadie.
+- **[demo.rickiecruz.com/portal](https://demo.rickiecruz.com/portal)**: el portal de
+  operaciones. Un clic te firma como administrador de la organización de demostración, sin
+  necesidad de cuenta. Cambia lo que quieras; el inquilino completo se destruye y se reconstruye
+  cada noche.
+- **[El sitio del producto](/es/coven)**: módulos, precios y cómo Coven maneja tus datos.
+
+## El primer inquilino
+
+Coven empezó como el sistema que construí para [Chatter Snow](/es/work/chatter-snow), donde
+formo parte de la junta. Ese estudio de caso cubre el lado de la organización: pasar de una
+cuenta de Gmail compartida a infraestructura real, y por qué el registro operativo importa para
+un grupo que se organiza hacia el estatus sin fines de lucro.
+
+## Métricas
+
+Las métricas de la plataforma (inquilinos activos, tiempo de aprovisionamiento, cobertura de las
+pruebas de aislamiento, costo de hosting por inquilino) siguen pendientes y se agregarán cuando
+una segunda organización esté funcionando en producción.
+
+## Qué sigue
+
+Incorporar a una segunda organización real y dejar que el aprovisionamiento se pruebe con un
+cliente y no con un fixture. Después, convertir en autoservicio por inquilino los pasos
+operativos que todavía requieren a un operador, como los dominios propios y las direcciones de
+envío verificadas.
